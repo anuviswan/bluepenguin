@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "oxAihzfjZYsvXVXQ5cq6d+ujlbBADZ9eB3rJDUp1M3QB5517r1rQfMyd4NgyMLkyQ5A61fXLzs1kLK1I1baJ0A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\anu.viswan\\source\\repos\\BluePenguin.Catalogue.WebApi\\BluePenguin.Catalogue.WebApi.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\anu.viswan\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\anu.viswan\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\anu.viswan\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
+    "C:\\Users\\anu.viswan\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
+    "C:\\Users\\anu.viswan\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
+    "C:\\Users\\anu.viswan\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.5.0\\swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}
