@@ -6,10 +6,11 @@
 		<xsl:template match="/">
 			<Products>
 			<xsl:for-each select="Root/Products/Product">
+				<Name>
+					<xsl:value-of select="ProductProfile/Name"/>
+				</Name>
 			</xsl:for-each>
-			<Name>
-				<xsl:value-of select="Name"/>
-			</Name>
+			
 			</Products>
 		</xsl:template>
 	
