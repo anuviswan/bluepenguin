@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json;
 using System.Xml.Serialization;
 
 namespace BluePenguin.Catalogue.Transformer
@@ -10,8 +8,8 @@ namespace BluePenguin.Catalogue.Transformer
         static void Main(string[] args)
         {
             var inputPath = args[0];
-            var outputPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\myFile.xml"; ;
-            var metaFiles = Find(args[0]);
+            var outputPath = args[1];
+            var metaFiles = Find(inputPath);
             var productList = new List<Product>();
 
             foreach (var metaFile in metaFiles)
