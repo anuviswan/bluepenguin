@@ -11,30 +11,42 @@ namespace BluePenguin.Catalogue.Transformer
         {
             var inputPath = args[0];
             var outputPath = args[1];
+
+
             var metaFiles = Find(inputPath);
-            var productList = new List<Product>();
-
-            foreach (var metaFile in metaFiles)
-            {
-                using var stream = File.OpenRead(metaFile);
-                var productRoot = JsonSerializer.Deserialize<ProductRoot>(stream);
-                productList.Add(productRoot.Product);
-            }
-
             var root = new Root()
             {
-                Products = productList
+                Products = ExtractProducts(metaFiles).ToList()
             };
+
+            WriteToXml(outputPath, root);
+            Transform(outputPath);
+        }
+
+        private static void Transform(string outputPath)
+        {
+            var xsltTransform = new XslTransform();
+            xsltTransform.Load(@"Xslt/Transform.xslt");
+            xsltTransform.Transform(outputPath, "final.xml");
+        }
+
+        private static void WriteToXml(string outputPath, Root root)
+        {
             using (StreamWriter strmWriter = new StreamWriter(outputPath))
             {
                 XmlSerializer mySerializer = new XmlSerializer(typeof(Root));
                 mySerializer.Serialize(strmWriter, root);
             }
+        }
 
-
-            var xsltTransform = new XslTransform();
-            xsltTransform.Load(@"Xslt/Transform.xslt");
-            xsltTransform.Transform(outputPath, "final.xml");
+        private static IEnumerable<Product> ExtractProducts(IEnumerable<string> metaFiles)
+        {
+            foreach (var metaFile in metaFiles)
+            {
+                using var stream = File.OpenRead(metaFile);
+                var productRoot = JsonSerializer.Deserialize<ProductRoot>(stream);
+                yield return productRoot.Product;
+            }
         }
 
         private static IEnumerable<string> Find(string path) => Directory.GetFiles(path, "meta.json", SearchOption.AllDirectories);
