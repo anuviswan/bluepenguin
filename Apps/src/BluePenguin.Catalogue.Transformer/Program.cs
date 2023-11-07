@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Xml.Serialization;
+using System.Xml.Xsl;
 
 namespace BluePenguin.Catalogue.Transformer
 {
@@ -29,6 +30,10 @@ namespace BluePenguin.Catalogue.Transformer
                 mySerializer.Serialize(strmWriter, root);
             }
 
+
+            var xsltTransform = new XslTransform();
+            xsltTransform.Load(@"Xslt/Transform.xslt");
+            xsltTransform.Transform(outputPath, "final.xml");
         }
 
         private static IEnumerable<string> Find(string path) => Directory.GetFiles(path, "meta.json", SearchOption.AllDirectories);
