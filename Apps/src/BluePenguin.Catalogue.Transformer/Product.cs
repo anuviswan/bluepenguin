@@ -31,6 +31,8 @@ namespace BluePenguin.Catalogue.Transformer
         public string Id { get; set; }
         public string Name { get; set; }
         public string Category { get; set; }
+
+        public string Collection { get; set; }
         public List<string> Tags { get; set; }
         public string TimeStamp { get; set; }
     }
