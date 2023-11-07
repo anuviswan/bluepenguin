@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BluePenguin.Catalogue.Transformer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\anuvi\\Desktop\\Blue Penguin\" \"C:\\temp\""
+    }
+  }
+}
