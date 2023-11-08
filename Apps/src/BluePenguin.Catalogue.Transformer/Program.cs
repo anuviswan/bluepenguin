@@ -11,7 +11,7 @@ namespace BluePenguin.Catalogue.Transformer
         {
             var inputPath = args[0];
             var outputPath = args[1];
-
+            var tempXml = "TempXml";
 
             var metaFiles = Find(inputPath);
             var root = new Root()
@@ -19,20 +19,20 @@ namespace BluePenguin.Catalogue.Transformer
                 Products = ExtractProducts(metaFiles).ToList()
             };
 
-            WriteToXml(outputPath, root);
-            Transform(outputPath);
+            WriteToXml(tempXml, root);
+            Transform(tempXml, outputPath);
         }
 
-        private static void Transform(string outputPath)
+        private static void Transform(string xmlPath, string outputPath)
         {
             var xsltTransform = new XslTransform();
             xsltTransform.Load(@"Xslt/Transform.xslt");
-            xsltTransform.Transform(outputPath, "final.xml");
+            xsltTransform.Transform(xmlPath, outputPath);
         }
 
         private static void WriteToXml(string outputPath, Root root)
         {
-            using (StreamWriter strmWriter = new StreamWriter(outputPath))
+            using (StreamWriter strmWriter = new StreamWriter(outputPath,false))
             {
                 XmlSerializer mySerializer = new XmlSerializer(typeof(Root));
                 mySerializer.Serialize(strmWriter, root);
