@@ -6,3 +6,7 @@
 /Apps/src/BluePenguin.Catalogue.Transformer/obj
 /Apps/src/BluePenguin.Catalogue.Transformer/.vs/BluePenguin.Catalogue.Transformer
 /Apps/src/BluePenguin.Catalogue.Transformer/.vs/ProjectEvaluation
+/Apps/src/BluePenguin.Catalogue.AzureFunction/Properties/PublishProfiles
+/Apps/src/BluePenguin.Catalogue.AzureFunction/Properties/ServiceDependencies/BluePenguinCatalogue - Zip Deploy
+/Apps/src/BluePenguin.Catalogue.AzureFunction/Properties/serviceDependencies.BluePenguinCatalogue - Zip Deploy.json
+/Apps/src/BluePenguin.Catalogue.AzureFunction/Properties/serviceDependencies.json
