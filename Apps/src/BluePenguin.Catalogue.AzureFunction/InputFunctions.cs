@@ -11,6 +11,7 @@ namespace BluePenguin.Catalogue.AzureFunction
 {
     public static class InputFunctions
     {
+        [FunctionName("SayHello")]
         public static async Task<HttpResponseMessage> SayHello([HttpTrigger(AuthorizationLevel.Function, "get",  Route = null)] HttpRequestMessage req)
         {
             return req.CreateResponse(HttpStatusCode.OK, "Hello Custom !! This is Blue Penguin");
