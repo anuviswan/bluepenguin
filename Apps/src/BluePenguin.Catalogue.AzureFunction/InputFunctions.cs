@@ -17,7 +17,7 @@ namespace BluePenguin.Catalogue.AzureFunction
             return req.CreateResponse(HttpStatusCode.OK, "Hello Custom !! This is Blue Penguin");
         }
 
-        [FunctionName("GetAllProducts")]
+        [FunctionName("UploadProducts")]
         public static async Task<HttpResponseMessage> UploadProducts(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
             [Blob("productlist")] CloudBlobContainer blobContainer, 
