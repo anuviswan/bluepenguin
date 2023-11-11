@@ -61,5 +61,23 @@ namespace BluePenguin.Catalogue.AzureFunction
             await blob.UploadTextAsync(fileContent);
             return req.CreateResponse(HttpStatusCode.Created, "Product List Uploaded"); ;
         }
+
+
+        [FunctionName("GetAllProducts")]
+        public static async Task GetAllProducts([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
+            [Blob("productlist")] CloudBlobContainer blobContainer,
+            TraceWriter log)
+        {
+            try
+            {
+                await blobContainer.CreateIfNotExistsAsync();
+                var blob = blobContainer.GetBlockBlobReference($"productlist.xml");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
