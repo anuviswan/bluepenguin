@@ -1,11 +1,19 @@
+using BluePenguin.Catalogue.AzureFunction.DTO;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace BluePenguin.Catalogue.AzureFunction
 {
@@ -20,9 +28,10 @@ namespace BluePenguin.Catalogue.AzureFunction
         [FunctionName("UploadProducts")]
         public static async Task<HttpResponseMessage> UploadProducts(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
-            [Blob("productlist")] CloudBlobContainer blobContainer, 
+            [Blob("productlist")] CloudBlobContainer blobContainer,
             TraceWriter log)
         {
+
             MultipartMemoryStreamProvider stream;
             try
             {
@@ -54,17 +63,16 @@ namespace BluePenguin.Catalogue.AzureFunction
                 return req.CreateResponse(HttpStatusCode.InternalServerError, "Unable to read file stream");
             }
 
-
             await blobContainer.CreateIfNotExistsAsync();
 
             var blob = blobContainer.GetBlockBlobReference($"productlist.xml");
             await blob.UploadTextAsync(fileContent);
-            return req.CreateResponse(HttpStatusCode.Created, "Product List Uploaded"); ;
+            return req.CreateResponse(HttpStatusCode.Created, "Product List Uploaded"); 
         }
 
 
         [FunctionName("GetAllProducts")]
-        public static async Task GetAllProducts([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
+        public static async Task<IEnumerable<Product>> GetAllProducts([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
             [Blob("productlist")] CloudBlobContainer blobContainer,
             TraceWriter log)
         {
@@ -72,11 +80,27 @@ namespace BluePenguin.Catalogue.AzureFunction
             {
                 await blobContainer.CreateIfNotExistsAsync();
                 var blob = blobContainer.GetBlockBlobReference($"productlist.xml");
-            }
-            catch (Exception)
-            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Products));
+                var products = new Products()
+                {
+                    Product = Enumerable.Empty<Product>().ToList()
+                };
 
-                throw;
+                using (var stream = await blob.OpenReadAsync())
+                {
+                    using (var reader = new XmlTextReader(stream))
+                    {
+                        products = (Products)serializer.Deserialize(reader);
+                    }
+                        
+                }
+
+                return products.Product;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
         }
     }
