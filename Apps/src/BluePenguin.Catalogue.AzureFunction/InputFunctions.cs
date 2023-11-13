@@ -103,5 +103,42 @@ namespace BluePenguin.Catalogue.AzureFunction
                 throw ex;
             }
         }
+
+
+        [FunctionName("GetProduct")]
+        public static async Task<Product> GetProduct([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
+            [Blob("productlist")] CloudBlobContainer blobContainer,
+            TraceWriter log)
+        {
+            try
+            {
+                var queryParams = req.GetQueryNameValuePairs();
+                var searchTerm = queryParams.FirstOrDefault(x=>x.Key == "name").Value;
+
+                await blobContainer.CreateIfNotExistsAsync();
+                var blob = blobContainer.GetBlockBlobReference($"productlist.xml");
+                XmlSerializer serializer = new XmlSerializer(typeof(Products));
+                var products = new Products()
+                {
+                    Product = Enumerable.Empty<Product>().ToList()
+                };
+
+                using (var stream = await blob.OpenReadAsync())
+                {
+                    using (var reader = new XmlTextReader(stream))
+                    {
+                        products = (Products)serializer.Deserialize(reader);
+                    }
+
+                }
+
+                return products.Product.FirstOrDefault(x=>x.Name == searchTerm);
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
