@@ -1,0 +1,6 @@
+<template>
+</template>
+
+<script setup lang="ts">
+<v-btn size="x-large" rounded elevation="2">Dummy</v-btn>
+</script>
