@@ -13,7 +13,7 @@ class HttpClient{
             "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
             "Content-Type": "application/json", // this shows the expected content type
           };
-        this.axiosInstance = axios.create({baseURL: "http://localhost:8001/", headers:headers});
+        this.axiosInstance = axios.create({baseURL: "http://localhost:7071/", headers:headers});
 
         
 

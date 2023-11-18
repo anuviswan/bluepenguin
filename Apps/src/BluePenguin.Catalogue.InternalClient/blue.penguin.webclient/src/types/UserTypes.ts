@@ -1,5 +1,6 @@
-export interface User{
-    userName : string,
-    displayName? : string,
-    bio? : string 
-}
+export interface IProduct {
+    name: string;
+    url: string;
+    category: string;
+    collection: string;
+  }

@@ -4,7 +4,7 @@
       
       <v-row class="d-flex align-center justify-center">
         <v-col cols="auto">
-          <SquareButton msg="Product List"></SquareButton>
+          <SquareButton msg="Product List" @click="GoToProductList"></SquareButton>
         </v-col>
 
         <v-col cols="auto">
@@ -20,7 +20,13 @@
 </template>
 
 <script lang="ts" setup>
-import SquareButton from './controls/SquareButton.vue';
+import SquareButton from '@/components/controls/SquareButton.vue'
+import router from "@/router";
 
+const GoToProductList = () => {
+  console.log("product list")
+  router.push("/productlist");
+} 
   //
 </script>
+``
