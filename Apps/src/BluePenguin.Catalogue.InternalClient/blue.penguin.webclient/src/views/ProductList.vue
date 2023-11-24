@@ -13,17 +13,17 @@
 </template>
 
 <script setup lang="ts">
+import {  ref , onMounted } from "vue";
 import {IProduct} from "@/types/UserTypes";
-import ProductCard from "@/components/controls/ProductCard.vue";
-const products: IProduct[] = [...Array(10).keys()].map(
-  (v, i) =>
-    <IProduct>{
-      name: "Demo " + i,
-      url: `https://picsum.photos/300/400?image=${i + 1}`,
-      category: "Category " + i,
-      collection: "Collection " + i,
-    }
-);
+import ProductCard from "@/components/controls/ProductCard.vue"
+import {productsApiService} from "@/apiservice/ProductApiService"
+
+console.log("loading...")
+const getAllProducts = async () => await productsApiService.getAllProducts();
+const products = ref<IGetAllProductsResponse>();
+onMounted(async () =>{
+  products.value = await getAllProducts();
+});
 </script>
 
 <style scoped>
