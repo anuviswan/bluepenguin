@@ -1,6 +1,8 @@
 <template>
    <v-card
-    
+   prepend-icon="mdi-account"
+   :title = product.name
+   :subtitle = product.category
     class="mx-auto my-12"
     max-width="374"
   >
@@ -10,7 +12,6 @@
       src="https://cdn.vuetifyjs.com/images/cards/cooking.png"
     ></v-img> -->
 
-    <v-card-title>{{product.name}}</v-card-title>
 
     <v-card-text>
 
@@ -18,12 +19,12 @@
         {{product.category}} , {{product.collection}}
       </div>
 
-      <div>Small plates, salads & sandwiches - an intimate setting with 12 indoor seats plus patio seating.</div>
+      <div>{{product.MRP}}</div>
     </v-card-text>
 
     <v-divider class="mx-4"></v-divider>
-    <v-card-subtitle>MRP Rs.354</v-card-subtitle>
-    <v-card-subtitle>Discount Price Rs.354</v-card-subtitle>
+    <v-card-subtitle>MRP Rs.{{product.mrp}}</v-card-subtitle>
+    <v-card-subtitle>Discount Price Rs.{{product.discountPrice}}</v-card-subtitle>
     <v-divider class="mx-4"></v-divider>
     <v-card-text>
       <v-chip-group
@@ -31,13 +32,11 @@
         active-class="deep-purple accent-4 white--text"
         column
       >
-        <v-chip>Vintage</v-chip>
-
-        <v-chip>Heart</v-chip>
-
-        <v-chip>Antique</v-chip>
-
-        <v-chip>Gold</v-chip>
+      <div v-for="item in product.tags.Tag" :key="item.name">
+          <div  class="mx-4">
+            <v-chip>{{item}}</v-chip>
+          </div>
+        </div>
       </v-chip-group>
     </v-card-text>
 

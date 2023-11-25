@@ -12,10 +12,9 @@ class HttpClient{
             "Access-Control-Allow-Methods": "OPTIONS,POST,GET", // this states the allowed methods
             "Content-Type": "application/json", // this shows the expected content type
           };
-        this.axiosInstance = axios.create({baseURL: "http://localhost:7071/", headers:headers});
+        this.axiosInstance = axios.create({baseURL: import.meta.env.VITE_API_BASEURL, headers:headers});
 
-        
-
+       
         
         // this.axiosInstance.interceptors.request.use(function (config) 
         // {
@@ -36,7 +35,6 @@ class HttpClient{
         try{
             const response =  await this.axiosInstance.request<T>(config); 
 
-            console.log(response.data)
             return response.data;
         }catch(error : AxiosError | any){
 

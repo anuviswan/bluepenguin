@@ -18,6 +18,8 @@
 						</xsl:for-each>
 					</Tags>
 					<Size><xsl:value-of select="Specification/Height"/>x<xsl:value-of select="Specification/Width"/><xsl:value-of select="Specification/Unit"/></Size>
+					<MRP><xsl:value-of select="Cost/MRP"/></MRP>
+					<DiscountPrice><xsl:value-of select="Cost/DiscountPrice"/></DiscountPrice>
 				</Product>
 			</xsl:for-each>
 			

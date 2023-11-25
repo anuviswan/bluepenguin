@@ -18,7 +18,7 @@ import {IProduct} from "@/types/UserTypes";
 import ProductCard from "@/components/controls/ProductCard.vue"
 import {productsApiService} from "@/apiservice/ProductApiService"
 
-console.log("loading...")
+
 const getAllProducts = async () => await productsApiService.getAllProducts();
 const products = ref<IGetAllProductsResponse>();
 onMounted(async () =>{
