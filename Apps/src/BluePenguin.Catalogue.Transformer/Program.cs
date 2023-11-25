@@ -7,11 +7,15 @@ namespace BluePenguin.Catalogue.Transformer
 {
     internal class Program
     {
+        /// <summary>
+        /// Usage : .exe SourcePath DestinationFileName
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             var inputPath = args[0];
             var outputPath = args[1];
-            var tempXml = "TempXml";
+            var tempXml = "Temp.xml";
 
             var metaFiles = Find(inputPath);
             var root = new Root()

@@ -11,6 +11,11 @@
 					<Name><xsl:value-of select="ProductProfile/Name"/></Name>
 					<Category><xsl:value-of select="ProductProfile/Category"/></Category>
 					<Collection><xsl:value-of select="ProductProfile/Collection"/></Collection>
+					<Tags>
+						<xsl:for-each select="ProductProfile/Tags/Tag">
+							<Tag><xsl:value-of select="." /></Tag>
+						</xsl:for-each>
+					</Tags>
 				</Product>
 			</xsl:for-each>
 			

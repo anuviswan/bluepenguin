@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace BluePenguin.Catalogue.Transformer
 {
@@ -33,6 +34,9 @@ namespace BluePenguin.Catalogue.Transformer
         public string Category { get; set; }
 
         public string Collection { get; set; }
+
+        [XmlArray]
+        [XmlArrayItem(typeof(string),ElementName = "Tag")]
         public List<string> Tags { get; set; }
         public string TimeStamp { get; set; }
     }
