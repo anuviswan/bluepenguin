@@ -47,6 +47,8 @@ namespace BluePenguin.Catalogue.Transformer
     {
         public double Height { get; set; }
         public double Width { get; set; }
+
+        public string Unit { get; set; }
         public double Weight { get; set; }
         public string Shape { get; set; }
     }

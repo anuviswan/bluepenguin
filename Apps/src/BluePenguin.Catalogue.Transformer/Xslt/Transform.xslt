@@ -9,6 +9,7 @@
 			<xsl:for-each select="Root/Products/Product">
 				<Product>
 					<Name><xsl:value-of select="ProductProfile/Name"/></Name>
+					<Code><xsl:value-of select="ProductProfile/Id"/></Code>
 					<Category><xsl:value-of select="ProductProfile/Category"/></Category>
 					<Collection><xsl:value-of select="ProductProfile/Collection"/></Collection>
 					<Tags>
@@ -16,6 +17,7 @@
 							<Tag><xsl:value-of select="." /></Tag>
 						</xsl:for-each>
 					</Tags>
+					<Size><xsl:value-of select="Specification/Height"/>x<xsl:value-of select="Specification/Width"/><xsl:value-of select="Specification/Unit"/></Size>
 				</Product>
 			</xsl:for-each>
 			

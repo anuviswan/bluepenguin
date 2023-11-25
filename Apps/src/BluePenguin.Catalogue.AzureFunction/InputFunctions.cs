@@ -66,6 +66,7 @@ namespace BluePenguin.Catalogue.AzureFunction
             await blobContainer.CreateIfNotExistsAsync();
 
             var blob = blobContainer.GetBlockBlobReference($"productlist.xml");
+            await blob.DeleteIfExistsAsync();
             await blob.UploadTextAsync(fileContent);
             return req.CreateResponse(HttpStatusCode.Created, "Product List Uploaded"); 
         }
