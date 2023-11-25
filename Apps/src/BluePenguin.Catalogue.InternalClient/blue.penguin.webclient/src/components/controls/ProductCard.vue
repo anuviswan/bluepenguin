@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto my-12" max-width="374">
+  <v-card elevation="2" rounded="5"  class="mx-auto my-12" max-width="374">
     <v-card-item>
       <v-card
         :color="titleColor"
@@ -9,10 +9,7 @@
       >
       </v-card>
     </v-card-item>
-    <v-card-subtitle>MRP Rs.{{ product.mrp }}</v-card-subtitle>
-    <v-card-subtitle
-      >Discount Price Rs.{{ product.discountPrice }}</v-card-subtitle
-    >
+
     <v-card-text>
       <v-chip-group
         v-model="selection"
@@ -26,10 +23,9 @@
         </div>
       </v-chip-group>
     </v-card-text>
-
-    <v-card-actions>
-      <v-btn color="deep-purple lighten-2" text> Details </v-btn>
-    </v-card-actions>
+    <v-divider thickness="2"></v-divider>
+    <v-card-subtitle>MRP Rs.{{ product.mrp }}</v-card-subtitle>
+    <v-card-subtitle>Discount Price Rs.{{ product.discountPrice }}</v-card-subtitle>
   </v-card>
 </template>
 
