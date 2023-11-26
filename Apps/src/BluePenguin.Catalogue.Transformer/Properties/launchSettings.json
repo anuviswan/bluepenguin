@@ -2,7 +2,7 @@
   "profiles": {
     "BluePenguin.Catalogue.Transformer": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\anuvi\\Desktop\\Blue Penguin\" \"C:\\Users\\anuvi\\Desktop\\output.xml\""
+      "commandLineArgs": "\"D:\\OneDrive\\Blue Penguin\" \"C:\\Users\\anuvi\\Desktop\\output.xml\""
     }
   }
 }

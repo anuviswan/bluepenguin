@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.IO;
+using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.Xsl;
@@ -7,15 +8,21 @@ namespace BluePenguin.Catalogue.Transformer
 {
     internal class Program
     {
+        private const string TEMP_XML_PATH = "Temp.xml";
+        private const string TEMP_THUMBNAIL_PATH = "TempThumbnail";
         /// <summary>
         /// Usage : .exe SourcePath DestinationFileName
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            if(!Directory.Exists(TEMP_THUMBNAIL_PATH))
+            {
+                Directory.CreateDirectory(TEMP_THUMBNAIL_PATH);
+            }
+
             var inputPath = args[0];
             var outputPath = args[1];
-            var tempXml = "Temp.xml";
 
             var metaFiles = Find(inputPath);
             var root = new Root()
@@ -23,8 +30,9 @@ namespace BluePenguin.Catalogue.Transformer
                 Products = ExtractProducts(metaFiles).ToList()
             };
 
-            WriteToXml(tempXml, root);
-            Transform(tempXml, outputPath);
+            
+            WriteToXml(TEMP_XML_PATH, root);
+            Transform(TEMP_XML_PATH, outputPath);
         }
 
         private static void Transform(string xmlPath, string outputPath)
