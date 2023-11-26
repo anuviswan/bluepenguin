@@ -1,5 +1,5 @@
 <template>
-  <v-card elevation="2" rounded="5"  class="mx-auto my-12" max-width="374">
+  <v-card elevation="5" rounded="5" class="mx-auto my-12" max-width="374">
     <v-card-item>
       <v-card
         :color="titleColor"
@@ -9,8 +9,18 @@
       >
       </v-card>
     </v-card-item>
+    <v-card-item>
+      <v-layout align-center>
+      <v-img
+        :width="300"
+        aspect-ratio="16/9"
+        cover
+        src="https://cdn.vuetifyjs.com/images/parallax/material.jpg"
+      ></v-img>
+      </v-layout>
+    </v-card-item>
 
-    <v-card-text>
+    <v-card-item>
       <v-chip-group
         v-model="selection"
         active-class="deep-purple accent-4 white--text"
@@ -22,35 +32,42 @@
           </div>
         </div>
       </v-chip-group>
-    </v-card-text>
+    </v-card-item>
     <v-divider thickness="2"></v-divider>
-    <v-card-subtitle>MRP Rs.{{ product.mrp }}</v-card-subtitle>
-    <v-card-subtitle>Discount Price Rs.{{ product.discountPrice }}</v-card-subtitle>
+    <v-container>
+      <v-row>
+        <v-col align-self="start">
+          <v-btn color="red">Rs.{{ product.mrp }}</v-btn>
+        </v-col>
+        <v-spacer></v-spacer>
+        <v-col align-self="end">
+          <v-btn color="red-accent-1">Rs.{{ product.discountPrice }}</v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { IProduct } from "@/types/UserTypes";
-import {computed} from "vue"
+import { computed } from "vue";
 
 const props = defineProps<{
   product: IProduct;
 }>();
 
-const titleColor = computed(()=> {
+const titleColor = computed(() => {
   switch (props.product.category) {
-    
     case "CANVAS":
       return "blue";
-    
+
     case "CLOCK":
       return "indigo";
-    
+
     case "PENDANT":
       return "teal";
     default:
       return "secondary";
   }
-})
-
+});
 </script>
