@@ -22,11 +22,10 @@
 
     <v-card-item>
       <v-chip-group
-        v-model="selection"
         active-class="deep-purple accent-4 white--text"
         column
       >
-        <div v-for="item in product.tags.Tag" :key="item.name">
+        <div v-for="item in product.tags.tag" :key="item">
           <div class="mx-4">
             <v-chip>{{ item }}</v-chip>
           </div>

@@ -1,6 +1,6 @@
 import { IResponseBase } from "@/types/ApiRequestResponseTypes";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
-import HttpClient from "./HttpClient";
+import HttpClient from "@/apiService/HttpClient";
 
 
 export abstract class ApiServiceBase

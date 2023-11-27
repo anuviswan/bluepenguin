@@ -1,5 +1,5 @@
-import { User } from "./UserTypes";
+// import { User } from "./UserTypes";
 
-export interface LoggedInUser extends User{
-    token : string 
-} 
+// export interface LoggedInUser extends User{
+//     token : string 
+// } 

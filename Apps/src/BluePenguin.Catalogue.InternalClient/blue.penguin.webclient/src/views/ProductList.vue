@@ -14,13 +14,13 @@
 
 <script setup lang="ts">
 import {  ref , onMounted } from "vue";
-import {IProduct} from "@/types/UserTypes";
+import {IProduct} from "@/types/UserTypes"
 import ProductCard from "@/components/controls/ProductCard.vue"
-import {productsApiService} from "@/apiservice/ProductApiService"
+import {productsApiService} from "@/apiService/ProductApiService"
 
 
 const getAllProducts = async () => await productsApiService.getAllProducts();
-const products = ref<IGetAllProductsResponse>();
+const products = ref<IProduct[]>();
 onMounted(async () =>{
   products.value = await getAllProducts();
 });

@@ -1,3 +1,5 @@
+import {IProduct} from "@/types/UserTypes"
+
 export interface IResponseBase {
     hasError: boolean,
     status?: number,
@@ -6,10 +8,7 @@ export interface IResponseBase {
 
 
 export interface IGetAllProductsResponse extends IResponseBase {
-    name: string;
-    url: string;
-    category: string;
-    collection: string;
+    products : IProduct[]
 }
 
 
