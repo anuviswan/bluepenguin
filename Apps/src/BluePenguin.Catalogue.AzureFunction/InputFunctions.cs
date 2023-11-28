@@ -73,7 +73,7 @@ namespace BluePenguin.Catalogue.AzureFunction
 
 
         [FunctionName("GetAllProducts")]
-        public static async Task<IEnumerable<Product>> GetAllProducts([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
+        public static async Task<Products> GetAllProducts([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
             [Blob("productlist")] CloudBlobContainer blobContainer,
             TraceWriter log)
         {
@@ -96,7 +96,7 @@ namespace BluePenguin.Catalogue.AzureFunction
                         
                 }
 
-                return products.Product;
+                return products;
 
             }
             catch (Exception ex)
