@@ -56,6 +56,7 @@ const props = defineProps<{
 }>();
 
 const titleColor = computed(() => {
+  console.log(props.product)
   switch (props.product.category) {
     case "CANVAS":
       return "blue";
