@@ -73,7 +73,7 @@ namespace BluePenguin.Catalogue.AzureFunction
 
 
         [FunctionName("GetAllProducts")]
-        public static async Task<Products> GetAllProducts([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
+        public static async Task<Root> GetAllProducts([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
             [Blob("productlist")] CloudBlobContainer blobContainer,
             TraceWriter log)
         {
@@ -81,17 +81,17 @@ namespace BluePenguin.Catalogue.AzureFunction
             {
                 await blobContainer.CreateIfNotExistsAsync();
                 var blob = blobContainer.GetBlockBlobReference($"productlist.xml");
-                XmlSerializer serializer = new XmlSerializer(typeof(Products));
-                var products = new Products()
+                XmlSerializer serializer = new XmlSerializer(typeof(Root));
+                var products = new Root()
                 {
-                    Product = Enumerable.Empty<Product>().ToList()
+                    Products = Enumerable.Empty<Product>().ToList()
                 };
 
                 using (var stream = await blob.OpenReadAsync())
                 {
                     using (var reader = new XmlTextReader(stream))
                     {
-                        products = (Products)serializer.Deserialize(reader);
+                        products = (Root)serializer.Deserialize(reader);
                     }
                         
                 }
@@ -118,22 +118,22 @@ namespace BluePenguin.Catalogue.AzureFunction
 
                 await blobContainer.CreateIfNotExistsAsync();
                 var blob = blobContainer.GetBlockBlobReference($"productlist.xml");
-                XmlSerializer serializer = new XmlSerializer(typeof(Products));
-                var products = new Products()
+                XmlSerializer serializer = new XmlSerializer(typeof(Root));
+                var products = new Root()
                 {
-                    Product = Enumerable.Empty<Product>().ToList()
+                    Products = Enumerable.Empty<Product>().ToList()
                 };
 
                 using (var stream = await blob.OpenReadAsync())
                 {
                     using (var reader = new XmlTextReader(stream))
                     {
-                        products = (Products)serializer.Deserialize(reader);
+                        products = (Root)serializer.Deserialize(reader);
                     }
 
                 }
 
-                return products.Product.FirstOrDefault(x=>x.Name == searchTerm);
+                return products.Products.FirstOrDefault(x=>x.Name == searchTerm);
 
             }
             catch (Exception ex)

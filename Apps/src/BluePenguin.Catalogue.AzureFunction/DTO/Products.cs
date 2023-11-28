@@ -8,12 +8,6 @@ using System.Xml.Serialization;
 
 namespace BluePenguin.Catalogue.AzureFunction.DTO
 {
-    // using System.Xml.Serialization;
-    // XmlSerializer serializer = new XmlSerializer(typeof(Products));
-    // using (StringReader reader = new StringReader(xml))
-    // {
-    //    var test = (Products)serializer.Deserialize(reader);
-    // }
 
     [XmlRoot(ElementName = "Product")]
     public class Product
@@ -52,12 +46,11 @@ namespace BluePenguin.Catalogue.AzureFunction.DTO
     }
 
     [XmlRoot(ElementName = "Products")]
-    public class Products
+    public class Root
     {
 
         [XmlElement(ElementName = "Product")]
-        public List<Product> Product { get; set; }
+        public List<Product> Products { get; set; }
     }
-
 
 }
