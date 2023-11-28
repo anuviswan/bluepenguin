@@ -2,7 +2,7 @@
   <v-container class="fill-height" fluid grid-list-xl grid-list-md>
     <v-layout wrap justify-space-around>
       <v-row class="d-flex align-center justify-center">
-        <div v-for="item in products" :key="item.name">
+        <div v-for="item in products" :key="item.Name">
           <div  class="mx-4">
             <ProductCard :product=item />
           </div>
@@ -23,6 +23,8 @@ const getAllProducts = async () => await productsApiService.getAllProducts();
 const products = ref<IProduct[]>();
 onMounted(async () =>{
   products.value = await getAllProducts();
+  console.log(products.value);
+  
 });
 </script>
 

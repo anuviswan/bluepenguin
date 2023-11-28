@@ -1,4 +1,4 @@
-import {ITag} from "@/types/UserTypes"
+import {IProduct} from "@/types/UserTypes"
 export interface IResponseBase {
     hasError: boolean,
     status?: number,
@@ -7,13 +7,7 @@ export interface IResponseBase {
 
 
 export interface IGetAllProductsResponse extends IResponseBase {
-    Name: string;
-    Url: string;
-    Category: string;
-    Collection: string;
-    MRP: number;
-    DiscountPrice: number;
-    Tags:ITag
+    Products : IProduct[]
 }
 
 

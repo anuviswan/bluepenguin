@@ -4,8 +4,8 @@
       <v-card
         :color="titleColor"
         text-center
-        :title="product.name"
-        :subtitle="product.category"
+        :title="product.Name"
+        :subtitle="product.Category"
       >
       </v-card>
     </v-card-item>
@@ -25,7 +25,7 @@
         active-class="deep-purple accent-4 white--text"
         column
       >
-        <div v-for="item in product.tags.tag" :key="item">
+        <div v-for="item in product.Tags.Tag" :key="item">
           <div class="mx-4">
             <v-chip>{{ item }}</v-chip>
           </div>
@@ -36,11 +36,11 @@
     <v-container>
       <v-row>
         <v-col align-self="start">
-          <v-btn color="red">Rs.{{ product.mrp }}</v-btn>
+          <v-btn color="red">Rs.{{ product.MRP }}</v-btn>
         </v-col>
         <v-spacer></v-spacer>
         <v-col align-self="end">
-          <v-btn color="red-accent-1">Rs.{{ product.discountPrice }}</v-btn>
+          <v-btn color="red-accent-1">Rs.{{ product.DiscountPrice }}</v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -57,7 +57,7 @@ const props = defineProps<{
 
 const titleColor = computed(() => {
   console.log(props.product)
-  switch (props.product.category) {
+  switch (props.product.Category) {
     case "CANVAS":
       return "blue";
 

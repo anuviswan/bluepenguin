@@ -6,26 +6,26 @@ class ProductApiService extends ApiServiceBase {
 
     public async getAllProducts():Promise<IProduct[]>{
         
-        const result =  await this.invoke<IGetAllProductsResponse[]>({method:'get', url:import.meta.env.VITE_API_GETALLPRODUCTS});
+        const result =  await this.invoke<IGetAllProductsResponse>({method:'get', url:import.meta.env.VITE_API_GETALLPRODUCTS});
 
-        console.log(result)
-        const response = result.map(x => {
-                const product : IProduct = { 
-                    name : x.Name,
-                    collection : x.Collection,
-                    category : x.Category,
-                    discountPrice : x.DiscountPrice,
-                    mrp : x.MRP,
-                    tags: x.Tags,
-                    url:''
-                  };
+        //  console.log(result)
+        // const response = result.Products.map(x => {
+        //         const product : IProduct = { 
+        //             name : x.Name,
+        //             collection : x.Collection,
+        //             category : x.Category,
+        //             discountPrice : x.DiscountPrice,
+        //             mrp : x.MRP,
+        //             tags: x.tags,
+        //             url:''
+        //           };
     
-                return product;
-            })
+        //         return product;
+        //     })
         
         
         
-        return response;
+        return result.Products;
     }
 }
 

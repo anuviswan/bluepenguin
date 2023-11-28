@@ -1,13 +1,13 @@
 export interface IProduct {
-    name: string;
-    url: string;
-    category: string;
-    collection: string;
-    mrp: number;
-    discountPrice: number;
-    tags:ITag
+    Name: string;
+    Url: string;
+    Category: string;
+    Collection: string;
+    MRP: number;
+    DiscountPrice: number;
+    Tags:ITag
   }
 
   export interface ITag{
-    tag: string[];
+    Tag: string[];
   }
