@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Drawing.Imaging;
+using System.IO;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
@@ -55,9 +56,20 @@ namespace BluePenguin.Catalogue.Transformer
         {
             foreach (var metaFile in metaFiles)
             {
-                using var stream = File.OpenRead(metaFile);
-                var productRoot = JsonSerializer.Deserialize<ProductRoot>(stream);
-                yield return productRoot.Product;
+                var product = ExtractProductMetaInfo(metaFile);
+                yield return product;
+            }
+
+            void GenerateThumbnails()
+            {
+
+            }
+
+            Product ExtractProductMetaInfo(string metaFilePath)
+            {
+                using var stream = File.OpenRead(metaFilePath);
+                var root = JsonSerializer.Deserialize<ProductRoot>(stream);
+                return root.Product;
             }
         }
 
