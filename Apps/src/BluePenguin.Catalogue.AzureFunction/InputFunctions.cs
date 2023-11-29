@@ -71,6 +71,54 @@ namespace BluePenguin.Catalogue.AzureFunction
             return req.CreateResponse(HttpStatusCode.Created, "Product List Uploaded"); 
         }
 
+        [FunctionName("UploadProductImage")]
+        public static async Task<HttpResponseMessage> UploadProductImage(
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
+            [Blob("productlist")] CloudBlobContainer blobContainer,
+            TraceWriter log)
+        {
+
+            MultipartMemoryStreamProvider stream;
+            try
+            {
+                var multipartTask = req.Content.ReadAsMultipartAsync();
+                if (!multipartTask.IsCompleted)
+                {
+                    multipartTask.RunSynchronously();
+                }
+                stream = multipartTask.Result;
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Posted data was not multipart or read failed");
+            }
+
+            var id = req.GetQueryNameValuePairs().FirstOrDefault(c=>c.Key == "productCode");
+
+            string fileContent;
+            try
+            {
+                var httpContent = stream.Contents[0];
+                var contentTask = httpContent.ReadAsStringAsync();
+                if (!contentTask.IsCompleted)
+                {
+                    contentTask.RunSynchronously();
+                }
+                fileContent = contentTask.Result;
+            }
+            catch (Exception)
+            {
+                return req.CreateResponse(HttpStatusCode.InternalServerError, "Unable to read file stream");
+            }
+
+            await blobContainer.CreateIfNotExistsAsync();
+
+            var blob = blobContainer.GetBlockBlobReference($"{id}.jpg");
+            await blob.DeleteIfExistsAsync();
+            await blob.UploadTextAsync(fileContent);
+            return req.CreateResponse(HttpStatusCode.Created, "Product Image uploaded");
+        }
+
 
         [FunctionName("GetAllProducts")]
         public static async Task<Root> GetAllProducts([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequestMessage req,
