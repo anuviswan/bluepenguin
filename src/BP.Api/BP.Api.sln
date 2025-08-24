@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36408.4 d17.14
+VisualStudioVersion = 17.14.36408.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.Api", "BP.Api\BP.Api.csproj", "{D939985A-80DC-292F-844C-AC88CAADF471}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.Api.AppHost", "BP.Api.AppHost\BP.Api.AppHost.csproj", "{E8465509-BD50-429F-806F-625032BEA3B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.Api.ServiceDefaults", "BP.Api.ServiceDefaults\BP.Api.ServiceDefaults.csproj", "{47731F6E-BD69-7BC5-7FE6-1BD9CE714ECF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orchestration", "Orchestration", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +32,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E8465509-BD50-429F-806F-625032BEA3B5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{47731F6E-BD69-7BC5-7FE6-1BD9CE714ECF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B5182A60-61F8-466B-B601-0095AADE2836}
