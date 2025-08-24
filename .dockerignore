@@ -1,5 +1,5 @@
 # =========================
-# Build outputs
+# Build artifacts
 # =========================
 bin/
 obj/
@@ -9,24 +9,15 @@ out/
 [Ll]ogs/
 
 # =========================
-# User-specific files
+# IDE and tooling
 # =========================
+.vs/
+.vscode/
+.idea/
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
-
-# =========================
-# Visual Studio
-# =========================
-.vs/
-
-# =========================
-# Visual Studio Code
-# =========================
-.vscode/
-.history/
-*.code-workspace
 
 # =========================
 # Copilot
@@ -34,31 +25,39 @@ out/
 .copilot/
 
 # =========================
-# Aspire (AppHost, Service Projects, Orchestration)
+# Aspire
 # =========================
-# Aspire local state & container orchestration artifacts
 .aspire/
 .docker/
 docker-compose.override.yml
 docker-compose.override.*.yml
-
-# Sometimes Aspire creates local launch profiles & overrides
 launchSettings.Local.json
 *.orchestrator.json
 *.orchestration.json
 
 # =========================
-# OS generated files
+# Git and version control
+# =========================
+.git
+.gitignore
+.gitattributes
+
+# =========================
+# OS & temp files
 # =========================
 .DS_Store
 Thumbs.db
-
-# =========================
-# Others
-# =========================
 *.swp
 *.tmp
 *.bak
 *.log
 *.tlog
 *.cache
+
+# =========================
+# Node / Frontend (if you use Vue/React in Aspire dashboards)
+# =========================
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
