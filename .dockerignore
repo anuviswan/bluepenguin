@@ -1,0 +1,63 @@
+# =========================
+# Build artifacts
+# =========================
+bin/
+obj/
+out/
+[Bb]uild/
+[Ll]og/
+[Ll]ogs/
+
+# =========================
+# IDE and tooling
+# =========================
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Copilot
+# =========================
+.copilot/
+
+# =========================
+# Aspire
+# =========================
+.aspire/
+.docker/
+docker-compose.override.yml
+docker-compose.override.*.yml
+launchSettings.Local.json
+*.orchestrator.json
+*.orchestration.json
+
+# =========================
+# Git and version control
+# =========================
+.git
+.gitignore
+.gitattributes
+
+# =========================
+# OS & temp files
+# =========================
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+*.bak
+*.log
+*.tlog
+*.cache
+
+# =========================
+# Node / Frontend (if you use Vue/React in Aspire dashboards)
+# =========================
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log

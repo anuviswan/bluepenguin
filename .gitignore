@@ -1,0 +1,64 @@
+# =========================
+# Build outputs
+# =========================
+bin/
+obj/
+out/
+[Bb]uild/
+[Ll]og/
+[Ll]ogs/
+
+# =========================
+# User-specific files
+# =========================
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Visual Studio
+# =========================
+.vs/
+
+# =========================
+# Visual Studio Code
+# =========================
+.vscode/
+.history/
+*.code-workspace
+
+# =========================
+# Copilot
+# =========================
+.copilot/
+
+# =========================
+# Aspire (AppHost, Service Projects, Orchestration)
+# =========================
+# Aspire local state & container orchestration artifacts
+.aspire/
+.docker/
+docker-compose.override.yml
+docker-compose.override.*.yml
+
+# Sometimes Aspire creates local launch profiles & overrides
+launchSettings.Local.json
+*.orchestrator.json
+*.orchestration.json
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Others
+# =========================
+*.swp
+*.tmp
+*.bak
+*.log
+*.tlog
+*.cache
