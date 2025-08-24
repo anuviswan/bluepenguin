@@ -12,6 +12,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BP.Api.ServiceDefaults\BP.Api.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\BP.Application.Interfaces\BP.Application.Interfaces.csproj" />
+    <ProjectReference Include="..\BP.Application\BP.Application.csproj" />
+    <ProjectReference Include="..\BP.Domain\BP.Domain.csproj" />
+    <ProjectReference Include="..\BP.Infrastructure\BP.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

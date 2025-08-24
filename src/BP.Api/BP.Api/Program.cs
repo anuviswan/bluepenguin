@@ -1,4 +1,6 @@
 
+using BP.Api.ExtensionMethods;
+
 namespace BP.Api;
 
 public class Program
@@ -13,6 +15,8 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+        builder.Services.AddApplicationServices();
+        builder.Services.AddRepositories();
 
         var app = builder.Build();
 
