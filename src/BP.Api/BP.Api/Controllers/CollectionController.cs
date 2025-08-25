@@ -4,17 +4,17 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoryController:BaseController
+public class CollectionController:BaseController
 {
-    public CategoryController(ILogger<CategoryController> logger):base(logger)
+    public CollectionController(ILogger<CollectionController> logger):base(logger)
     {
             
     }
     [HttpPost]
     [Route("create")]
-    public IActionResult CreateCategory()
+    public IActionResult CreateCollection()
     {
         Logger.LogInformation("Test endpoint hit");
-        return Ok("CategoryController is working!");
+        return Ok("CollectionController is working!");
     }
 }

@@ -4,17 +4,17 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoryController:BaseController
+public class FeatureController:BaseController
 {
-    public CategoryController(ILogger<CategoryController> logger):base(logger)
+    public FeatureController(ILogger<FeatureController> logger):base(logger)
     {
             
     }
     [HttpPost]
     [Route("create")]
-    public IActionResult CreateCategory()
+    public IActionResult CreateFeature()
     {
         Logger.LogInformation("Test endpoint hit");
-        return Ok("CategoryController is working!");
+        return Ok("FeatureController is working!");
     }
 }

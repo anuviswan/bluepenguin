@@ -4,17 +4,17 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoryController:BaseController
+public class MaterialController:BaseController
 {
-    public CategoryController(ILogger<CategoryController> logger):base(logger)
+    public MaterialController(ILogger<MaterialController> logger):base(logger)
     {
             
     }
     [HttpPost]
     [Route("create")]
-    public IActionResult CreateCategory()
+    public IActionResult CreateMaterial()
     {
         Logger.LogInformation("Test endpoint hit");
-        return Ok("CategoryController is working!");
+        return Ok("MaterialController is working!");
     }
 }
