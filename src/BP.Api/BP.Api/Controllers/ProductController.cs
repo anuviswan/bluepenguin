@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BP.Application.Interfaces.Services;
+using BP.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
 
@@ -6,16 +8,29 @@ namespace BP.Api.Controllers;
 [Route("api/[controller]")]
 public class ProductController:BaseController
 {
-    public ProductController(ILogger<ProductController> logger):base(logger)
+    private readonly IProductService _productService;
+    public ProductController(IProductService productService, ILogger<ProductController> logger):base(logger)
     {
-            
+        _productService = productService;
     }
 
     [HttpPost]
     [Route("create")]
-    public IActionResult CreateProduct()
+    public IActionResult CreateProduct(Product product)
     {
-        Logger.LogInformation("Test endpoint hit");
+        Logger.LogInformation("Creating Product");
+
+        try
+        {
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        _productService.AddProduct(product);
+
         return Ok("ProductController is working!");
     }
 }
