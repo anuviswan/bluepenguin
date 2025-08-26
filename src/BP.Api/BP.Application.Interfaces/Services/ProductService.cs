@@ -10,4 +10,5 @@ public interface IProductService
     Product? GetProductBySku(string sku);
     IEnumerable<Product> GetAllProducts();
     IEnumerable<Product> GetProductsByCategory(string categoryId);
+    int GetItemCountForCollection(string collectionCode, int Year);
 }

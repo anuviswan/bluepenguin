@@ -20,6 +20,11 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         throw new NotImplementedException();
     }
 
+    public int GetItemCountForCollection(string collectionCode, int Year)
+    {
+        throw new NotImplementedException();
+    }
+
     public BP.Domain.Entities.Product? GetProductBySku(string sku)
     {
         throw new NotImplementedException();

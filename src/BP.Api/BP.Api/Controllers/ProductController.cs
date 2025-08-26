@@ -1,4 +1,5 @@
-﻿using BP.Application.Interfaces.Services;
+﻿using BP.Api.Contracts;
+using BP.Application.Interfaces.Services;
 using BP.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,21 +17,35 @@ public class ProductController:BaseController
 
     [HttpPost]
     [Route("create")]
-    public IActionResult CreateProduct(Product product)
+    public IActionResult CreateProduct(CreateProductRequest product)
     {
         Logger.LogInformation("Creating Product");
 
         try
         {
+            if (!ModelState.IsValid)
+            {
+                Logger.LogError("Invalid model state for Product");
+                return BadRequest("Invalid model state");
+            }
 
+            var collectionCode = _productService.GetItemCountForCollection(product.CollectionCode, product.YearCode);
+            var skuCode = $"{product.Category}{product.Material}-{string.Join('-', product.FeatureCodes)}-{product.CollectionCode}{product.YearCode}{collectionCode + 1}";
+            var newProduct = new Product
+            {
+                ProductName = product.Name,
+                Price = product.Price,
+                SKU = skuCode,
+                Stock = 0
+            };
+
+            var createdProduct = _productService.AddProduct(newProduct);
+            return Ok(createdProduct);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-
-            throw;
+            return BadRequest(e);
         }
-        _productService.AddProduct(product);
 
-        return Ok("ProductController is working!");
     }
 }
