@@ -50,4 +50,46 @@ public class ProductController:BaseController
         }
 
     }
+
+    [HttpGet]
+    [Route("getbysku")]
+    public async Task<IActionResult> GetProduct([FromQuery]string sku)
+    {
+        Logger.LogInformation("Getting Product");
+        try
+        {
+            if (string.IsNullOrWhiteSpace(sku))
+            {
+                Logger.LogError("Invalid SKU");
+                return BadRequest("Invalid SKU");
+            }
+            var product = await _productService.GetProductBySku(sku);
+            if (product == null)
+            {
+                Logger.LogWarning($"Product with SKU {sku} not found");
+                return NotFound($"Product with SKU {sku} not found");
+            }
+            return Ok(product);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
+    }
+
+    [HttpGet]
+    [Route("getall")]
+    public async Task<IActionResult> GetAllProducts()
+    {
+        Logger.LogInformation("Getting all Products");
+        try
+        {
+            var products = await _productService.GetAllProducts();
+            return Ok(products);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
+    }
 }
