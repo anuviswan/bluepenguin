@@ -1,12 +1,27 @@
-﻿using BP.Domain.Entities;
+﻿using Azure.Data.Tables;
+using BP.Domain.Entities;
 using BP.Domain.Repository;
 
 namespace BP.Infrastructure.Repositories;
 
 public class ProductRepository : GenericRepository<Product>, IProductRepository
 {
-    public IEnumerable<Product> GetProductsByCategory(string categoryId)
+    public ProductRepository(TableClient tableClient):base(tableClient)
     {
-        throw new NotImplementedException();
+            
+    }
+    public async Task<IEnumerable<Product>> GetProductsByCategory(string categoryCode, int yearCode)
+    {
+        var queryResults =  TableClient.QueryAsync<Product>(p => p.PartitionKey == categoryCode && p.YearCode == yearCode);
+
+        var results = new List<Product>();
+        await foreach (var entity in queryResults)
+        {
+            results.Add(entity);
+            
+        }
+
+        return results;
+
     }
 }

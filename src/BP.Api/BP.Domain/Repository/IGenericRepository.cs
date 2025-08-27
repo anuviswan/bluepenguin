@@ -1,10 +1,12 @@
-﻿namespace BP.Domain.Repository;
+﻿using Azure.Data.Tables;
 
-public interface IGenericRepository<T> where T : class
+namespace BP.Domain.Repository;
+
+public interface IGenericRepository<T> where T : class, ITableEntity
 {
-    T Add(T entity);
-    T Update(T entity);
-    void Delete(T entity);
-    T? GetById(string id);
-    IEnumerable<T> GetAll();
+    Task Add(T entity);
+    Task Update(T entity);
+    Task Delete(T entity);
+    Task<T?> GetById(string paritionId, string searchKey);
+    Task<IEnumerable<T>> GetAll();
 }

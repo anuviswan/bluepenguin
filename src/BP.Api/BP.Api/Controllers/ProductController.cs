@@ -17,7 +17,7 @@ public class ProductController:BaseController
 
     [HttpPost]
     [Route("create")]
-    public IActionResult CreateProduct(CreateProductRequest product)
+    public async Task<IActionResult> CreateProduct(CreateProductRequest product)
     {
         Logger.LogInformation("Creating Product");
 
@@ -29,10 +29,12 @@ public class ProductController:BaseController
                 return BadRequest("Invalid model state");
             }
 
-            var collectionCode = _productService.GetItemCountForCollection(product.CollectionCode, product.YearCode);
+            var collectionCode = await _productService.GetItemCountForCollection(product.CollectionCode, product.YearCode);
             var skuCode = $"{product.Category}{product.Material}-{string.Join('-', product.FeatureCodes)}-{product.CollectionCode}{product.YearCode}{collectionCode + 1}";
             var newProduct = new Product
             {
+                PartitionKey = product.Category,
+                RowKey = skuCode,
                 ProductName = product.Name,
                 Price = product.Price,
                 SKU = skuCode,
