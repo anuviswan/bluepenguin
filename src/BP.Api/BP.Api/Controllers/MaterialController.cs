@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BP.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
 
@@ -6,15 +7,24 @@ namespace BP.Api.Controllers;
 [Route("api/[controller]")]
 public class MaterialController:BaseController
 {
-    public MaterialController(ILogger<MaterialController> logger):base(logger)
+    private readonly IMaterialService _materialService;
+    public MaterialController(IMaterialService materialService, ILogger<MaterialController> logger):base(logger)
     {
-            
+        _materialService = materialService;
     }
-    [HttpPost]
-    [Route("create")]
-    public IActionResult CreateMaterial()
+    [HttpGet]
+    [Route("getall")]
+    public Task<IActionResult> GetAll()
     {
-        Logger.LogInformation("Test endpoint hit");
-        return Ok("MaterialController is working!");
+        Logger.LogInformation("Get All Materials");
+        try
+        {
+            var materials = _materialService.GetAllMaterials();
+            return Task.FromResult<IActionResult>(Ok(materials));
+        }
+        catch (Exception e)
+        {
+            return Task.FromResult<IActionResult>(BadRequest(e));
+        }
     }
 }

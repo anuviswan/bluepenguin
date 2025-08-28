@@ -7,10 +7,10 @@ namespace BP.Api.Controllers;
 [Route("api/[controller]")]
 public class CollectionController:BaseController
 {
-    private readonly ICategoryService _categoryService;
-    public CollectionController(ICategoryService categoryService, ILogger<CollectionController> logger):base(logger)
+    private readonly ICollectionService _collectionService;
+    public CollectionController(ICollectionService collectionService, ILogger<CollectionController> logger):base(logger)
     {
-        _categoryService = categoryService;
+        _collectionService = collectionService;
     }
     [HttpGet]
     [Route("getall")]
@@ -19,7 +19,7 @@ public class CollectionController:BaseController
         Logger.LogInformation("Get All Collections");
         try
         {
-            var collections = _categoryService.GetAllCategories();
+            var collections = _collectionService.GetAllCollections();
             return Task.FromResult<IActionResult>(Ok(collections));
         }
         catch (Exception e)

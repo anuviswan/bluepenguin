@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BP.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
 
@@ -6,15 +7,26 @@ namespace BP.Api.Controllers;
 [Route("api/[controller]")]
 public class FeatureController:BaseController
 {
-    public FeatureController(ILogger<FeatureController> logger):base(logger)
+    private readonly IFeatureService _featureService;
+
+    public FeatureController(IFeatureService featureService, ILogger<FeatureController> logger):base(logger)
     {
-            
+        _featureService = featureService;
     }
-    [HttpPost]
-    [Route("create")]
-    public IActionResult CreateFeature()
+
+    [HttpGet]
+    [Route("getall")]
+    public Task<IActionResult> GetAll()
     {
-        Logger.LogInformation("Test endpoint hit");
-        return Ok("FeatureController is working!");
+        Logger.LogInformation("Get All Features");
+        try
+        {
+            var features = _featureService.GetAllFeatures();
+            return Task.FromResult<IActionResult>(Ok(features));
+        }
+        catch (Exception e)
+        {
+            return Task.FromResult<IActionResult>(BadRequest(e));
+        }
     }
 }
