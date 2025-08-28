@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BP.Application.SkuAttributes;
+namespace BP.Application.Interfaces.SkuAttributes;
 
 public enum Material
 {

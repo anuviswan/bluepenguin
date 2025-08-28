@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BP.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
 
@@ -6,15 +7,24 @@ namespace BP.Api.Controllers;
 [Route("api/[controller]")]
 public class CollectionController:BaseController
 {
-    public CollectionController(ILogger<CollectionController> logger):base(logger)
+    private readonly ICategoryService _categoryService;
+    public CollectionController(ICategoryService categoryService, ILogger<CollectionController> logger):base(logger)
     {
-            
+        _categoryService = categoryService;
     }
-    [HttpPost]
-    [Route("create")]
-    public IActionResult CreateCollection()
+    [HttpGet]
+    [Route("getall")]
+    public Task<IActionResult> GetAll()
     {
-        Logger.LogInformation("Test endpoint hit");
-        return Ok("CollectionController is working!");
+        Logger.LogInformation("Get All Collections");
+        try
+        {
+            var collections = _categoryService.GetAllCategories();
+            return Task.FromResult<IActionResult>(Ok(collections));
+        }
+        catch (Exception e)
+        {
+            return Task.FromResult<IActionResult>(BadRequest(e));
+        }
     }
 }
