@@ -1,4 +1,5 @@
-﻿using BP.Application.Interfaces.Services;
+﻿using BP.Api.ExtensionMethods;
+using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -19,7 +20,7 @@ public class CategoryController:BaseController
         Logger.LogInformation("Get All Categories");
         try
         {
-            var categories = _categoryService.GetAllCategories().Select(x=>x.ToString());
+            var categories = _categoryService.GetAllCategories().Select(x=> new { Key = x.ToString(), Value = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(categories));
         }
         catch (Exception e)

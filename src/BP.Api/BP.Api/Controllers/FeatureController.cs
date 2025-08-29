@@ -1,4 +1,5 @@
-﻿using BP.Application.Interfaces.Services;
+﻿using BP.Api.ExtensionMethods;
+using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -21,7 +22,7 @@ public class FeatureController:BaseController
         Logger.LogInformation("Get All Features");
         try
         {
-            var features = _featureService.GetAllFeatures().Select(x => x.ToString());
+            var features = _featureService.GetAllFeatures().Select(x => new { Key = x.ToString(), Value = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(features));
         }
         catch (Exception e)
