@@ -1,5 +1,6 @@
 
 using BP.Api.ExtensionMethods;
+using Microsoft.AspNetCore.Builder;
 
 namespace BP.Api;
 
@@ -18,7 +19,8 @@ public class Program
         builder.Services.AddApplicationServices();
         builder.Services.AddAzureTableServices();
         builder.Services.AddRepositories();
-
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
         var app = builder.Build();
 
         app.MapDefaultEndpoints();
@@ -27,6 +29,12 @@ public class Program
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+            // Serve OpenAPI JSON at /swagger/v1/swagger.json
+            app.UseSwagger();
+
+            // Serve Swagger UI at /swagger
+            app.UseSwaggerUI();
+
         }
 
         app.UseHttpsRedirection();

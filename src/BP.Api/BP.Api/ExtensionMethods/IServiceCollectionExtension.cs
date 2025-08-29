@@ -9,6 +9,10 @@ public static class IServiceCollectionExtension
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddTransient<BP.Application.Interfaces.Services.IProductService, BP.Application.Services.ProductService>();
+        services.AddTransient<BP.Application.Interfaces.Services.ICollectionService, BP.Application.Services.CollectionService>();
+        services.AddTransient<BP.Application.Interfaces.Services.ICategoryService, BP.Application.Services.CategoryService>();
+        services.AddTransient<BP.Application.Interfaces.Services.IFeatureService, BP.Application.Services.FeatureService>();
+        services.AddTransient<BP.Application.Interfaces.Services.IMaterialService, BP.Application.Services.MaterialService>();
         return services;
     }
 
