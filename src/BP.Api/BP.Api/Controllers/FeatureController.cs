@@ -21,7 +21,7 @@ public class FeatureController:BaseController
         Logger.LogInformation("Get All Features");
         try
         {
-            var features = _featureService.GetAllFeatures();
+            var features = _featureService.GetAllFeatures().Select(x => x.ToString());
             return Task.FromResult<IActionResult>(Ok(features));
         }
         catch (Exception e)

@@ -19,7 +19,7 @@ public class CollectionController:BaseController
         Logger.LogInformation("Get All Collections");
         try
         {
-            var collections = _collectionService.GetAllCollections();
+            var collections = _collectionService.GetAllCollections().Select(x=>x.ToString());
             return Task.FromResult<IActionResult>(Ok(collections));
         }
         catch (Exception e)
