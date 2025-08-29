@@ -1,4 +1,5 @@
-﻿using BP.Application.Interfaces.Services;
+﻿using BP.Api.ExtensionMethods;
+using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -19,7 +20,7 @@ public class CollectionController:BaseController
         Logger.LogInformation("Get All Collections");
         try
         {
-            var collections = _collectionService.GetAllCollections();
+            var collections = _collectionService.GetAllCollections().Select(x=> new { Key = x.ToString(), Value = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(collections));
         }
         catch (Exception e)

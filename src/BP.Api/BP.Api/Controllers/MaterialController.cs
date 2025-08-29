@@ -1,4 +1,5 @@
-﻿using BP.Application.Interfaces.Services;
+﻿using BP.Api.ExtensionMethods;
+using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -19,7 +20,7 @@ public class MaterialController:BaseController
         Logger.LogInformation("Get All Materials");
         try
         {
-            var materials = _materialService.GetAllMaterials();
+            var materials = _materialService.GetAllMaterials().Select(x => new { Key = x.ToString(), Value = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(materials));
         }
         catch (Exception e)
