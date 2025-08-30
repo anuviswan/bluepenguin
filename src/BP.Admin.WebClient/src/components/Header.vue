@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top py-0">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top py-3">
     <div class="container-fluid">
       <!-- Brand -->
       <a class="navbar-brand" href="#">November Talkies</a>

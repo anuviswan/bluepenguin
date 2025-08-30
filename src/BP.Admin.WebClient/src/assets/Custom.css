@@ -1,0 +1,33 @@
+:root {
+    --bs-primary: #039AC8; /* default blue */
+}
+
+/* Override with your own brand color */
+:root {
+    --bs-primary: #039AC8; /* your Blue Penguin accent */
+}
+
+body {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Make navbar brand stand out */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.75rem; /* bigger logo text */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    background: #fff;              /* contrast block */
+    color: #000 !important;
+    padding: 0.25rem 0.75rem;
+    border: 3px solid #000;
+    box-shadow: 4px 4px 0px #000;  /* brutalist shadow */
+}
