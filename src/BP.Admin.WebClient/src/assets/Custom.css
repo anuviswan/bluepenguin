@@ -1,14 +1,21 @@
 :root {
     --bs-primary: #039AC8; /* default blue */
+    --bs-black: #000000;
 }
 
 /* Override with your own brand color */
 :root {
     --bs-primary: #039AC8; /* your Blue Penguin accent */
+    --bs-black: #000000;
 }
 
 body {
     font-family: 'Space Grotesk', sans-serif;
+    background-color: #E5E5E5;
+}
+
+html{
+    background-color: #E5E5E5;
 }
 
 /* Make navbar brand stand out */
