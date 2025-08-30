@@ -14,12 +14,17 @@ const fontForeColor = Colors[props.fontColor];
 </script>
 
 <template>
+  <div>
+    <a href="#">
   <div
       class="tile d-flex flex-column justify-content-center align-items-center"
       :style="{ background: backgroundColor}"
   >
+
     <h3 class="tile-title text-center" :style="{color:fontForeColor}">{{ title }}</h3>
 
+  </div>
+    </a>
   </div>
 </template>
 

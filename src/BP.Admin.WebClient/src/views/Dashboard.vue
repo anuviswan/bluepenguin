@@ -78,22 +78,29 @@ const categoryCollection : CategoryType[] = [
 
 <template>
   <div>
+    <!-- Fixed navbar -->
     <Header />
-    <!-- Main container -->
+
+    <!-- Main container, pushed down -->
     <div class="container mt-5 pt-5">
       <div class="row g-4">
-
         <!-- 10 square tiles -->
-        <div class="col-6 col-sm-4 col-md-3 col-lg-2"  v-for="category in categoryCollection" :key="category.title">
-          <div>
-            <Tile :title=category.title :color=category.color :fontColor="category.fontColor">
-            </Tile>
-          </div>
+        <div
+            class="col-6 col-sm-4 col-md-3 col-lg-2"
+            v-for="category in categoryCollection"
+            :key="category.title"
+        >
+          <Tile
+              :title="category.title"
+              :color="category.color"
+              :fontColor="category.fontColor"
+          />
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 
