@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type {ColorKey} from "../types/Colors.ts";
+import type { ColorKey } from "../types/Colors.ts";
 import { Colors } from "../types/Colors.ts";
 
 interface Props {
-  title:string,
-  color:ColorKey,
-  fontColor:ColorKey,
+  title: string;
+  color: ColorKey;
+  fontColor: ColorKey;
 }
 
 const props = defineProps<Props>();
@@ -16,24 +16,22 @@ const fontForeColor = Colors[props.fontColor];
 <template>
   <div>
     <a href="#">
-  <div
-      class="tile d-flex flex-column justify-content-center align-items-center"
-      :style="{ background: backgroundColor}"
-  >
-
-    <h3 class="tile-title text-center" :style="{color:fontForeColor}">{{ title }}</h3>
-
-  </div>
+      <div
+        class="tile d-flex flex-column justify-content-center align-items-center"
+        :style="{ background: backgroundColor }"
+      >
+        <h3 class="tile-title text-center" :style="{ color: fontForeColor }">
+          {{ title }}
+        </h3>
+      </div>
     </a>
   </div>
 </template>
 
-
-
 <style scoped>
 .tile {
-  width: 100%;              /* desired width */
-  aspect-ratio: 1 / 1;       /* square */
+  width: 100%; /* desired width */
+  aspect-ratio: 1 / 1; /* square */
   border: 3px solid #000;
   box-shadow: 6px 6px 0 #000;
   padding: 1rem;
@@ -41,8 +39,8 @@ const fontForeColor = Colors[props.fontColor];
   flex-direction: column;
   justify-content: space-between; /* distribute title & content */
   align-items: center;
-  font-family: 'Space Grotesk', sans-serif;
-  overflow: hidden;          /* prevent overflow */
+  font-family: "Space Grotesk", sans-serif;
+  overflow: hidden; /* prevent overflow */
   text-align: center;
 }
 .tile:hover {
@@ -55,7 +53,7 @@ const fontForeColor = Colors[props.fontColor];
   text-transform: uppercase;
   margin: 0;
   font-size: clamp(0.8rem, 2vw, 1.5rem);
-  word-wrap: break-word;      /* wrap long words */
+  word-wrap: break-word; /* wrap long words */
 }
 
 .tile-content {
