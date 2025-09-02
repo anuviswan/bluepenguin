@@ -1,11 +1,21 @@
 <template>
-  <div class="container-fluid">
-    <Dashboard></Dashboard>
+  <div id="app">
+
+
+    <!-- Routed views appear here -->
+    <main class="main-content">
+      <router-view />
+    </main>
   </div>
 </template>
 
+
 <script setup lang="ts">
-import Dashboard from "./views/Dashboard.vue";
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.main-content {
+  padding-top: 70px; /* match your Header height */
+}
+</style>
