@@ -1,7 +1,6 @@
 <template>
   <div id="app">
-    <!-- Always visible -->
-    <Header />
+
 
     <!-- Routed views appear here -->
     <main class="main-content">
