@@ -1,5 +1,7 @@
 ﻿
 using BP.Application.Interfaces.Services;
+using BP.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -7,13 +9,18 @@ namespace BP.Api.Controllers;
 public partial class AuthenticationController : BaseController
 {
     private readonly IAuthenticationService _authenticationService;
-    public AuthenticationController(IAuthenticationService authenticationService, ILogger<AuthenticationController> logger) : base(logger)
+    private readonly ITokenService _tokenService;
+    private readonly IConfiguration _configuration;
+    public AuthenticationController(IAuthenticationService authenticationService,ITokenService tokenService, IConfiguration config, ILogger<AuthenticationController> logger) : base(logger)
     {
         _authenticationService = authenticationService;
+        _tokenService = tokenService;
+        _configuration = config;
     }
 
-
-    [HttpPost("login")]
+    [AllowAnonymous]
+    [Route("login")]
+    [HttpPost]
     public async Task<ActionResult<AuthenticationResponse>> Authenticate(AuthenticationRequest request)
     {
         Logger.LogInformation("Login action requested");
@@ -22,21 +29,21 @@ public partial class AuthenticationController : BaseController
         {
             var response = _authenticationService.Authenticate(request.Username, request.Password);
 
-            if(response?.IsAuthenticated == true)
+            if(response == true)
             {
-                Logger.LogWarning($"Authentication Succeeded for {response.UserName}");
+                Logger.LogWarning($"Authentication Succeeded for {request.Username}");
+
+                var generatedToken = _tokenService.BuildToken(_configuration["Jwt:Key"]!.ToString(), _configuration["Jwt:Issuer"]!.ToString(), request.Username);
+                
                 return Ok(new AuthenticationResponse
                 {
-                    Token = response.Token!,
-                    UserId = response.UserName,
-                    Expiration = response.Expiration!.Value
+                    Token = generatedToken,
+                    UserId = request.Username,
                 });
             }
 
             Logger.LogWarning($"Authentication Failed for {request.Username}");
             return Unauthorized("Invalid credentials");
-
-
         }
         catch (Exception)
         {
