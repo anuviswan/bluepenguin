@@ -8,6 +8,7 @@ public static class IServiceCollectionExtension
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        services.AddTransient<BP.Application.Interfaces.Services.IAuthenticationService, BP.Application.Services.AuthenticationService>();
         services.AddTransient<BP.Application.Interfaces.Services.IProductService, BP.Application.Services.ProductService>();
         services.AddTransient<BP.Application.Interfaces.Services.ICollectionService, BP.Application.Services.CollectionService>();
         services.AddTransient<BP.Application.Interfaces.Services.ICategoryService, BP.Application.Services.CategoryService>();
