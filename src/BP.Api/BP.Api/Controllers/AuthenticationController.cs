@@ -27,7 +27,7 @@ public partial class AuthenticationController : BaseController
 
         try
         {
-            var response = _authenticationService.Authenticate(request.Username, request.Password);
+            var response = await _authenticationService.Authenticate(request.Username, request.Password);
 
             if(response == true)
             {
