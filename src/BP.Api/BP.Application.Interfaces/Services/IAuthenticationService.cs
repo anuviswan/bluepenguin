@@ -2,5 +2,6 @@
 
 public interface IAuthenticationService
 {
+    string HashPassword(string password);
     Task<bool> Authenticate(string username, string password);
 }

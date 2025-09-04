@@ -50,4 +50,13 @@ public partial class AuthenticationController : BaseController
             return Unauthorized("Invalid credentials");
         }
     }
+
+
+    [HttpGet]
+    [Route("hashme/{key}")]
+    [AllowAnonymous]
+    public ActionResult<string> Hashme(string key)
+    {
+        return Ok(_authenticationService.HashPassword(key));
+    } 
 }

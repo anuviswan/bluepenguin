@@ -25,7 +25,7 @@ public class AuthenticationService : IAuthenticationService
         return VerifyPassword(password, user.Password);
     }
 
-    private string HashPassword(string password)
+    public string HashPassword(string password)
     {
         // Generate a salt
         byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
