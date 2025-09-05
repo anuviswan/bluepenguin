@@ -23,6 +23,7 @@ public static class IServiceCollectionExtension
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
         services.AddTransient<BP.Domain.Repository.IProductRepository, BP.Infrastructure.Repositories.ProductRepository>();
+        services.AddTransient<BP.Domain.Repository.IUserRepository, BP.Infrastructure.Repositories.UserRepository>();
         return services;
     }
 
