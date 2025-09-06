@@ -31,8 +31,8 @@ public static class IServiceCollectionExtension
     {
         services.AddSingleton<TableClient>(sp =>
         {
-            var opts = sp.GetRequiredService<IOptions<TableStorageOptions>>().Value;
-            var serviceClient = new TableServiceClient(opts.ConnectionString);
+            var opts = sp.GetRequiredService<IOptions<ConnectionStrings>>().Value;
+            var serviceClient = new TableServiceClient(opts.Storage);
             return serviceClient.GetTableClient(opts.ProductTableName);
         });
         return services;
