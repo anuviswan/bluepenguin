@@ -29,11 +29,18 @@ public static class IServiceCollectionExtension
 
     public static IServiceCollection AddAzureTableServices(this IServiceCollection services)
     {
-        services.AddSingleton<TableClient>(sp =>
+        services.AddKeyedSingleton<TableClient>("Product",(sp,key) =>
         {
             var opts = sp.GetRequiredService<IOptions<ConnectionStrings>>().Value;
             var serviceClient = new TableServiceClient(opts.Storage);
             return serviceClient.GetTableClient(opts.ProductTableName);
+        });
+
+        services.AddKeyedSingleton<TableClient>("User", (sp, key) =>
+        {
+            var opts = sp.GetRequiredService<IOptions<ConnectionStrings>>().Value;
+            var serviceClient = new TableServiceClient(opts.Storage);
+            return serviceClient.GetTableClient(opts.UserTableName);
         });
         return services;
     }

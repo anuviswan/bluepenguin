@@ -1,12 +1,13 @@
 ﻿using Azure.Data.Tables;
 using BP.Domain.Entities;
 using BP.Domain.Repository;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BP.Infrastructure.Repositories;
 
 public class ProductRepository : GenericRepository<Product>, IProductRepository
 {
-    public ProductRepository(TableClient tableClient):base(tableClient)
+    public ProductRepository([FromKeyedServices("Product")]TableClient tableClient):base(tableClient)
     {
             
     }
