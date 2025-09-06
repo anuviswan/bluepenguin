@@ -31,16 +31,26 @@ public static class IServiceCollectionExtension
     {
         services.AddKeyedSingleton<TableClient>("Product",(sp,key) =>
         {
-            var opts = sp.GetRequiredService<IOptions<ConnectionStrings>>().Value;
-            var serviceClient = new TableServiceClient(opts.Storage);
-            return serviceClient.GetTableClient(opts.ProductTableName);
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connectionString = config.GetConnectionString("tables");
+            var tableName = config["TableNames:Product"] ?? "Products";
+
+            var serviceClient = new TableServiceClient(connectionString);
+            var client = serviceClient.GetTableClient(tableName);
+            client.CreateIfNotExists();
+            return client;
         });
 
         services.AddKeyedSingleton<TableClient>("User", (sp, key) =>
         {
-            var opts = sp.GetRequiredService<IOptions<ConnectionStrings>>().Value;
-            var serviceClient = new TableServiceClient(opts.Storage);
-            return serviceClient.GetTableClient(opts.UserTableName);
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connectionString = config.GetConnectionString("tables");
+            var tableName = config["TableNames:User"] ?? "Users";
+
+            var serviceClient = new TableServiceClient(connectionString);
+            var client = serviceClient.GetTableClient(tableName);
+            client.CreateIfNotExists();
+            return client;
         });
         return services;
     }
