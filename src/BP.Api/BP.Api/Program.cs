@@ -1,6 +1,8 @@
 
 using BP.Api.ExtensionMethods;
 using BP.Api.Options;
+using BP.Application.Interfaces.Options;
+using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 
@@ -8,12 +10,12 @@ namespace BP.Api;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.AddServiceDefaults();
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
-        builder.Services.Configure<ConnectionStrings>(builder.Configuration.GetSection(nameof(ConnectionStrings)));
+        builder.Services.Configure<UserTableSeedingOptions>(builder.Configuration.GetSection(nameof(UserTableSeedingOptions)));
 
         // Add services to the container.
 
@@ -36,6 +38,12 @@ public class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+
+            using var scope = app.Services.CreateScope();
+            var seeder = scope.ServiceProvider.GetRequiredKeyedService<ISeederService>("User");
+            await seeder.SeedAsync();
+
+
             app.MapOpenApi();
             // Serve OpenAPI JSON at /swagger/v1/swagger.json
             app.UseSwagger();

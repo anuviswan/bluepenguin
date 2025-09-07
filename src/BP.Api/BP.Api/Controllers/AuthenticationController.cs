@@ -33,7 +33,7 @@ public partial class AuthenticationController : BaseController
             {
                 Logger.LogWarning($"Authentication Succeeded for {request.Username}");
 
-                var generatedToken = _tokenService.BuildToken(_configuration["Jwt:Key"]!.ToString(), _configuration["Jwt:Issuer"]!.ToString(), request.Username);
+                var generatedToken = _tokenService.BuildToken(_configuration["JwtOptions:Key"]!.ToString(), _configuration["JwtOptions:Issuer"]!.ToString(), request.Username);
                 
                 return Ok(new AuthenticationResponse
                 {
@@ -58,5 +58,6 @@ public partial class AuthenticationController : BaseController
     public ActionResult<string> Hashme(string key)
     {
         return Ok(_authenticationService.HashPassword(key));
-    } 
+    }
+
 }
