@@ -52,14 +52,21 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import  userService from "../apiservice/UserService.ts";
 
 const email = ref("");
 const password = ref("");
 
-const handleLogin = () => {
+const handleLogin = async (): Promise<void> => {
   console.log("Email:", email.value);
   console.log("Password:", password.value);
-  alert("Logged in (fake)!");
+
+  const response = await userService.validateUser(
+      {
+        userName: email.value,
+        password: password.value
+      });
+  console.log(response);
 };
 </script>
 

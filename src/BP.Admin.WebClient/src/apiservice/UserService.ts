@@ -16,4 +16,5 @@ class UserService extends ApiServiceBase {
     }
 }
 
-export const userService = new UserService();
+const userService = new UserService();
+export default userService;
