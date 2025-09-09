@@ -7,7 +7,7 @@ class UserService extends ApiServiceBase {
     ): Promise<IValidateUserResponse> {
         const response = await this.invoke<IValidateUserResponse>({
             method: 'post',
-            url: '/api/User/ValidateUser',
+            url: '/login',
             data: user,
         });
         console.log('Response from validation');
