@@ -1,4 +1,3 @@
-
 using BP.Api.ExtensionMethods;
 using BP.Api.Options;
 using BP.Application.Interfaces.Options;
@@ -31,6 +30,28 @@ public class Program
             .AddJwtBearer();
 
         builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+
+        // Add CORS policies
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .AllowAnyHeader()
+                      .AllowAnyMethod();
+            });
+
+            options.AddPolicy("AllowSpecificOrigins", policy =>
+            {
+                policy.WithOrigins(
+                    "https://your-production-origin.com",
+                    "https://another-production-origin.com"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+            });
+        });
+
         var app = builder.Build();
 
         app.MapDefaultEndpoints();
@@ -54,6 +75,16 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        // Use CORS policy based on environment
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseCors("AllowAll");
+        }
+        else
+        {
+            app.UseCors("AllowSpecificOrigins");
+        }
 
         app.UseAuthentication();
         app.UseAuthorization();

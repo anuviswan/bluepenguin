@@ -8,10 +8,10 @@
       <form @submit.prevent="handleLogin">
         <!-- Email -->
         <div class="mb-3">
-          <label for="email" class="form-label fw-bold">Email</label>
+          <label for="username" class="form-label fw-bold">Email</label>
           <input
-              type="email"
-              id="email"
+              type="text"
+              id="username"
               v-model="email"
               required
               class="form-control neubrutalism-input"
@@ -52,14 +52,36 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import  userService from "../apiservice/UserService.ts";
+import { useRouter } from "vue-router";
+import {useUserStore} from "../stores/userStore.ts";
 
+const userStore = useUserStore();
+const router = useRouter();
 const email = ref("");
 const password = ref("");
 
-const handleLogin = () => {
-  console.log("Email:", email.value);
-  console.log("Password:", password.value);
-  alert("Logged in (fake)!");
+const handleLogin = async (): Promise<void> => {
+
+  const response = await userService.validateUser(
+
+      {
+        userName: email.value,
+        password: password.value
+      });
+  if(response.hasError){
+    console.log("Login failed");
+  }
+  else{
+    {
+      console.log("login success");
+      userStore.SaveUser({
+        token : response.data.token,
+        userName : response.data.userId
+      })
+      router.push({ name: "Dashboard" });
+    }
+  }
 };
 </script>
 

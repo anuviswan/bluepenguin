@@ -1,12 +1,13 @@
 ﻿
+using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
-using BP.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
 
-public partial class AuthenticationController : BaseController
+
+public class AuthenticationController : BaseController
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ITokenService _tokenService;
@@ -21,7 +22,7 @@ public partial class AuthenticationController : BaseController
     [AllowAnonymous]
     [Route("login")]
     [HttpPost]
-    public async Task<ActionResult<AuthenticationResponse>> Authenticate(AuthenticationRequest request)
+    public async Task<ActionResult<AuthenticationResponse>> Authenticate([FromBody]AuthenticationRequest request)
     {
         Logger.LogInformation("Login action requested");
 

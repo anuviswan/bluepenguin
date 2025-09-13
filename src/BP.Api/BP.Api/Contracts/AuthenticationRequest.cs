@@ -1,10 +1,7 @@
-﻿namespace BP.Api.Controllers;
+﻿namespace BP.Api.Contracts;
 
-public partial class AuthenticationController
+public record AuthenticationRequest
 {
-    public record AuthenticationRequest
-    {
-        public string Username { get; init; } = null!;
-        public string Password { get; init; } = null!;
-    }
+    public string Username { get; init; } = null!;
+    public string Password { get; init; } = null!;
 }

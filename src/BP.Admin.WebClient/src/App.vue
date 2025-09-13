@@ -4,7 +4,7 @@
 
     <!-- Routed views appear here -->
     <main class="main-content">
-      <router-view />
+      <router-view></router-view>
     </main>
   </div>
 </template>
@@ -19,3 +19,4 @@
   padding-top: 70px; /* match your Header height */
 }
 </style>
+
