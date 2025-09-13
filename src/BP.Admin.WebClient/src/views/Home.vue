@@ -8,10 +8,10 @@
       <form @submit.prevent="handleLogin">
         <!-- Email -->
         <div class="mb-3">
-          <label for="email" class="form-label fw-bold">Email</label>
+          <label for="username" class="form-label fw-bold">Email</label>
           <input
-              type="email"
-              id="email"
+              type="text"
+              id="username"
               v-model="email"
               required
               class="form-control neubrutalism-input"
@@ -53,7 +53,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import  userService from "../apiservice/UserService.ts";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const email = ref("");
 const password = ref("");
 
@@ -62,10 +64,19 @@ const handleLogin = async (): Promise<void> => {
   console.log("Password:", password.value);
 
   const response = await userService.validateUser(
+
       {
         userName: email.value,
         password: password.value
       });
+  if(response.hasError){
+    console.log("Error");
+  }
+  else{
+    {
+      router.push({ name: "Dashboard" });
+    }
+  }
   console.log(response);
 };
 </script>
