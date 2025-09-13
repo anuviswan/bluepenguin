@@ -54,14 +54,14 @@
 import { ref } from "vue";
 import  userService from "../apiservice/UserService.ts";
 import { useRouter } from "vue-router";
+import {useUserStore} from "../stores/userStore.ts";
 
+const userStore = useUserStore();
 const router = useRouter();
 const email = ref("");
 const password = ref("");
 
 const handleLogin = async (): Promise<void> => {
-  console.log("Email:", email.value);
-  console.log("Password:", password.value);
 
   const response = await userService.validateUser(
 
@@ -70,14 +70,18 @@ const handleLogin = async (): Promise<void> => {
         password: password.value
       });
   if(response.hasError){
-    console.log("Error");
+    console.log("Login failed");
   }
   else{
     {
+      console.log("login success");
+      userStore.SaveUser({
+        token : response.data.token,
+        userName : response.data.userId
+      })
       router.push({ name: "Dashboard" });
     }
   }
-  console.log(response);
 };
 </script>
 

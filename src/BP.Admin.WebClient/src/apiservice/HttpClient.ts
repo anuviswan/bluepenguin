@@ -38,7 +38,9 @@ class HttpClient {
     ): Promise<T> {
         try {
             const response = await this.axiosInstance.request<T>(config);
-            return response.data;
+            return {
+                data: response.data
+            } as T;
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return {
