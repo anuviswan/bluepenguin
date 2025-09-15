@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BP.PriceTracker.Views.LoginView"
+             xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
+             x:DataType="viewModels:LoginViewModel"
+             Title="LoginView">
+    <VerticalStackLayout>
+        <Entry Placeholder="Passkey" Text="{Binding PassKey}" IsPassword="True" Keyboard="Numeric" />
+    </VerticalStackLayout>
+</ContentPage>
