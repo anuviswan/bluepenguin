@@ -19,6 +19,7 @@ namespace BP.PriceTracker
     		builder.Logging.AddDebug();
 #endif
 
+            builder.Services.AddTransient<ViewModels.LoginViewModel>();
             return builder.Build();
         }
     }
