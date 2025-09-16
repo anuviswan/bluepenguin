@@ -62,3 +62,5 @@ Thumbs.db
 *.log
 *.tlog
 *.cache
+/src/BP.PriceTracker/BP.PriceTracker/appsettings.development.json
+/src/BP.PriceTracker/BP.PriceTracker/appsettings.production.json
