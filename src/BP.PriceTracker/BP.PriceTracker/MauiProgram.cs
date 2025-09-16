@@ -1,5 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-
+﻿using BP.PriceTracker.Services.Options;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 namespace BP.PriceTracker
 {
     public static class MauiProgram
@@ -19,7 +20,19 @@ namespace BP.PriceTracker
     		builder.Logging.AddDebug();
 #endif
 
+            var configBuilder = new ConfigurationBuilder();
+#if DEBUG
+            configBuilder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+#else
+            configBuilder.AddJsonFile("appsettings.Production.json", optional: false, reloadOnChange: true);
+#endif
+            var configuration = configBuilder.Build();
+            configBuilder.AddEnvironmentVariables();
+
+            builder.Services.Configure<ApiSettings>(configuration.GetSection(nameof(ApiSettings)));
+
             builder.Services.AddTransient<ViewModels.LoginViewModel>();
+
             return builder.Build();
         }
     }
