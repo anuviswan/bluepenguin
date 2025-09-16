@@ -6,15 +6,10 @@ using Microsoft.Extensions.Options;
 
 namespace BP.PriceTracker.Services.Services;
 
-public class UserService : IUserService
+public class UserService(IApiService apiService, IOptions<ApiSettings> apiOptions) : IUserService
 {
-    private readonly ApiSettings _apiSettings;
-    private readonly IApiService _apiService;
-    public UserService(IApiService apiService, IOptions<ApiSettings> apiOptions)
-    {
-        _apiSettings = apiOptions.Value;
-        _apiService = apiService;
-    }
+    private readonly ApiSettings _apiSettings = apiOptions.Value;
+
     public UserDto ValidateUser(string passKey)
     {
         var endpoint = _apiSettings.ValidateUserEndpoint;
@@ -23,7 +18,7 @@ public class UserService : IUserService
             UserName = "admin",
             PassKey = passKey 
         };
-        var response = _apiService.PostAsync<ValidateUserRequest,ValidateUserResponse>(_apiSettings.ValidateUserEndpoint,request, null).GetAwaiter().GetResult();   
+        var response = apiService.PostAsync<ValidateUserRequest,ValidateUserResponse>(_apiSettings.ValidateUserEndpoint,request, null).GetAwaiter().GetResult();   
         return new UserDto 
         { 
             IsAuthenticated = response.IsAuthenticated,
