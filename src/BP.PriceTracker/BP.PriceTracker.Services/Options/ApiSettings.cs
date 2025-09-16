@@ -9,5 +9,5 @@ namespace BP.PriceTracker.Services.Options;
 public record ApiSettings
 {
     public string BaseUrl { get; init; } = string.Empty;
-    public string LoginEndpoint { get; init; } = string.Empty;
+    public string ValidateUserEndpoint { get; init; } = string.Empty;
 }

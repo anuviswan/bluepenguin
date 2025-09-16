@@ -3,13 +3,23 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
+using Microsoft.Extensions.Options;
+using BP.PriceTracker.Services.Options;
 
 namespace BP.PriceTracker.Services.Services;
 
 public class ApiService : IApiService
 {
-    private static readonly HttpClient _httpClient = new();
+    private readonly HttpClient _httpClient;
 
+    public ApiService(IOptions<ApiSettings> apiOptions)
+    {
+        var apiSettings = apiOptions.Value;
+        _httpClient = new HttpClient()
+        {
+            BaseAddress = new Uri(apiSettings.BaseUrl)
+        };
+    }
     public async Task DeleteAsync(string endpoint, string? authToken = null)
     {
         var request = new HttpRequestMessage(HttpMethod.Delete, endpoint);
