@@ -31,10 +31,10 @@ namespace BP.PriceTracker
             using var stream = FileSystem.OpenAppPackageFileAsync("appsettings.Production.json").GetAwaiter().GetResult();
             builder.Configuration.AddJsonStream(stream);
 #endif
-            var configuration = configBuilder.Build();
+            //var configuration = configBuilder.Build();
             configBuilder.AddEnvironmentVariables();
 
-            builder.Services.Configure<ApiSettings>(configuration.GetSection(nameof(ApiSettings)));
+            builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection(nameof(ApiSettings)));
 
             builder.Services.AddTransient<ViewModels.LoginViewModel>();
             builder.Services.AddTransient<IUserService,UserService>();
