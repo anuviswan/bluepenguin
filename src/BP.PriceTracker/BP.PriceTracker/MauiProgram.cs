@@ -1,4 +1,6 @@
-﻿using BP.PriceTracker.Services.Options;
+﻿using BP.PriceTracker.Services.Interfaces;
+using BP.PriceTracker.Services.Options;
+using BP.PriceTracker.Services.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 namespace BP.PriceTracker
@@ -22,9 +24,12 @@ namespace BP.PriceTracker
 
             var configBuilder = new ConfigurationBuilder();
 #if DEBUG
-            configBuilder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            using var stream = FileSystem.OpenAppPackageFileAsync("appsettings.development.json").GetAwaiter().GetResult();
+            builder.Configuration.AddJsonStream(stream);
+
 #else
-            configBuilder.AddJsonFile("appsettings.Production.json", optional: false, reloadOnChange: true);
+            using var stream = FileSystem.OpenAppPackageFileAsync("appsettings.Production.json").GetAwaiter().GetResult();
+            builder.Configuration.AddJsonStream(stream);
 #endif
             var configuration = configBuilder.Build();
             configBuilder.AddEnvironmentVariables();
@@ -32,6 +37,8 @@ namespace BP.PriceTracker
             builder.Services.Configure<ApiSettings>(configuration.GetSection(nameof(ApiSettings)));
 
             builder.Services.AddTransient<ViewModels.LoginViewModel>();
+            builder.Services.AddTransient<IUserService,UserService>();
+            builder.Services.AddTransient<IApiService,ApiService>();
 
             return builder.Build();
         }
