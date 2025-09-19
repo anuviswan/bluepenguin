@@ -1,6 +1,7 @@
 ﻿using BP.PriceTracker.Services.Interfaces;
 using BP.PriceTracker.Services.Options;
 using BP.PriceTracker.Services.Services;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 namespace BP.PriceTracker
@@ -12,14 +13,16 @@ namespace BP.PriceTracker
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             var configBuilder = new ConfigurationBuilder();

@@ -4,5 +4,5 @@ namespace BP.PriceTracker.Services.Interfaces;
 
 public  interface IUserService
 {
-    UserDto ValidateUser(string authToken);
+    Task<UserDto> ValidateUser(string passKey);
 }

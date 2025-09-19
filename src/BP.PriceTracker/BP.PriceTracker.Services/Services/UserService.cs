@@ -10,7 +10,7 @@ public class UserService(IApiService apiService, IOptions<ApiSettings> apiOption
 {
     private readonly ApiSettings _apiSettings = apiOptions.Value;
 
-    public UserDto ValidateUser(string passKey)
+    public async Task<UserDto> ValidateUser(string passKey)
     {
         var endpoint = _apiSettings.ValidateUserEndpoint;
         var request = new ValidateUserRequest 
@@ -18,7 +18,7 @@ public class UserService(IApiService apiService, IOptions<ApiSettings> apiOption
             UserName = "admin",
             PassKey = passKey 
         };
-        var response = apiService.PostAsync<ValidateUserRequest,ValidateUserResponse>(_apiSettings.ValidateUserEndpoint,request, null).GetAwaiter().GetResult();   
+        var response = await apiService.PostAsync<ValidateUserRequest,ValidateUserResponse>(_apiSettings.ValidateUserEndpoint,request, null);   
         return new UserDto 
         { 
             IsAuthenticated = response.IsAuthenticated,
