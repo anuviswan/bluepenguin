@@ -15,9 +15,15 @@ public class ApiService : IApiService
     public ApiService(IOptions<ApiSettings> apiOptions)
     {
         var apiSettings = apiOptions.Value;
-        _httpClient = new HttpClient()
+
+        var handler = new SocketsHttpHandler
         {
-            BaseAddress = new Uri(apiSettings.BaseUrl)
+            AllowAutoRedirect = false
+        };
+
+        _httpClient = new HttpClient(handler)
+        {
+            BaseAddress = new Uri(apiSettings.BaseUrl),
         };
     }
     public async Task DeleteAsync(string endpoint, string? authToken = null)
@@ -66,6 +72,7 @@ public class ApiService : IApiService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
+        
         using var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 

@@ -12,10 +12,12 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        builder.WebHost.ConfigureKestrel(options =>
-        {
-            options.ListenAnyIP(5000); // binds to 0.0.0.0:5000
-        });
+        //builder.WebHost.ConfigureKestrel(options =>
+        //{
+        //    options.ListenAnyIP(5000); // binds to 0.0.0.0:5000
+        //});
+
+        //builder.WebHost.UseUrls("http://0.0.0.0:5000");
         builder.AddServiceDefaults();
         builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
         builder.Services.Configure<UserTableSeedingOptions>(builder.Configuration.GetSection(nameof(UserTableSeedingOptions)));
