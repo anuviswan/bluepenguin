@@ -49,6 +49,7 @@ public class ApiService : IApiService
         }
 
         using var response = await _httpClient.SendAsync(request);
+
         response.EnsureSuccessStatusCode();
 
         var responseContent = await response.Content.ReadAsStringAsync();
@@ -74,7 +75,14 @@ public class ApiService : IApiService
 
         
         using var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+
+        if ((int)response.StatusCode == 307)
+        {
+            var target = response.Headers.Location?.ToString();
+            Console.WriteLine($"Redirected to: {target}");
+        }
+
+        //response.EnsureSuccessStatusCode();
 
         var responseContent = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<TResponse>(responseContent, new JsonSerializerOptions

@@ -80,7 +80,7 @@ public class Program
 
         }
 
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
 
         // Use CORS policy based on environment
         if (app.Environment.IsDevelopment())
