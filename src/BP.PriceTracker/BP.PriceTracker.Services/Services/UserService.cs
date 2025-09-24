@@ -16,7 +16,7 @@ public class UserService(IApiService apiService, IOptions<ApiSettings> apiOption
         var request = new ValidateUserRequest 
         { 
             UserName = "admin",
-            PassKey = passKey 
+            Password = passKey 
         };
         var response = await apiService.PostAsync<ValidateUserRequest,ValidateUserResponse?>(_apiSettings.ValidateUserEndpoint,request, null);
 
@@ -24,8 +24,8 @@ public class UserService(IApiService apiService, IOptions<ApiSettings> apiOption
         {
             return new UserDto 
             { 
-                IsAuthenticated = response.Data?.IsAuthenticated ?? false,
-                AuthToken = response.Data?.AuthToken ?? string.Empty
+                IsAuthenticated = true,
+                AuthToken = response.Data?.Token ?? string.Empty
             };
         }
         return new UserDto 

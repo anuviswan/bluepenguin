@@ -7,7 +7,7 @@
              >
     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
         <Entry Placeholder="Password" Text="{Binding PassKey}" 
-               IsPassword="True" Keyboard="Numeric" />
+               IsPassword="True"  />
         <Button Text="Login" Command="{Binding ExecuteLoginCommand}"/>
     </VerticalStackLayout>
 </ContentPage>
