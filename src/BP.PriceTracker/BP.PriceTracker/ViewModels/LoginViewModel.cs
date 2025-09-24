@@ -16,25 +16,17 @@ public partial class LoginViewModel(ILogger<LoginViewModel> logger, IUserService
     [RelayCommand(CanExecute = nameof(CanExecuteLogin))]
     private async Task ExecuteLogin()
     {
-        try
-        {
-            var response = await userService.ValidateUser(PassKey);
+        var response = await userService.ValidateUser(PassKey);
 
-            if (response?.IsAuthenticated == true)
-            {
-
-            }
-            else
-            {
-                await Snackbar.Make("Invalid PassKey").Show();
-            }
-        }
-        catch (Exception e)
+        if (response?.IsAuthenticated == true)
         {
 
-            throw;
         }
-        
+        else
+        {
+            await Snackbar.Make("Invalid PassKey").Show();
+        }
+
     }
 
     public bool CanExecuteLogin()

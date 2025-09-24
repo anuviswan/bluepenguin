@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text;
 using Microsoft.Extensions.Options;
 using BP.PriceTracker.Services.Options;
+using BP.PriceTracker.Services.Types;
 
 namespace BP.PriceTracker.Services.Services;
 
@@ -39,7 +40,7 @@ public class ApiService : IApiService
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<T> GetAsync<T>(string endpoint, string? authToken = null)
+    public async Task<ApiResult<T>> GetAsync<T>(string endpoint, string? authToken = null)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
 
@@ -50,18 +51,32 @@ public class ApiService : IApiService
 
         using var response = await _httpClient.SendAsync(request);
 
-        response.EnsureSuccessStatusCode();
-
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+        if (response.IsSuccessStatusCode)
         {
-            PropertyNameCaseInsensitive = true
-        });
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
-        return result!;
+            return new ApiResult<T>
+            {
+                IsSuccess = true,
+                Data = result!,
+                StatusCode = response.StatusCode
+            };
+        }
+
+        return new ApiResult<T>
+        {
+            IsSuccess = false,
+            Data = default,
+            StatusCode = response.StatusCode,
+            ErrorMessage = await response.Content.ReadAsStringAsync()
+        };
     }
 
-    public async Task<TResponse> PostAsync<TRequest, TResponse>(string endpoint, TRequest data, string? authToken = null)
+    public async Task<ApiResult<TResponse>> PostAsync<TRequest, TResponse>(string endpoint, TRequest data, string? authToken = null)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
@@ -76,24 +91,33 @@ public class ApiService : IApiService
         
         using var response = await _httpClient.SendAsync(request);
 
-        if ((int)response.StatusCode == 307)
+
+        if (response.IsSuccessStatusCode)
         {
-            var target = response.Headers.Location?.ToString();
-            Console.WriteLine($"Redirected to: {target}");
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<TResponse>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return new ApiResult<TResponse>
+            {
+                IsSuccess = true,
+                Data = result!,
+                StatusCode = response.StatusCode
+            };
         }
 
-        //response.EnsureSuccessStatusCode();
-
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<TResponse>(responseContent, new JsonSerializerOptions
+        return new ApiResult<TResponse>
         {
-            PropertyNameCaseInsensitive = true
-        });
-
-        return result!;
+            IsSuccess = false,
+            Data = default,
+            StatusCode = response.StatusCode,
+            ErrorMessage = await response.Content.ReadAsStringAsync()
+        };
     }
 
-    public async Task<TResponse> PutAsync<TRequest, TResponse>(string endpoint, TRequest data, string? authToken = null)
+    public async Task<ApiResult<TResponse>> PutAsync<TRequest, TResponse>(string endpoint, TRequest data, string? authToken = null)
     {
         var request = new HttpRequestMessage(HttpMethod.Put, endpoint)
         {
@@ -106,14 +130,30 @@ public class ApiService : IApiService
         }
 
         using var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
 
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<TResponse>(responseContent, new JsonSerializerOptions
+
+        if (response.IsSuccessStatusCode)
         {
-            PropertyNameCaseInsensitive = true
-        });
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<TResponse>(responseContent, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
-        return result!;
+            return new ApiResult<TResponse>
+            {
+                IsSuccess = true,
+                Data = result!,
+                StatusCode = response.StatusCode
+            };
+        }
+
+        return new ApiResult<TResponse>
+        {
+            IsSuccess = false,
+            Data = default,
+            StatusCode = response.StatusCode,
+            ErrorMessage = await response.Content.ReadAsStringAsync()
+        };
     }
 }
