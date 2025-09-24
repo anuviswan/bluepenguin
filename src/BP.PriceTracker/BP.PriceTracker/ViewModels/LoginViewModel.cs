@@ -16,11 +16,11 @@ public partial class LoginViewModel(ILogger<LoginViewModel> logger, IUserService
     [RelayCommand(CanExecute = nameof(CanExecuteLogin))]
     private async Task ExecuteLogin()
     {
-        var response = await userService.ValidateUser(PassKey);
+        var response = await userService.ValidateUser(PassKey!);
 
         if (response?.IsAuthenticated == true)
         {
-
+            await Shell.Current.GoToAsync(Constants.Routes.HomeView);
         }
         else
         {

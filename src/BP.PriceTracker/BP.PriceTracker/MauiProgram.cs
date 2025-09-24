@@ -40,6 +40,9 @@ namespace BP.PriceTracker
             builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection(nameof(ApiSettings)));
 
             builder.Services.AddTransient<ViewModels.LoginViewModel>();
+            builder.Services.AddTransientWithShellRoute<Views.HomeView,ViewModels.HomeViewModel>(Constants.Routes.HomeView);
+
+
             builder.Services.AddTransient<IUserService,UserService>();
             builder.Services.AddTransient<IApiService,ApiService>();
 
