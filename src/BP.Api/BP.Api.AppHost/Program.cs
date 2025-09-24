@@ -5,6 +5,7 @@ var storage = builder.AddAzureStorage("storage")
 
 var tables = storage.AddTables("tables");
 builder.AddProject<Projects.BP_Api>("bp-api")
+    .WithEndpoint("http", e => e.Port = 5000)
     .WaitFor(tables)
     .WithReference(tables)
     .WithEnvironment("TableNames__Product", "Products")

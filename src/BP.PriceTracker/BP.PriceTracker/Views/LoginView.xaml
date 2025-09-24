@@ -4,8 +4,10 @@
              x:Class="BP.PriceTracker.Views.LoginView"
              xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
              x:DataType="viewModels:LoginViewModel"
-             Title="LoginView">
-    <VerticalStackLayout>
-        <Entry Placeholder="Passkey" Text="{Binding PassKey}" IsPassword="True" Keyboard="Numeric" />
+             >
+    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+        <Entry Placeholder="Password" Text="{Binding PassKey}" 
+               IsPassword="True"  />
+        <Button Text="Login" Command="{Binding ExecuteLoginCommand}"/>
     </VerticalStackLayout>
 </ContentPage>
