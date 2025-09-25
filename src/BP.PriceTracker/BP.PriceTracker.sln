@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.PriceTracker", "BP.Price
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.PriceTracker.Services", "BP.PriceTracker.Services\BP.PriceTracker.Services.csproj", "{1C71FD86-1097-49EF-8544-ABD42FFFA1FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.PriceTracker.Controls", "BP.PriceTracker.Controls\BP.PriceTracker.Controls.csproj", "{C3CD1B8A-D28F-45A2-9BCB-C6264A36993E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{1C71FD86-1097-49EF-8544-ABD42FFFA1FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C71FD86-1097-49EF-8544-ABD42FFFA1FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C71FD86-1097-49EF-8544-ABD42FFFA1FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3CD1B8A-D28F-45A2-9BCB-C6264A36993E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3CD1B8A-D28F-45A2-9BCB-C6264A36993E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3CD1B8A-D28F-45A2-9BCB-C6264A36993E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3CD1B8A-D28F-45A2-9BCB-C6264A36993E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

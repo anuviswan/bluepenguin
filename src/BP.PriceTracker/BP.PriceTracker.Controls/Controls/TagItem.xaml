@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BP.PriceTracker.Controls.Controls.TagItem">
+
+    <StackLayout Orientation="Horizontal" Spacing="8">
+
+        <!-- Unselected Tag -->
+        <Border x:Name="UnselectedTag"
+            Background="{StaticResource TagUnselectedFill}"
+            Stroke="{StaticResource TagUnselectedBorder}"
+            StrokeThickness="3"
+            IsVisible="{Binding IsSelected, Converter={StaticResource InverseBoolConverter}}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16"/>
+            </Border.StrokeShape>
+            <Label Text="SPORTS"
+               TextColor="{StaticResource NeutralText}"
+               FontAttributes="Bold"/>
+        </Border>
+
+        <!-- Selected Tag -->
+        <Border x:Name="SelectedTag"
+            Background="{StaticResource TagSelectedFill}"
+            Stroke="{StaticResource TagSelectedBorder}"
+            StrokeThickness="3"
+            IsVisible="{Binding IsSelected}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16"/>
+            </Border.StrokeShape>
+            <Label Text="SPORTS"
+               TextColor="White"
+               FontAttributes="Bold"/>
+        </Border>
+
+    </StackLayout>
+
+    <ContentView.GestureRecognizers>
+        <TapGestureRecognizer Tapped="OnTagTapped"/>
+    </ContentView.GestureRecognizers>
+</ContentView>
