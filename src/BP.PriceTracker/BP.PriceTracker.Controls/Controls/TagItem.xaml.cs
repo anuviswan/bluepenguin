@@ -25,7 +25,7 @@ public partial class TagItem : ContentView
     public TagItem()
 	{
 		InitializeComponent();
-	}
+    }
 
 	private void OnTagTapped(object sender, EventArgs e)
 	{

@@ -88,6 +88,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\BP.PriceTracker.Controls\BP.PriceTracker.Controls.csproj" />
 	  <ProjectReference Include="..\BP.PriceTracker.Services\BP.PriceTracker.Services.csproj" />
 	</ItemGroup>
 

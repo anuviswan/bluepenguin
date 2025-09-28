@@ -4,11 +4,13 @@
              x:Class="BP.PriceTracker.Views.HomeView"
              Title="HomeView"
              xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
+             xmlns:controls="clr-namespace:BP.PriceTracker.Controls.Controls;assembly=BP.PriceTracker.Controls"
              x:DataType="viewModels:HomeViewModel">
-    <VerticalStackLayout>
-        <Label 
-            Text="This is Home View"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+    <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Tags}">
+        <BindableLayout.ItemTemplate>
+            <DataTemplate x:DataType="viewModels:TagItemEntry">
+                <controls:TagItem Text="{Binding Title}"/>
+            </DataTemplate>
+        </BindableLayout.ItemTemplate>
+    </HorizontalStackLayout>
 </ContentPage>
