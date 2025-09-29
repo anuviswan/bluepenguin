@@ -6,11 +6,14 @@
              xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
              xmlns:controls="clr-namespace:BP.PriceTracker.Controls.Controls;assembly=BP.PriceTracker.Controls"
              x:DataType="viewModels:HomeViewModel">
-    <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Tags}" VerticalOptions="Start" Margin="10" Padding="10">
-        <BindableLayout.ItemTemplate>
-            <DataTemplate x:DataType="viewModels:TagItemEntry">
-                <controls:TagItem Text="{Binding Title}"/>
-            </DataTemplate>
-        </BindableLayout.ItemTemplate>
-    </HorizontalStackLayout>
+    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Start">
+        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Tags}"  Margin="10" Padding="10">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="viewModels:TagItemEntry">
+                    <controls:TagItem Text="{Binding Title}"/>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </HorizontalStackLayout>
+        <Button Text="Next"/>
+    </VerticalStackLayout>
 </ContentPage>

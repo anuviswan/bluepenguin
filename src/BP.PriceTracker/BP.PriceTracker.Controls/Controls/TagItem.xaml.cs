@@ -31,4 +31,9 @@ public partial class TagItem : ContentView
 	{
 		IsSelected = !IsSelected;
     }
+
+    private void OnTagTapped(object sender, TappedEventArgs e)
+    {
+
+    }
 }
