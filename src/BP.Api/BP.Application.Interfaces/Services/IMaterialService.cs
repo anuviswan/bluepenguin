@@ -1,5 +1,5 @@
 ﻿namespace BP.Application.Interfaces.Services;
-using BP.Application.Interfaces.SkuAttributes;
+using BP.Shared.SkuAttributes;
 
 public interface IMaterialService
 {

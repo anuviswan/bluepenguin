@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BP.Application.Interfaces.SkuAttributes;
+namespace BP.Shared.SkuAttributes;
 
 public enum Feature
 {

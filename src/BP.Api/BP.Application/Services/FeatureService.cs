@@ -1,5 +1,5 @@
 ﻿using BP.Application.Interfaces.Services;
-using BP.Application.Interfaces.SkuAttributes;
+using BP.Shared.SkuAttributes;
 
 namespace BP.Application.Services;
 
