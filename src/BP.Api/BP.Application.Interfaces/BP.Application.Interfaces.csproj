@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BP.Shared\BP.Shared.csproj" />
+    <Compile Remove="Types\**" />
+    <EmbeddedResource Remove="Types\**" />
+    <None Remove="Types\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BP.Domain\BP.Domain.csproj" />
   </ItemGroup>
 

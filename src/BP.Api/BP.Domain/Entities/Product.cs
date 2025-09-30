@@ -3,7 +3,7 @@ using Azure.Data.Tables;
 
 namespace BP.Domain.Entities;
 
-public record Product :  ITableEntity
+public record Product : ITableEntity
 {
     public string? ProductName { get; set; }
     public string SKU { get; set; } = null!;

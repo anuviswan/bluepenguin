@@ -1,12 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace BP.PriceTracker.Services.Types;
 
-namespace BP.PriceTracker.Services.Types
-{
-    public class Category
-    {
-    }
-}
+public record Category(string Id, string Name);

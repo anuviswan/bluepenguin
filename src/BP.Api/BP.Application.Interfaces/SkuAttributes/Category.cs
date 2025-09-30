@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BP.Shared.SkuAttributes;
+namespace BP.Application.Interfaces.SkuAttributes;
 
 public enum Category
 {

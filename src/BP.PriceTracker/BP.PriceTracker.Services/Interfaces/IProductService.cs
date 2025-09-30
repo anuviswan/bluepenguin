@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BP.PriceTracker.Services.Types;
 
 namespace BP.PriceTracker.Services.Interfaces;
 
 public interface IProductService
 {
+    Task<IEnumerable<Category>> GetCategoriesAsync();
 }

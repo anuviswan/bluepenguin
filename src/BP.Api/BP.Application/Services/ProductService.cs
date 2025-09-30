@@ -23,7 +23,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
 
     public async Task<int> GetItemCountForCollection(string collectionCode, int yearCode)
     {
-        var result = await productRepository.GetProductsByCategory(collectionCode,yearCode);
+        var result = await productRepository.GetProductsByCategory(collectionCode, yearCode);
         return result.Count();
     }
 

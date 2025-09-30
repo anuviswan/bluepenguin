@@ -1,4 +1,4 @@
-﻿using BP.Shared.SkuAttributes;
+﻿using BP.Application.Interfaces.SkuAttributes;
 
 namespace BP.Application.Interfaces.Services;
 

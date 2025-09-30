@@ -1,5 +1,6 @@
 ﻿namespace BP.Application.Interfaces.Services;
-using BP.Shared.SkuAttributes;
+
+using BP.Application.Interfaces.SkuAttributes;
 
 public interface IFeatureService
 {

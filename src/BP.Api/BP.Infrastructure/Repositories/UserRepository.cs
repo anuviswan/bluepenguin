@@ -13,6 +13,6 @@ public class UserRepository : GenericRepository<UserEntity>, IUserRepository
 
     public async Task<UserEntity?> GetUser(string username)
     {
-       return await GetById("Admin",username!);
+        return await GetById("Admin", username!);
     }
 }

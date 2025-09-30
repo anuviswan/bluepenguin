@@ -7,10 +7,10 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductController:BaseController
+public class ProductController : BaseController
 {
     private readonly IProductService _productService;
-    public ProductController(IProductService productService, ILogger<ProductController> logger):base(logger)
+    public ProductController(IProductService productService, ILogger<ProductController> logger) : base(logger)
     {
         _productService = productService;
     }
@@ -53,7 +53,7 @@ public class ProductController:BaseController
 
     [HttpGet]
     [Route("getbysku")]
-    public async Task<IActionResult> GetProduct([FromQuery]string sku)
+    public async Task<IActionResult> GetProduct([FromQuery] string sku)
     {
         Logger.LogInformation("Getting Product");
         try

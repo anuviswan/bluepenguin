@@ -8,17 +8,17 @@ namespace BP.PriceTracker.Services.Services;
 
 public class UserService(IApiService apiService, IOptions<ApiSettings> apiOptions) : IUserService
 {
-    private readonly ApiSettings _apiSettings = apiOptions.Value;
+    private ApiSettings ApiSettings => apiOptions.Value;
 
     public async Task<UserDto> ValidateUser(string passKey)
     {
-        var endpoint = _apiSettings.ValidateUserEndpoint;
+        var endpoint = ApiSettings.ValidateUserEndpoint;
         var request = new ValidateUserRequest 
         { 
             UserName = "admin",
             Password = passKey 
         };
-        var response = await apiService.PostAsync<ValidateUserRequest,ValidateUserResponse?>(_apiSettings.ValidateUserEndpoint,request, null);
+        var response = await apiService.PostAsync<ValidateUserRequest,ValidateUserResponse?>(ApiSettings.ValidateUserEndpoint,request, null);
 
         if (response.IsSuccess)
         {
