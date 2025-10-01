@@ -22,7 +22,7 @@ public class FeatureController : BaseController
         Logger.LogInformation("Get All Features");
         try
         {
-            var features = _featureService.GetAllFeatures().Select(x => new { Key = x.ToString(), Value = x.GetDescription() });
+            var features = _featureService.GetAllFeatures().Select(x => new { Id = x.ToString(), Name = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(features));
         }
         catch (Exception e)

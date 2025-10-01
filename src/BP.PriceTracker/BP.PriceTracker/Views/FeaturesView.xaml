@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BP.PriceTracker.Views.HomeView"
-             Title="Categories"
+             x:Class="BP.PriceTracker.Views.FeaturesView"
              xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
              xmlns:controls="clr-namespace:BP.PriceTracker.Controls.Controls;assembly=BP.PriceTracker.Controls"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:DataType="viewModels:HomeViewModel">
+             Title="Features">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="Loaded"
@@ -31,5 +30,4 @@
 
         <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
     </VerticalStackLayout>
-
 </ContentPage>
