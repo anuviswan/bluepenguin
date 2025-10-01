@@ -11,13 +11,7 @@ public class ProductService(IApiService apiService, IOptions<ApiSettings> apiOpt
     public async Task<IEnumerable<Category>> GetCategoriesAsync()
     {
         var endpoint = ApiSettings.GetCategoriesEndpoint;
-        var response = await apiService.GetAsync<IEnumerable<Category>>(endpoint);
-
-        if (response.IsSuccess)
-        {
-            return response.Data ?? Enumerable.Empty<Category>();
-        }
-        return Enumerable.Empty<Category>();
+        return await GetDataAsync<Category>(endpoint);
     }
 
     public async Task<IEnumerable<Material>> GetMaterialsAsync()
@@ -35,12 +29,24 @@ public class ProductService(IApiService apiService, IOptions<ApiSettings> apiOpt
     public async Task<IEnumerable<Feature>> GetFeaturesAsync()
     {
         var endpoint = ApiSettings.GetFeaturesEndpoint;
-        var response = await apiService.GetAsync<IEnumerable<Feature>>(endpoint);
+        return await GetDataAsync<Feature>(endpoint); ;
+    }
+
+    public async Task<IEnumerable<Collection>> GetCollectionsAsync()
+    {
+        var endpoint = ApiSettings.GetCollectionsEndpoint;
+        return await GetDataAsync<Collection>(endpoint);
+    }
+
+    private async Task<IEnumerable<TReturn>> GetDataAsync<TReturn>(string endpoint)
+    {
+        var response = await apiService.GetAsync<IEnumerable<TReturn>>(endpoint);
+
 
         if (response.IsSuccess)
         {
-            return response.Data ?? Enumerable.Empty<Feature>();
+            return response.Data ?? Enumerable.Empty<TReturn>();
         }
-        return Enumerable.Empty<Feature>();
+        return Enumerable.Empty<TReturn>();
     }
 }

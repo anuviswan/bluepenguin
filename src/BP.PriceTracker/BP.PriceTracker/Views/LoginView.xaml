@@ -6,7 +6,7 @@
              x:DataType="viewModels:LoginViewModel"
              >
     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Entry Placeholder="Password" Text="{Binding PassKey}" 
+        <Entry Placeholder="Password" Text="{Binding PassKey}" HorizontalTextAlignment="Center"
                IsPassword="True"  />
         <Button Text="Login" Command="{Binding ExecuteLoginCommand}" Style="{StaticResource RoundedButtonStyle}"/>
     </VerticalStackLayout>

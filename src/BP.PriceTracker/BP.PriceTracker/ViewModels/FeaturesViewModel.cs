@@ -22,6 +22,6 @@ public partial class FeaturesViewModel(IProductService productService, INavigati
     private async Task MoveNext()
     {
         cacheService.Add<IEnumerable<TagItemEntry>>("SelectedFeatures", Tags.Where(t => t.IsSelected));
-        await Shell.Current.GoToAsync(Constants.Routes.FeatureView);
+        await Shell.Current.GoToAsync(Constants.Routes.CollectionView);
     }
 }

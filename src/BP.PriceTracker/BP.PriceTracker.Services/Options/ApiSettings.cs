@@ -7,4 +7,5 @@ public record ApiSettings
     public string GetCategoriesEndpoint { get; init; } = string.Empty;
     public string GetMaterialsEndpoint { get; init; } = string.Empty;
     public string GetFeaturesEndpoint { get; init; } = string.Empty;
+    public string GetCollectionsEndpoint { get; init; } = string.Empty;
 }
