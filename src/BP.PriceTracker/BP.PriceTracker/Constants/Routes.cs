@@ -12,4 +12,5 @@ public static class Routes
     public const string HomeView = "Home";
     public const string MaterialView = "Materials";
     public const string FeatureView = "Features";
+    public const string CollectionView = "Collections";
 }

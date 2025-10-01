@@ -31,4 +31,16 @@ public class ProductService(IApiService apiService, IOptions<ApiSettings> apiOpt
         }
         return Enumerable.Empty<Material>();
     }
+
+    public async Task<IEnumerable<Feature>> GetFeaturesAsync()
+    {
+        var endpoint = ApiSettings.GetFeaturesEndpoint;
+        var response = await apiService.GetAsync<IEnumerable<Feature>>(endpoint);
+
+        if (response.IsSuccess)
+        {
+            return response.Data ?? Enumerable.Empty<Feature>();
+        }
+        return Enumerable.Empty<Feature>();
+    }
 }

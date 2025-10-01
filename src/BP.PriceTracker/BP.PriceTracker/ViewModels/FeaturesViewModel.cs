@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace BP.PriceTracker.ViewModels;
 
-public partial class MaterialsViewModel(IProductService productService, INavigationCacheService cacheService, ILogger<MaterialsViewModel> logger) : ObservableObject
+public partial class FeaturesViewModel(IProductService productService, INavigationCacheService cacheService, ILogger<FeaturesViewModel> logger) : ObservableObject
 {
     [ObservableProperty]
     private ObservableCollection<TagItemEntry> tags = new();
@@ -14,14 +14,14 @@ public partial class MaterialsViewModel(IProductService productService, INavigat
     [RelayCommand]
     private async Task LoadDataAsync()
     {
-        var materials = await productService.GetMaterialsAsync();
-        Tags = new ObservableCollection<TagItemEntry>(materials.Select(c => new TagItemEntry(c.Name, c.Id, false)));
+        var features = await productService.GetFeaturesAsync();
+        Tags = new ObservableCollection<TagItemEntry>(features.Select(c => new TagItemEntry(c.Name, c.Id, false)));
     }
 
     [RelayCommand]
     private async Task MoveNext()
     {
-        cacheService.Add<IEnumerable<TagItemEntry>>("SelectedMaterials", Tags.Where(t => t.IsSelected));
+        cacheService.Add<IEnumerable<TagItemEntry>>("SelectedFeatures", Tags.Where(t => t.IsSelected));
         await Shell.Current.GoToAsync(Constants.Routes.FeatureView);
     }
 }

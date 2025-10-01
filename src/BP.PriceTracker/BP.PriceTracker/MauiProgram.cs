@@ -42,6 +42,7 @@ namespace BP.PriceTracker
             builder.Services.AddTransient<ViewModels.LoginViewModel>();
             builder.Services.AddTransientWithShellRoute<Views.HomeView,ViewModels.HomeViewModel>(Constants.Routes.HomeView);
             builder.Services.AddTransientWithShellRoute<Views.MaterialsView,ViewModels.MaterialsViewModel>(Constants.Routes.MaterialView);
+            builder.Services.AddTransientWithShellRoute<Views.FeaturesView,ViewModels.FeaturesViewModel>(Constants.Routes.FeatureView);
 
 
             builder.Services.AddTransient<INavigationCacheService, NavigationCacheService>();
