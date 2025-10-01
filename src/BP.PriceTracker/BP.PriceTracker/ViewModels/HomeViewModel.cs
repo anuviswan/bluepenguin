@@ -1,21 +1,20 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BP.PriceTracker.Services.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 
 namespace BP.PriceTracker.ViewModels;
 
-public partial class HomeViewModel: ObservableObject
+public partial class HomeViewModel(IProductService productService, ILogger<HomeViewModel> logger): ObservableObject
 {
-    public ObservableCollection<TagItemEntry> Tags { get; set; } = [
-        new TagItemEntry("Electronics 1", false),
-        new TagItemEntry("Electronics 2", false),
-        ];
+    [ObservableProperty]
+    private ObservableCollection<TagItemEntry> tags = new ();
 
     [RelayCommand]
-    private Task LoadDataAsync()
+    private async Task LoadDataAsync()
     {
-        // TODO : Call your data loading logic here
-        return Task.CompletedTask;
+        var categories = await productService.GetCategoriesAsync();
+        Tags = new ObservableCollection<TagItemEntry>(categories.Select(c => new TagItemEntry(c.Name, c.Id, false)));
     }
-
 }

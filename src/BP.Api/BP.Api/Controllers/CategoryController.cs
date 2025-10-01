@@ -20,7 +20,7 @@ public class CategoryController : BaseController
         Logger.LogInformation("Get All Categories");
         try
         {
-            var categories = _categoryService.GetAllCategories().Select(x => new { Key = x.ToString(), Value = x.GetDescription() });
+            var categories = _categoryService.GetAllCategories().Select(x => new { Id = x.ToString(), Name = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(categories));
         }
         catch (Exception e)

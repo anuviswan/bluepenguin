@@ -8,9 +8,15 @@ namespace BP.PriceTracker.Services.Services;
 public class ProductService(IApiService apiService, IOptions<ApiSettings> apiOptions) : IProductService
 {
     private ApiSettings ApiSettings => apiOptions.Value;
-    public Task<IEnumerable<Category>> GetCategoriesAsync()
+    public async Task<IEnumerable<Category>> GetCategoriesAsync()
     {
         var endpoint = ApiSettings.GetCategoriesEndpoint;
-        throw new NotImplementedException();
+        var response = await apiService.GetAsync<IEnumerable<Category>>(endpoint);
+
+        if (response.IsSuccess)
+        {
+            return response.Data ?? Enumerable.Empty<Category>();
+        }
+        return Enumerable.Empty<Category>();
     }
 }

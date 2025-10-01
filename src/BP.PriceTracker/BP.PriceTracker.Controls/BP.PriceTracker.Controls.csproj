@@ -27,10 +27,13 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Styles\Colors.xaml">
-	    <Generator>MSBuild:Compile</Generator>
+	    <Generator></Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Styles\Controls.xaml">
 	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Styles\UserStyles.xaml">
+	    <Generator></Generator>
 	  </MauiXaml>
 	</ItemGroup>
 

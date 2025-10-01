@@ -13,13 +13,23 @@
             Command="{Binding LoadDataCommand}" />
     </ContentPage.Behaviors>
     <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Start">
-        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding Tags}"  Margin="10" Padding="10">
-            <BindableLayout.ItemTemplate>
-                <DataTemplate x:DataType="viewModels:TagItemEntry">
-                    <controls:TagItem Text="{Binding Title}"/>
-                </DataTemplate>
-            </BindableLayout.ItemTemplate>
-        </HorizontalStackLayout>
-        <Button Text="Next"/>
+        <ScrollView Orientation="Vertical">
+            <FlexLayout
+            Direction="Row"
+            Wrap="Wrap"
+            JustifyContent="Start"
+            Margin="10"
+            Padding="10"
+            BindableLayout.ItemsSource="{Binding Tags}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="viewModels:TagItemEntry">
+                        <controls:TagItem Text="{Binding Title}" />
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+        </ScrollView>
+
+        <Button Text="Next" Style="{StaticResource ChipButtonStyle}"/>
     </VerticalStackLayout>
+
 </ContentPage>
