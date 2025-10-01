@@ -9,5 +9,13 @@
         <Entry Placeholder="Password" Text="{Binding PassKey}" HorizontalTextAlignment="Center"
                IsPassword="True"  />
         <Button Text="Login" Command="{Binding ExecuteLoginCommand}" Style="{StaticResource RoundedButtonStyle}"/>
+
+        <ActivityIndicator 
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            Color="Blue"
+            VerticalOptions="Fill"
+            HorizontalOptions="Fill"
+            WidthRequest="50" HeightRequest="50" />
     </VerticalStackLayout>
 </ContentPage>

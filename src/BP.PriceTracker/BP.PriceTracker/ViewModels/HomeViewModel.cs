@@ -1,4 +1,5 @@
 ﻿using BP.PriceTracker.Services.Interfaces;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
@@ -9,13 +10,30 @@ namespace BP.PriceTracker.ViewModels;
 public partial class HomeViewModel(IProductService productService,INavigationCacheService cacheService, ILogger<HomeViewModel> logger): ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<TagItemEntry> tags = new ();
+    private ObservableCollection<TagItemEntry> tags = [];
+
+    [ObservableProperty]
+    private bool isBusy;
 
     [RelayCommand]
     private async Task LoadDataAsync()
     {
-        var categories = await productService.GetCategoriesAsync();
-        Tags = new ObservableCollection<TagItemEntry>(categories.Select(c => new TagItemEntry(c.Name, c.Id, false)));
+        try
+        {
+            IsBusy = true;
+            var categories = await productService.GetCategoriesAsync();
+            Tags = new ObservableCollection<TagItemEntry>(categories.Select(c => new TagItemEntry(c.Name, c.Id, false)));
+        }
+        catch (Exception e)
+        {
+            IsBusy = false;
+            logger.LogError("Failed to load categories {0}", e.Message);
+            await Snackbar.Make("Unable to retrieve categories").Show();
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
