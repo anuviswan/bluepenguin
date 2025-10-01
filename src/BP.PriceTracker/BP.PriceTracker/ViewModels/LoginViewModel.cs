@@ -30,7 +30,7 @@ public partial class LoginViewModel(ILogger<LoginViewModel> logger, IUserService
         else
         {
             IsBusy = false;
-            await Snackbar.Make("Invalid PassKey").Show();
+            await Toast.Make("Invalid PassKey").Show();
         }
         
     }

@@ -19,6 +19,8 @@ public partial class FeaturesViewModel(IProductService productService, INavigati
     [RelayCommand]
     private async Task LoadDataAsync()
     {
+        if(IsBusy)
+            return;
         try
         {
             IsBusy = true;
@@ -29,7 +31,7 @@ public partial class FeaturesViewModel(IProductService productService, INavigati
         {
             IsBusy = false;
             logger.LogError("Failed to load features {0}", e.Message);
-            await Snackbar.Make("Unable to retrieve features").Show();
+            await Snackbar.Make("Unable to retrieve features", async () => await LoadDataAsync(), "Retry", new TimeSpan(0, 0, 5)).Show();
         }
         finally
         {

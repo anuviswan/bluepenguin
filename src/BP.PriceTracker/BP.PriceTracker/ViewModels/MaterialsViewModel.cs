@@ -18,6 +18,8 @@ public partial class MaterialsViewModel(IProductService productService, INavigat
     [RelayCommand]
     private async Task LoadDataAsync()
     {
+        if (IsBusy)
+            return;
         try
         {
             IsBusy = true;
@@ -28,7 +30,8 @@ public partial class MaterialsViewModel(IProductService productService, INavigat
         {
             IsBusy = false;
             logger.LogError("Failed to load materials {0}", e.Message);
-            await Snackbar.Make("Unable to retrieve materials").Show();
+            await Snackbar.Make("Unable to retrieve materials", async () => await LoadDataAsync(), "Retry", new TimeSpan(0, 0, 5)).Show();
+
         }
         finally
         {

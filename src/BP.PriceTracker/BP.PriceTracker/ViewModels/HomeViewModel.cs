@@ -18,6 +18,8 @@ public partial class HomeViewModel(IProductService productService,INavigationCac
     [RelayCommand]
     private async Task LoadDataAsync()
     {
+        if(IsBusy)
+            return;
         try
         {
             IsBusy = true;
@@ -28,7 +30,7 @@ public partial class HomeViewModel(IProductService productService,INavigationCac
         {
             IsBusy = false;
             logger.LogError("Failed to load categories {0}", e.Message);
-            await Snackbar.Make("Unable to retrieve categories").Show();
+            await Snackbar.Make("Unable to retrieve categories", async ()=> await LoadDataAsync(), "Retry", new TimeSpan(0,0,5)).Show();
         }
         finally
         {

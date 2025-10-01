@@ -19,6 +19,8 @@ public partial class CollectionsViewModel(IProductService productService, INavig
     [RelayCommand]
     private async Task LoadDataAsync()
     {
+        if(IsBusy)
+            return;
         try
         {
             IsBusy = true;
@@ -29,7 +31,7 @@ public partial class CollectionsViewModel(IProductService productService, INavig
         {
             IsBusy = false;
             logger.LogError("Failed to load collections {0}",e.Message);
-            await Snackbar.Make("Unable to retrieve categories").Show();
+            await Snackbar.Make("Unable to retrieve collections", async () => await LoadDataAsync(), "Retry", new TimeSpan(0, 0, 5)).Show();
         }
         finally
         {
