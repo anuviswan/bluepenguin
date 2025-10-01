@@ -19,4 +19,16 @@ public class ProductService(IApiService apiService, IOptions<ApiSettings> apiOpt
         }
         return Enumerable.Empty<Category>();
     }
+
+    public async Task<IEnumerable<Material>> GetMaterialsAsync()
+    {
+        var endpoint = ApiSettings.GetMaterialsEndpoint;
+        var response = await apiService.GetAsync<IEnumerable<Material>>(endpoint);
+
+        if (response.IsSuccess)
+        {
+            return response.Data ?? Enumerable.Empty<Material>();
+        }
+        return Enumerable.Empty<Material>();
+    }
 }

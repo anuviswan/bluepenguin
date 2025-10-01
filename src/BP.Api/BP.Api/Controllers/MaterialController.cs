@@ -20,7 +20,7 @@ public class MaterialController : BaseController
         Logger.LogInformation("Get All Materials");
         try
         {
-            var materials = _materialService.GetAllMaterials().Select(x => new { Key = x.ToString(), Value = x.GetDescription() });
+            var materials = _materialService.GetAllMaterials().Select(x => new { Id = x.ToString(), Name = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(materials));
         }
         catch (Exception e)

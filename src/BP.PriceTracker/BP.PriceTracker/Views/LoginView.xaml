@@ -8,6 +8,6 @@
     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
         <Entry Placeholder="Password" Text="{Binding PassKey}" 
                IsPassword="True"  />
-        <Button Text="Login" Command="{Binding ExecuteLoginCommand}"/>
+        <Button Text="Login" Command="{Binding ExecuteLoginCommand}" Style="{StaticResource RoundedButtonStyle}"/>
     </VerticalStackLayout>
 </ContentPage>

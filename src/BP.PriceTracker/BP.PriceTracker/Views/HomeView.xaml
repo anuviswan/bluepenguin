@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="BP.PriceTracker.Views.HomeView"
-             Title="HomeView"
+             Title="Categories"
              xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
              xmlns:controls="clr-namespace:BP.PriceTracker.Controls.Controls;assembly=BP.PriceTracker.Controls"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -12,12 +12,12 @@
             EventName="Loaded"
             Command="{Binding LoadDataCommand}" />
     </ContentPage.Behaviors>
-    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Start">
+    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
         <ScrollView Orientation="Vertical">
             <FlexLayout
             Direction="Row"
             Wrap="Wrap"
-            JustifyContent="Start"
+            JustifyContent="Center"
             Margin="10"
             Padding="10"
             BindableLayout.ItemsSource="{Binding Tags}">
@@ -29,7 +29,7 @@
             </FlexLayout>
         </ScrollView>
 
-        <Button Text="Next" Style="{StaticResource ChipButtonStyle}"/>
+        <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
     </VerticalStackLayout>
 
 </ContentPage>
