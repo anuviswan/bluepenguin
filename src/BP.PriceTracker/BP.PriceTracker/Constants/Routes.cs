@@ -8,6 +8,8 @@ namespace BP.PriceTracker.Constants;
 
 public static class Routes
 {
-    public const string HomeView = "Home";
     public const string LoginView = "Login";
+    public const string HomeView = "Home";
+    public const string MaterialView = "Materials";
+    public const string FeatureView = "Features";
 }
