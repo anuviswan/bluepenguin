@@ -12,7 +12,7 @@ public class AuthenticationController : BaseController
     private readonly IAuthenticationService _authenticationService;
     private readonly ITokenService _tokenService;
     private readonly IConfiguration _configuration;
-    public AuthenticationController(IAuthenticationService authenticationService,ITokenService tokenService, IConfiguration config, ILogger<AuthenticationController> logger) : base(logger)
+    public AuthenticationController(IAuthenticationService authenticationService, ITokenService tokenService, IConfiguration config, ILogger<AuthenticationController> logger) : base(logger)
     {
         _authenticationService = authenticationService;
         _tokenService = tokenService;
@@ -22,7 +22,7 @@ public class AuthenticationController : BaseController
     [AllowAnonymous]
     [Route("login")]
     [HttpPost]
-    public async Task<ActionResult<AuthenticationResponse>> Authenticate([FromBody]AuthenticationRequest request)
+    public async Task<ActionResult<AuthenticationResponse>> Authenticate([FromBody] AuthenticationRequest request)
     {
         Logger.LogInformation("Login action requested");
 
@@ -30,12 +30,12 @@ public class AuthenticationController : BaseController
         {
             var response = await _authenticationService.Authenticate(request.Username, request.Password);
 
-            if(response == true)
+            if (response == true)
             {
                 Logger.LogWarning($"Authentication Succeeded for {request.Username}");
 
                 var generatedToken = _tokenService.BuildToken(_configuration["JwtOptions:Key"]!.ToString(), _configuration["JwtOptions:Issuer"]!.ToString(), request.Username);
-                
+
                 return Ok(new AuthenticationResponse
                 {
                     Token = generatedToken,

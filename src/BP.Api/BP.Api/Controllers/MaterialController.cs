@@ -6,10 +6,10 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class MaterialController:BaseController
+public class MaterialController : BaseController
 {
     private readonly IMaterialService _materialService;
-    public MaterialController(IMaterialService materialService, ILogger<MaterialController> logger):base(logger)
+    public MaterialController(IMaterialService materialService, ILogger<MaterialController> logger) : base(logger)
     {
         _materialService = materialService;
     }

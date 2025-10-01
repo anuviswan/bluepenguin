@@ -1,8 +1,6 @@
 ﻿using Azure.Data.Tables;
-using BP.Api.Options;
 using BP.Application.Interfaces.Services;
 using BP.Application.Services;
-using Microsoft.Extensions.Options;
 
 namespace BP.Api.ExtensionMethods;
 
@@ -30,7 +28,7 @@ public static class IServiceCollectionExtension
 
     public static IServiceCollection AddAzureTableServices(this IServiceCollection services)
     {
-        services.AddKeyedSingleton<TableClient>("Product",(sp,key) =>
+        services.AddKeyedSingleton<TableClient>("Product", (sp, key) =>
         {
             var config = sp.GetRequiredService<IConfiguration>();
             var connectionString = config.GetConnectionString("tables");

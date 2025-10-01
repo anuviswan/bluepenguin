@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BP.PriceTracker.Controls.Controls.TagItem"
+             x:Name="root"
+             xmlns:controls="clr-namespace:BP.PriceTracker.Controls.Controls"
+             xmlns:converters="clr-namespace:BP.PriceTracker.Controls.Converters"
+             x:DataType="controls:TagItem"
+             >
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        </ResourceDictionary>
+    </ContentView.Resources>
+
+    <StackLayout Orientation="Horizontal" Padding="5">
+        
+        <!-- Unselected Tag -->
+        <Border x:Name="UnselectedTag"
+            Background="{StaticResource TagUnselectedFill}"
+            Stroke="{StaticResource TagUnselectedBorder}"
+            StrokeThickness="3"
+            HorizontalOptions="Start"
+            VerticalOptions="Center" Padding="10"
+            IsVisible="{Binding IsSelected, Source={x:Reference root}, Converter={StaticResource InverseBooleanConverter }}"    
+            >
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16"/>
+            </Border.StrokeShape>
+            <Label Text="{Binding Text, Source={x:Reference root}}" 
+               TextColor="{StaticResource NeutralText}"
+               FontAttributes="Bold"/>
+        </Border>
+
+        <!-- Selected Tag -->
+        <Border x:Name="SelectedTag"
+            Background="{StaticResource TagSelectedFill}"
+            Stroke="{StaticResource TagSelectedBorder}"
+            StrokeThickness="3"
+            HorizontalOptions="Start"
+            VerticalOptions="Center"
+                IsVisible="{Binding IsSelected, Source={x:Reference root}}"    
+            >
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="16"/>
+            </Border.StrokeShape>
+            <Label  Text="{Binding Text, Source={x:Reference root}}"
+               TextColor="{StaticResource NeutralText}"
+               FontAttributes="Bold"/>
+        </Border>
+
+    </StackLayout>
+
+    <ContentView.GestureRecognizers>
+        <TapGestureRecognizer Tapped="OnTagTapped"/>
+    </ContentView.GestureRecognizers>
+</ContentView>

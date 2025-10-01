@@ -6,10 +6,10 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CollectionController:BaseController
+public class CollectionController : BaseController
 {
     private readonly ICollectionService _collectionService;
-    public CollectionController(ICollectionService collectionService, ILogger<CollectionController> logger):base(logger)
+    public CollectionController(ICollectionService collectionService, ILogger<CollectionController> logger) : base(logger)
     {
         _collectionService = collectionService;
     }
@@ -20,7 +20,7 @@ public class CollectionController:BaseController
         Logger.LogInformation("Get All Collections");
         try
         {
-            var collections = _collectionService.GetAllCollections().Select(x=> new { Key = x.ToString(), Value = x.GetDescription() });
+            var collections = _collectionService.GetAllCollections().Select(x => new { Key = x.ToString(), Value = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(collections));
         }
         catch (Exception e)

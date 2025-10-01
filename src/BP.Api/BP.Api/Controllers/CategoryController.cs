@@ -6,10 +6,10 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CategoryController:BaseController
+public class CategoryController : BaseController
 {
     private readonly ICategoryService _categoryService;
-    public CategoryController(ICategoryService categoryService, ILogger<CategoryController> logger):base(logger)
+    public CategoryController(ICategoryService categoryService, ILogger<CategoryController> logger) : base(logger)
     {
         _categoryService = categoryService;
     }
@@ -20,7 +20,7 @@ public class CategoryController:BaseController
         Logger.LogInformation("Get All Categories");
         try
         {
-            var categories = _categoryService.GetAllCategories().Select(x=> new { Key = x.ToString(), Value = x.GetDescription() });
+            var categories = _categoryService.GetAllCategories().Select(x => new { Id = x.ToString(), Name = x.GetDescription() });
             return Task.FromResult<IActionResult>(Ok(categories));
         }
         catch (Exception e)

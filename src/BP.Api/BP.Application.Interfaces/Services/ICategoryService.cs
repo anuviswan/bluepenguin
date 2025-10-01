@@ -1,5 +1,6 @@
-﻿namespace BP.Application.Interfaces.Services;
-using BP.Application.Interfaces.SkuAttributes;
+﻿using BP.Application.Interfaces.SkuAttributes;
+
+namespace BP.Application.Interfaces.Services;
 
 public interface ICategoryService
 {

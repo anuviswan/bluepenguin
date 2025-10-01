@@ -45,6 +45,7 @@ namespace BP.PriceTracker
 
             builder.Services.AddTransient<IUserService,UserService>();
             builder.Services.AddTransient<IApiService,ApiService>();
+            builder.Services.AddTransient<IProductService,ProductService>();
 
             return builder.Build();
         }

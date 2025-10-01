@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace BP.Application.Services;
 
-public class UserTableSeederService([FromKeyedServices("User")] TableClient userTable,IAuthenticationService authenticationService, IOptions<UserTableSeedingOptions> seedingInfo) : ISeederService
+public class UserTableSeederService([FromKeyedServices("User")] TableClient userTable, IAuthenticationService authenticationService, IOptions<UserTableSeedingOptions> seedingInfo) : ISeederService
 {
     public async Task SeedAsync()
     {
@@ -20,13 +20,13 @@ public class UserTableSeederService([FromKeyedServices("User")] TableClient user
         if (existing) return;
 
         // Seed default users
-        foreach(var user in seedingOptions.Users)
+        foreach (var user in seedingOptions.Users)
         {
             var userEntity = new UserEntity
             {
                 PartitionKey = "Admin",
                 RowKey = user.userName,
-                Password = authenticationService.HashPassword(user.password) 
+                Password = authenticationService.HashPassword(user.password)
             };
             await userTable.AddEntityAsync(userEntity);
         }

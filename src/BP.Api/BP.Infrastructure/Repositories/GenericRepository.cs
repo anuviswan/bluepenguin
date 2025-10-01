@@ -9,7 +9,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class, ITabl
     public GenericRepository(TableClient tableClient)
     {
         _tableClient = tableClient;
-        if(TableClient.CreateIfNotExists() == null)
+        if (TableClient.CreateIfNotExists() == null)
         {
             throw new Exception($"Table {tableClient.Name} could not be created.");
         }
@@ -39,11 +39,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class, ITabl
 
     public async Task<T?> GetById(string paritionId, string searchKey)
     {
-        return await TableClient.GetEntityAsync<T>(partitionKey:paritionId, rowKey:searchKey);
+        return await TableClient.GetEntityAsync<T>(partitionKey: paritionId, rowKey: searchKey);
     }
 
     public async Task Update(T entity)
     {
-        await TableClient.UpdateEntityAsync(entity,entity.ETag,TableUpdateMode.Replace);
+        await TableClient.UpdateEntityAsync(entity, entity.ETag, TableUpdateMode.Replace);
     }
 }

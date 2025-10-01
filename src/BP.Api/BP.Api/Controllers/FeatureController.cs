@@ -6,11 +6,11 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FeatureController:BaseController
+public class FeatureController : BaseController
 {
     private readonly IFeatureService _featureService;
 
-    public FeatureController(IFeatureService featureService, ILogger<FeatureController> logger):base(logger)
+    public FeatureController(IFeatureService featureService, ILogger<FeatureController> logger) : base(logger)
     {
         _featureService = featureService;
     }

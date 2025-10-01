@@ -9,6 +9,6 @@ builder.AddProject<Projects.BP_Api>("bp-api")
     .WaitFor(tables)
     .WithReference(tables)
     .WithEnvironment("TableNames__Product", "Products")
-    .WithEnvironment("TableNames__User", "Users"); 
+    .WithEnvironment("TableNames__User", "Users");
 
 builder.Build().Run();

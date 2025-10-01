@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BP.PriceTracker.Controls.Styles.Colors">
+
+    <!-- ===================== -->
+    <!-- 1. Primary Brand      -->
+    <!-- ===================== -->
+    <Color x:Key="PrimaryBlue">#039AC8</Color>
+    <!-- brand / CTAs -->
+    <Color x:Key="PrimaryBlueLight">#6FD6F5</Color>
+    <!-- hover, playful accents -->
+
+    <!-- ===================== -->
+    <!-- 2. Accent Colors      -->
+    <!-- ===================== -->
+    <Color x:Key="AccentYellow">#FFD93D</Color>
+    <!-- promo, highlight -->
+    <Color x:Key="AccentPink">#FF4D6D</Color>
+    <!-- alerts, contrast -->
+    <Color x:Key="AccentGreen">#22C55E</Color>
+    <!-- success, positive -->
+    <Color x:Key="AccentPurple">#9D4EDD</Color>
+    <!-- discovery, secondary -->
+
+    <!-- ===================== -->
+    <!-- 3. Neutrals           -->
+    <!-- ===================== -->
+    <Color x:Key="NeutralBackground">#FDFDFD</Color>
+    <!-- airy background -->
+    <Color x:Key="NeutralSoft">#E5E5E5</Color>
+    <!-- panels, secondary info -->
+    <Color x:Key="NeutralText">#1E1E1E</Color>
+    <!-- strong readable text -->
+    <Color x:Key="NeutralBorder">#000000</Color>
+    <!-- brutalist outlines -->
+
+
+    <!-- ===================== -->
+    <!-- 4. Tag Control Brushes -->
+    <!-- ===================== -->
+    <!-- Unselected -->
+    <SolidColorBrush x:Key="TagUnselectedFill" Color="{StaticResource NeutralBackground}" />
+    <SolidColorBrush x:Key="TagUnselectedBorder" Color="{StaticResource NeutralBorder}" />
+
+    <!-- Selected -->
+    <SolidColorBrush x:Key="TagSelectedFill" Color="{StaticResource PrimaryBlue}" />
+    <SolidColorBrush x:Key="TagSelectedBorder" Color="{StaticResource NeutralBorder}" />
+</ResourceDictionary>
