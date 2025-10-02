@@ -38,7 +38,10 @@ public class ProductController : BaseController
                 ProductName = product.Name,
                 Price = product.Price,
                 SKU = skuCode,
-                Stock = 0
+                Stock = 0,
+                MaterialCode = product.Material,
+                CollectionCode = product.CollectionCode,
+                FeatureCodes = string.Join(',', product.FeatureCodes),
             };
 
             var createdProduct = _productService.AddProduct(newProduct);
