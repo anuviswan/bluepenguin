@@ -13,20 +13,26 @@ public partial class LoginViewModel(ILogger<LoginViewModel> logger, IUserService
     [NotifyCanExecuteChangedFor(nameof(ExecuteLoginCommand))]
     private string? passKey;
 
+    [ObservableProperty]
+    private bool isBusy;
+
     [RelayCommand(CanExecute = nameof(CanExecuteLogin))]
     private async Task ExecuteLogin()
     {
+        IsBusy = true;
         var response = await userService.ValidateUser(PassKey!);
 
         if (response?.IsAuthenticated == true)
         {
+            IsBusy = false;
             await Shell.Current.GoToAsync(Constants.Routes.HomeView);
         }
         else
         {
-            await Snackbar.Make("Invalid PassKey").Show();
+            IsBusy = false;
+            await Toast.Make("Invalid PassKey").Show();
         }
-
+        
     }
 
     public bool CanExecuteLogin()

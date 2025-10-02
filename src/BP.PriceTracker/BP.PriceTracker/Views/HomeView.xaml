@@ -30,6 +30,13 @@
         </ScrollView>
 
         <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+        <ActivityIndicator 
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}"
+            Color="Blue"
+            VerticalOptions="Fill"
+            HorizontalOptions="Fill"
+            WidthRequest="50" HeightRequest="50" />
     </VerticalStackLayout>
 
 </ContentPage>
