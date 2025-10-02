@@ -7,13 +7,10 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductController : BaseController
+public class ProductController(IProductService productService, ISkuGeneratorService skuGeneratorService, ILogger<ProductController> logger) : BaseController(logger)
 {
-    private readonly IProductService _productService;
-    public ProductController(IProductService productService, ILogger<ProductController> logger) : base(logger)
-    {
-        _productService = productService;
-    }
+    private IProductService ProductService => productService;
+    private ISkuGeneratorService SkuGeneratorService => skuGeneratorService;
 
     [HttpPost]
     [Route("create")]
@@ -29,8 +26,7 @@ public class ProductController : BaseController
                 return BadRequest("Invalid model state");
             }
 
-            var collectionCode = await _productService.GetItemCountForCollection(product.CollectionCode, product.YearCode);
-            var skuCode = $"{product.Category}{product.Material}-{string.Join('-', product.FeatureCodes)}-{product.CollectionCode}{product.YearCode}{collectionCode + 1}";
+            var skuCode = await SkuGeneratorService.GetSkuCode(product.Category, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode);
             var newProduct = new Product
             {
                 PartitionKey = product.Category,
@@ -44,7 +40,7 @@ public class ProductController : BaseController
                 FeatureCodes = string.Join(',', product.FeatureCodes),
             };
 
-            var response = await _productService.AddProduct(newProduct);
+            var response = await ProductService.AddProduct(newProduct);
             return Ok(response);
         }
         catch (Exception e)
@@ -66,7 +62,7 @@ public class ProductController : BaseController
                 Logger.LogError("Invalid SKU");
                 return BadRequest("Invalid SKU");
             }
-            var product = await _productService.GetProductBySku(sku);
+            var product = await ProductService.GetProductBySku(sku);
             if (product == null)
             {
                 Logger.LogWarning($"Product with SKU {sku} not found");
@@ -87,7 +83,7 @@ public class ProductController : BaseController
         Logger.LogInformation("Getting all Products");
         try
         {
-            var products = await _productService.GetAllProducts();
+            var products = await ProductService.GetAllProducts();
             return Ok(products);
         }
         catch (Exception e)
