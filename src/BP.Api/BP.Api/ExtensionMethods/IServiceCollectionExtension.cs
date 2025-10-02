@@ -16,6 +16,7 @@ public static class IServiceCollectionExtension
         services.AddTransient<IFeatureService, FeatureService>();
         services.AddTransient<IMaterialService, MaterialService>();
         services.AddKeyedTransient<ISeederService, UserTableSeederService>("User");
+        services.AddTransient<ISkuGeneratorService, SkuGeneratorService>();
         return services;
     }
 
