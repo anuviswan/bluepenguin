@@ -44,8 +44,8 @@ public class ProductController : BaseController
                 FeatureCodes = string.Join(',', product.FeatureCodes),
             };
 
-            var createdProduct = _productService.AddProduct(newProduct);
-            return Ok(createdProduct);
+            var response = await _productService.AddProduct(newProduct);
+            return Ok(response);
         }
         catch (Exception e)
         {

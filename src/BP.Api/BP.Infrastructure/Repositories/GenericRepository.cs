@@ -16,9 +16,10 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class, ITabl
     }
 
     public TableClient TableClient => _tableClient;
-    public async Task Add(T entity)
+    public async Task<T> Add(T entity)
     {
-        await TableClient.AddEntityAsync(entity);
+        var response = await TableClient.AddEntityAsync(entity);
+        return entity;
     }
 
     public async Task Delete(T entity)

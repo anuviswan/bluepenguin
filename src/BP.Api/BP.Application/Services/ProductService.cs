@@ -1,13 +1,14 @@
 ﻿using BP.Application.Interfaces.Services;
+using BP.Domain.Entities;
 using BP.Domain.Repository;
 
 namespace BP.Application.Services;
 
 public class ProductService(IProductRepository productRepository) : IProductService
 {
-    public async Task AddProduct(BP.Domain.Entities.Product product)
+    public async Task<Product> AddProduct(BP.Domain.Entities.Product product)
     {
-        await productRepository.Add(product);
+        return await productRepository.Add(product);
     }
 
     public async Task DeleteProduct(string sku)

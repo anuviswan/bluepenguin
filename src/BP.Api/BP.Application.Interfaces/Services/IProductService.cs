@@ -4,7 +4,7 @@ namespace BP.Application.Interfaces.Services;
 
 public interface IProductService
 {
-    Task AddProduct(Product product);
+    Task<Product> AddProduct(Product product);
     Product UpdateProduct(Product product);
     Task DeleteProduct(string sku);
     Task<Product?> GetProductBySku(string sku);
