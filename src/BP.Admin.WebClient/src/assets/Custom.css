@@ -39,3 +39,53 @@ html {
   border: 3px solid #000;
   box-shadow: 4px 4px 0px #000; /* brutalist shadow */
 }
+
+/* --- Label styling --- */
+.label-brutal {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #000;
+    text-align: right;
+    font-size: 0.95rem;
+}
+
+/* --- Flat neubrutalist inputs --- */
+.nb-input {
+    width: 100%;
+    border: 3px solid black;
+    background: transparent;
+    padding: 14px 16px;
+    font-weight: 600;
+    color: #000;
+    transition: border-color 0.1s ease, transform 0.1s ease;
+}
+
+.nb-input:focus {
+    border-color: #00aaff;
+    transform: translate(-2px, -2px);
+}
+
+/* --- Flat neubrutalist button --- */
+.nb-button {
+    border: 3px solid black;
+    background: #00aaff;
+    color: black;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+}
+
+.nb-button:hover {
+    background: #0095dd;
+    transform: translate(-3px, -3px);
+    box-shadow: 3px 3px 0px black;
+}
+
+.nb-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}

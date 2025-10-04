@@ -1,119 +1,131 @@
-<template>
-  <div class="create-product-page max-w-2xl mx-auto mt-10 p-6 bg-white shadow-lg rounded-2xl">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Create New Product</h2>
+<script setup lang="ts">
+import { ref } from "vue";
 
-    <form @submit.prevent="handleSubmit" class="space-y-5">
-      <!-- Product Name -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
-        <input
-            v-model="form.name"
-            type="text"
-            placeholder="e.g., Ocean Beads Necklace"
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-        />
-      </div>
-
-      <!-- Category -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-        <select
-            v-model="form.category"
-            class="w-full border rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        >
-          <option disabled value="">Select Category</option>
-          <option value="necklace">Necklace</option>
-          <option value="bracelet">Bracelet</option>
-          <option value="earring">Earring</option>
-          <option value="ring">Ring</option>
-        </select>
-      </div>
-
-      <!-- Price -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Price (INR)</label>
-        <input
-            v-model.number="form.price"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="e.g., 1499"
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            required
-        />
-      </div>
-
-      <!-- Description -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-        <textarea
-            v-model="form.description"
-            placeholder="Write a short description..."
-            rows="4"
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-        ></textarea>
-      </div>
-
-      <!-- Submit -->
-      <div class="pt-4">
-        <button
-            type="submit"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition"
-            :disabled="isSubmitting"
-        >
-          {{ isSubmitting ? 'Creating...' : 'Create Product' }}
-        </button>
-      </div>
-    </form>
-
-    <!-- Success message -->
-    <p v-if="successMessage" class="text-green-600 mt-4 text-center">
-      {{ successMessage }}
-    </p>
-  </div>
-</template>
-
-<script lang="ts" setup>
-import { ref } from 'vue'
-
-// reactive form state
 const form = ref({
-  name: '',
-  category: '',
+  name: "",
+  category: "",
   price: 0,
-  description: ''
-})
+  description: "",
+});
 
-const isSubmitting = ref(false)
-const successMessage = ref('')
+const isSubmitting = ref(false);
+const successMessage = ref("");
 
-async function handleSubmit() {
+
+
+const handleSubmit = async () => {
   try {
-    isSubmitting.value = true
-    successMessage.value = ''
-
-    // Example API call (replace with your real service)
-    const response = await fetch('/api/products', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form.value)
-    })
-
-    if (!response.ok) throw new Error('Failed to create product')
-
-    successMessage.value = 'Product created successfully!'
-    form.value = { name: '', category: '', price: 0, description: '' }
-  } catch (err) {
-    alert((err as Error).message)
+    isSubmitting.value = true;
+    successMessage.value = "";
+    await new Promise((r) => setTimeout(r, 800));
+    successMessage.value = "Product created successfully!";
+    form.value = { name: "", category: "", price: 0, description: "" };
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
 }
 </script>
 
+
+
+
+
+<template>
+  <div class="min-h-screen flex items-center justify-center p-10 bg-transparent">
+    <div class="w-full max-w-5xl">
+      <h1
+          class="text-4xl font-extrabold text-black mb-12 uppercase tracking-tight text-center"
+      >
+        Create Product
+      </h1>
+
+      <form @submit.prevent="handleSubmit" class="space-y-10">
+        <!-- Row: Product Name -->
+        <div class="form-row">
+          <label for="name" class="label-brutal">Product Name</label>
+          <input
+              id="name"
+              v-model="form.name"
+              type="text"
+              placeholder="Ocean Beads Necklace"
+              class="nb-input"
+              required
+          />
+        </div>
+
+        <!-- Row: Category -->
+        <div class="form-row">
+          <label for="category" class="label-brutal">Category</label>
+          <select id="category" v-model="form.category" class="nb-input" required>
+            <option disabled value="">Select category</option>
+            <option value="necklace">Necklace</option>
+            <option value="bracelet">Bracelet</option>
+            <option value="earring">Earring</option>
+            <option value="ring">Ring</option>
+          </select>
+        </div>
+
+        <!-- Row: Price -->
+        <div class="form-row">
+          <label for="price" class="label-brutal">Price (INR)</label>
+          <input
+              id="price"
+              v-model.number="form.price"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="1499"
+              class="nb-input"
+              required
+          />
+        </div>
+
+        <!-- Row: Description -->
+        <div class="form-row">
+          <label for="description" class="label-brutal">Description</label>
+          <textarea
+              id="description"
+              v-model="form.description"
+              rows="3"
+              placeholder="Write a short description..."
+              class="nb-input resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Submit -->
+        <div class="pt-10 text-center">
+          <button type="submit" class="nb-button w-60" :disabled="isSubmitting">
+            {{ isSubmitting ? "Saving..." : "Create Product" }}
+          </button>
+        </div>
+
+        <!-- Success -->
+        <p
+            v-if="successMessage"
+            class="text-green-700 mt-6 text-center font-bold uppercase tracking-wide"
+        >
+          {{ successMessage }}
+        </p>
+      </form>
+    </div>
+  </div>
+</template>
+
+
+
 <style scoped>
-.create-product-page {
-  transition: all 0.3s ease;
+/* --- Form structure --- */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  gap: 2rem;
 }
+
+/* add vertical space between rows */
+form > .form-row:not(:last-child) {
+  margin-bottom: 2.5rem; /* ~40px spacing between each row */
+}
+
+
 </style>
