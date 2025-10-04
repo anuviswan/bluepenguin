@@ -18,7 +18,8 @@ onMounted(async () => {
 })
 
 const getCategories = async () => {
-  availableCategories.value = (await categoryService.getCategories()).Categories;
+  availableCategories.value = await categoryService.getCategories();
+  console.log(availableCategories.value);
 }
 
 const handleSubmit = async () => {
@@ -66,7 +67,7 @@ const handleSubmit = async () => {
           <label for="category" class="label-brutal">Category</label>
           <select id="category" v-model="form.category" class="nb-input" required>
             <option disabled value="">Select category</option>
-            <option v-for="c in availableCategories" id="c.Id" value="c.Id">{{c.Name}}</option>
+            <option v-for="c in availableCategories" :key="c.Id" :value="c.Id">{{c.Name}}</option>
           </select>
         </div>
 
