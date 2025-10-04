@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import  categoryService from "../../apiservice/CategoryService.ts"
-import type {Category} from "../../types/ProductTypes.ts";
+import type {Category, Material } from "../../types/ProductTypes.ts";
+import materialService from "../../apiservice/MaterialService.ts";
 const form = ref({
   name: "",
   category: "",
+  material:"",
   price: 0,
   description: "",
 });
@@ -12,14 +14,21 @@ const form = ref({
 const isSubmitting = ref(false);
 const successMessage = ref("");
 const availableCategories = ref<Category[]>([]);
+const availableMaterials = ref<Material[]>([]);
 
 onMounted(async () => {
   await getCategories();
+  await getMaterials();
 })
 
 const getCategories = async () => {
   availableCategories.value = await categoryService.getCategories();
   console.log(availableCategories.value);
+}
+
+const getMaterials = async() =>{
+  availableMaterials.value = await materialService.getMaterials();
+  console.log(availableMaterials.value);
 }
 
 const handleSubmit = async () => {
@@ -28,15 +37,18 @@ const handleSubmit = async () => {
     successMessage.value = "";
     await new Promise((r) => setTimeout(r, 800));
     successMessage.value = "Product created successfully!";
-    form.value = { name: "", category: "", price: 0, description: "" };
+    form.value = {
+      name: "",
+      category: "",
+      material:"",
+      price: 0,
+      description: ""
+    };
   } finally {
     isSubmitting.value = false;
   }
 }
 </script>
-
-
-
 
 
 <template>
@@ -68,6 +80,16 @@ const handleSubmit = async () => {
           <select id="category" v-model="form.category" class="nb-input" required>
             <option disabled value="">Select category</option>
             <option v-for="c in availableCategories" :key="c.Id" :value="c.Id">{{c.Name}}</option>
+          </select>
+        </div>
+
+
+        <!-- Row: Material -->
+        <div class="form-row">
+          <label for="material" class="label-brutal">Material</label>
+          <select id="material" v-model="form.material" class="nb-input" required>
+            <option disabled value="">Select Material</option>
+            <option v-for="m in availableMaterials" :key="m.Id" :value="m.Id">{{m.Name}}</option>
           </select>
         </div>
 
