@@ -15,7 +15,7 @@ class CategoryService extends  ApiServiceBase{
 
         console.log(response);
         return response.data.map(
-            (c): Category => ({
+            (c:any): Category => ({
                 Id: c.id,
                 Name: c.name,
             })
