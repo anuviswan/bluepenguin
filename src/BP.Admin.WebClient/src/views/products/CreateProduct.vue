@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import  categoryService from "../../apiservice/CategoryService.ts"
-import type {Category, Material } from "../../types/ProductTypes.ts";
+import type {Category, Feature, Material} from "../../types/ProductTypes.ts";
 import materialService from "../../apiservice/MaterialService.ts";
+import featureService from "../../apiservice/FeatureService.ts";
 const form = ref({
   name: "",
   category: "",
@@ -16,11 +17,18 @@ const isSubmitting = ref(false);
 const successMessage = ref("");
 const availableCategories = ref<Category[]>([]);
 const availableMaterials = ref<Material[]>([]);
+const availableFeatures = ref<Feature[]>([]);
 
 onMounted(async () => {
   await getCategories();
   await getMaterials();
+  await getFeatures();
 })
+
+const getFeatures = async () => {
+  availableFeatures.value = await featureService.getFeatures();
+  console.log(availableFeatures.value);
+}
 
 const getCategories = async () => {
   availableCategories.value = await categoryService.getCategories();
@@ -86,9 +94,6 @@ const handleSubmit = async () => {
         </div>
 
 
-
-
-
         <!-- Row: Material -->
         <div class="form-row">
           <label for="material" class="label-brutal">Material</label>
@@ -105,7 +110,7 @@ const handleSubmit = async () => {
 
           <div class="checkbox-grid-3">
             <label
-                v-for="c in availableCategories"
+                v-for="c in availableFeatures"
                 :key="c.Id"
                 class="checkbox-item"
             >
