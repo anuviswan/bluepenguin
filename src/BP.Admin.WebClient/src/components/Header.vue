@@ -23,6 +23,7 @@
       <!-- Collapsible nav -->
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mb-2 mb-lg-0">
+          <!-- Products Dropdown -->
           <li class="nav-item dropdown">
             <a
                 class="nav-link dropdown-toggle"
@@ -34,13 +35,37 @@
             >
               Products
             </a>
+
             <ul class="dropdown-menu">
-              <li ><a class="dropdown-item" href="#"  :style="{
-        '--hover-bg': menuFontColor
-      }">Create</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <!-- Router links styled like Bootstrap items -->
+              <li>
+                <router-link
+                    to="/d/p/create"
+                    class="dropdown-item"
+                >
+                  Create Product
+                </router-link>
+              </li>
+
+              <li>
+                <router-link
+                    to="/dashboard/p/list"
+                    class="dropdown-item"
+                >
+                  View Products
+                </router-link>
+              </li>
+
               <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
+
+              <li>
+                <router-link
+                    to="/dashboard/p/stats"
+                    class="dropdown-item"
+                >
+                  Product Stats
+                </router-link>
+              </li>
             </ul>
           </li>
         </ul>
@@ -49,34 +74,29 @@
   </nav>
 </template>
 
-
-
 <script setup lang="ts">
-import {useUserStore} from "../stores/userStore.ts";
-import { type ColorKey, type ColorValue, Colors } from "../types/Colors.ts";
-import {onMounted} from "vue";
-import {useRouter} from "vue-router";
+import { useUserStore } from "../stores/userStore.ts";
+import { Colors, type ColorKey, type ColorValue } from "../types/Colors.ts";
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-const router  = useRouter();
+const router = useRouter();
 const userStore = useUserStore();
-
 
 const getColorKeyByValue = (value: ColorValue): ColorKey => {
   const key = (Object.keys(Colors) as ColorKey[]).find(
-      (k) => Colors[k] === value,
+      (k) => Colors[k] === value
   );
   if (!key) throw new Error(`Value ${value} not found in Colors`);
   return key;
 };
 
 onMounted(() => {
-  if(!userStore.loggedInUser.token){
-    console.log("User not logged in, redirecting to home")
+  if (!userStore.loggedInUser.token) {
+    console.log("User not logged in, redirecting to home");
     router.push({ name: "Home" });
   }
-})
-const menuFontColor = Colors[getColorKeyByValue(Colors.PrimaryDark)];
-console.log(menuFontColor)
-</script>
+});
 
-<style scoped></style>
+const menuFontColor = Colors[getColorKeyByValue(Colors.PrimaryDark)];
+</script>
