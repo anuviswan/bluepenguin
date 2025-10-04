@@ -9,6 +9,7 @@ const form = ref({
   material:"",
   price: 0,
   description: "",
+  features: []
 });
 
 const isSubmitting = ref(false);
@@ -42,7 +43,8 @@ const handleSubmit = async () => {
       category: "",
       material:"",
       price: 0,
-      description: ""
+      description: "",
+      features: []
     };
   } finally {
     isSubmitting.value = false;
@@ -84,6 +86,9 @@ const handleSubmit = async () => {
         </div>
 
 
+
+
+
         <!-- Row: Material -->
         <div class="form-row">
           <label for="material" class="label-brutal">Material</label>
@@ -92,6 +97,29 @@ const handleSubmit = async () => {
             <option v-for="m in availableMaterials" :key="m.Id" :value="m.Id">{{m.Name}}</option>
           </select>
         </div>
+
+
+        <!-- Row: Features -->
+        <div class="form-row">
+          <label class="label-brutal">Features</label>
+
+          <div class="checkbox-grid-3">
+            <label
+                v-for="c in availableCategories"
+                :key="c.Id"
+                class="checkbox-item"
+            >
+              <input
+                  type="checkbox"
+                  class="nb-checkbox"
+                  :value="c.Id"
+                  v-model="form.features"
+              />
+              <span>{{ c.Name }}</span>
+            </label>
+          </div>
+        </div>
+
 
         <!-- Row: Price -->
         <div class="form-row">
@@ -154,6 +182,23 @@ const handleSubmit = async () => {
 form > .form-row:not(:last-child) {
   margin-bottom: 2.5rem; /* ~40px spacing between each row */
 }
+
+.checkbox-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem 3rem; /* more whitespace between checkboxes */
+  padding: 0.5rem 0;
+}
+
+/* label wrapping the checkbox and text */
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
 
 
 </style>

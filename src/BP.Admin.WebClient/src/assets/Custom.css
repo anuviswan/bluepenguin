@@ -89,3 +89,28 @@ html {
     box-shadow: none;
     transform: none;
 }
+
+
+.nb-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 3px solid black;
+    background: transparent;
+    appearance: none;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
+    position: relative;
+}
+
+/* checked state — confident, slightly shifted look */
+.nb-checkbox:checked {
+    background: #00aaff;
+    box-shadow: 3px 3px 0 black;
+    transform: translate(-2px, -2px);
+}
+
+/* focus outline — sharp, not glowing */
+.nb-checkbox:focus {
+    outline: none;
+    border-color: #00aaff;
+}
