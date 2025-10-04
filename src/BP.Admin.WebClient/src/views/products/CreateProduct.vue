@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
-
+import {onMounted, ref} from "vue";
+import  categoryService from "../../apiservice/CategoryService.ts"
+import type {Category} from "../../types/ProductTypes.ts";
 const form = ref({
   name: "",
   category: "",
@@ -10,8 +11,15 @@ const form = ref({
 
 const isSubmitting = ref(false);
 const successMessage = ref("");
+const availableCategories = ref<Category[]>([]);
 
+onMounted(async () => {
+  await getCategories();
+})
 
+const getCategories = async () => {
+  availableCategories.value = (await categoryService.getCategories()).Categories;
+}
 
 const handleSubmit = async () => {
   try {
@@ -58,10 +66,7 @@ const handleSubmit = async () => {
           <label for="category" class="label-brutal">Category</label>
           <select id="category" v-model="form.category" class="nb-input" required>
             <option disabled value="">Select category</option>
-            <option value="necklace">Necklace</option>
-            <option value="bracelet">Bracelet</option>
-            <option value="earring">Earring</option>
-            <option value="ring">Ring</option>
+            <option v-for="c in availableCategories" id="c.Id" value="c.Id">{{c.Name}}</option>
           </select>
         </div>
 
