@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
 import  categoryService from "../../apiservice/CategoryService.ts"
-import type {Category, Feature, Material} from "../../types/ProductTypes.ts";
+import type {Category, Feature, Material, Collection, KeyValuePair} from "../../types/ProductTypes.ts";
 import materialService from "../../apiservice/MaterialService.ts";
 import featureService from "../../apiservice/FeatureService.ts";
+import collectionService from "../../apiservice/CollectionService.ts";
+
 const form = ref({
   name: "",
   category: "",
   material:"",
   price: 0,
-  description: "",
-  features: []
+  features: [],
+  collection:'',
+  yearCode:25
 });
 
 const isSubmitting = ref(false);
@@ -18,12 +21,29 @@ const successMessage = ref("");
 const availableCategories = ref<Category[]>([]);
 const availableMaterials = ref<Material[]>([]);
 const availableFeatures = ref<Feature[]>([]);
+const availableCollections = ref<Collection[]>([]);
+const availableYearCode = ref<KeyValuePair[]>();
 
 onMounted(async () => {
   await getCategories();
   await getMaterials();
   await getFeatures();
+  await getCollections();
+  getYearList();
 })
+
+const getYearList = () => {
+  const startId = 22;
+  availableYearCode.value =  Array.from({ length: 20 }, (_, i) => ({
+    Id: String(startId + i),
+    Name: String(2000 + startId + i)
+  }));
+};
+
+const getCollections = async () => {
+  availableCollections.value = await collectionService.getFeatures();
+  console.log(availableCollections.value);
+}
 
 const getFeatures = async () => {
   availableFeatures.value = await featureService.getFeatures();
@@ -51,8 +71,9 @@ const handleSubmit = async () => {
       category: "",
       material:"",
       price: 0,
-      description: "",
-      features: []
+      features: [],
+      collection: '',
+      yearCode:25
     };
   } finally {
     isSubmitting.value = false;
@@ -125,6 +146,24 @@ const handleSubmit = async () => {
           </div>
         </div>
 
+        <!-- Row: Collection -->
+        <div class="form-row">
+          <label for="collection" class="label-brutal">Collection</label>
+          <select id="collection" v-model="form.collection" class="nb-input" required>
+            <option disabled value="">Select Collection</option>
+            <option v-for="m in availableMaterials" :key="m.Id" :value="m.Id">{{m.Name}}</option>
+          </select>
+        </div>
+
+
+        <!-- Row: Year -->
+        <div class="form-row">
+          <label for="yearCode" class="label-brutal">Collection</label>
+          <select id="yearCode" v-model="form.yearCode" class="nb-input" required>
+            <option disabled value="">Select Year</option>
+            <option v-for="m in availableYearCode" :key="m.Id" :value="m.Id">{{m.Name}}</option>
+          </select>
+        </div>
 
         <!-- Row: Price -->
         <div class="form-row">
