@@ -3,7 +3,7 @@
 public record CreateProductRequest
 {
     public string Name { get; init; } = null!;
-    public decimal Price { get; init; }
+    public double Price { get; init; }
 
     public string Category { get; init; } = null!;
 
