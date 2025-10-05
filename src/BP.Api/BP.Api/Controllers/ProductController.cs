@@ -42,7 +42,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             };
 
             var response = await ProductService.AddProduct(newProduct);
-            return Ok(response);
+            return Ok(response?.SKU);
         }
         catch (Exception e)
         {
