@@ -7,7 +7,7 @@ public record Product : ITableEntity
 {
     public string? ProductName { get; set; }
     public string SKU { get; set; } = null!;
-    public decimal Price { get; set; }
+    public double Price { get; set; }
     public int Stock { get; set; }
     public string PartitionKey { get; set; } = null!;
     public string RowKey { get; set; } = null!;

@@ -18,4 +18,5 @@ export interface Product{
     FeatureCodes : Array<string>,
     CollectionCode: string,
     YearCode : string,
+    Price : number
 }

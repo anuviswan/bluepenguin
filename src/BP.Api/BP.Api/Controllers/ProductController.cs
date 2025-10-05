@@ -39,6 +39,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 MaterialCode = product.Material,
                 CollectionCode = product.CollectionCode,
                 FeatureCodes = string.Join(',', product.FeatureCodes),
+                YearCode = product.YearCode,
             };
 
             var response = await ProductService.AddProduct(newProduct);

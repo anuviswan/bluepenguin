@@ -4,6 +4,8 @@ import type {Product} from "../types/ProductTypes.ts";
 class ProductService extends  ApiServiceBase{
 
         public async createProduct(product: Product): Promise<Product> {
+
+            console.log(product);
             return await this.invoke<Product>({
                 method: "POST",
                 url: "/api/Product/create",
