@@ -16,5 +16,5 @@ public record Product : ITableEntity
     public string MaterialCode { get; set; } = null!;
     public string CollectionCode { get; set; } = null!;
     public string FeatureCodes { get; set; } = null!;
-    public int YearCode { get; set; }
+    public double YearCode { get; set; }
 }

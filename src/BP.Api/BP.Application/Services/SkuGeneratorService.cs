@@ -9,7 +9,7 @@ public class SkuGeneratorService(IProductService productService) : ISkuGenerator
     {
         var lastGeneratedCollectionSequenceCode = await ProductService.GetItemCountForCollection(collectionCode, yearCode);
         var newCollectionSequenceCode = lastGeneratedCollectionSequenceCode  + 1;
-        var skuCode = $"{categoryCode}{materialCode}-{string.Join('-', featureCodes)}-{collectionCode}{yearCode}{newCollectionSequenceCode}";
+        var skuCode = $"{categoryCode}{materialCode}-{string.Join('-', featureCodes)}-{collectionCode}{yearCode}{newCollectionSequenceCode:D3}";
         return skuCode;
     }
 }

@@ -5,6 +5,7 @@ import type {Category, Feature, Material, Collection, KeyValuePair} from "../../
 import materialService from "../../apiservice/MaterialService.ts";
 import featureService from "../../apiservice/FeatureService.ts";
 import collectionService from "../../apiservice/CollectionService.ts";
+import productService from "../../apiservice/ProductService.ts"
 
 const form = ref({
   name: "",
@@ -65,6 +66,16 @@ const handleSubmit = async () => {
     isSubmitting.value = true;
     successMessage.value = "";
     await new Promise((r) => setTimeout(r, 800));
+
+    await productService.createProduct({
+      Category  : form.value.category,
+      CollectionCode : form.value.collection,
+      Name : form.value.name,
+      Material : form.value.material,
+      FeatureCodes : form.value.features,
+      YearCode : String(form.value.yearCode),
+      Price : form.value.price
+    });
     successMessage.value = "Product created successfully!";
     form.value = {
       name: "",
@@ -151,14 +162,14 @@ const handleSubmit = async () => {
           <label for="collection" class="label-brutal">Collection</label>
           <select id="collection" v-model="form.collection" class="nb-input" required>
             <option disabled value="">Select Collection</option>
-            <option v-for="m in availableMaterials" :key="m.Id" :value="m.Id">{{m.Name}}</option>
+            <option v-for="m in availableCollections" :key="m.Id" :value="m.Id">{{m.Name}}</option>
           </select>
         </div>
 
 
         <!-- Row: Year -->
         <div class="form-row">
-          <label for="yearCode" class="label-brutal">Collection</label>
+          <label for="yearCode" class="label-brutal">Year</label>
           <select id="yearCode" v-model="form.yearCode" class="nb-input" required>
             <option disabled value="">Select Year</option>
             <option v-for="m in availableYearCode" :key="m.Id" :value="m.Id">{{m.Name}}</option>
