@@ -33,26 +33,26 @@ class HttpClient {
         });
     }
 
-    public async invoke<T extends IResponseBase>(
+    public async invoke<T>(
         config: AxiosRequestConfig
-    ): Promise<T> {
+    ): Promise<IResponseBase<T>> {
         try {
             const response = await this.axiosInstance.request<T>(config);
             return {
                 data: response.data
-            } as T;
+            } as IResponseBase<T>;
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return {
                     status: error.response?.status,
                     hasError: true,
                     errors: error.response?.data.errors,
-                } as T;
+                } as IResponseBase<T>;
             } else {
                 console.log('Some other error ?? ' + error);
             }
         }
-        return {} as T;
+        return {} as IResponseBase<T>;
     }
     public async getBlob<T>(config: AxiosRequestConfig): Promise<T | null> {
         try {
