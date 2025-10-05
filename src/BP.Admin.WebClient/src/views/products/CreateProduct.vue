@@ -180,17 +180,6 @@ const handleSubmit = async () => {
           />
         </div>
 
-        <!-- Row: Description -->
-        <div class="form-row">
-          <label for="description" class="label-brutal">Description</label>
-          <textarea
-              id="description"
-              v-model="form.description"
-              rows="3"
-              placeholder="Write a short description..."
-              class="nb-input resize-none"
-          ></textarea>
-        </div>
 
         <!-- Submit -->
         <div class="pt-10 text-center">
