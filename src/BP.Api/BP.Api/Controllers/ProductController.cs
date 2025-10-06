@@ -28,7 +28,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
 
             // use SKU Generator service to create SKU
             var skuCode = await SkuGeneratorService.GetSkuCode(product.Category, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode);
-            var newProduct = new Product
+            var newProduct = new ProductEntity
             {
                 PartitionKey = product.Category,
                 RowKey = skuCode,

@@ -6,7 +6,7 @@ namespace BP.Application.Services;
 
 public class ProductService(IProductRepository productRepository) : IProductService
 {
-    public async Task<Product> AddProduct(BP.Domain.Entities.Product product)
+    public async Task<ProductEntity> AddProduct(BP.Domain.Entities.ProductEntity product)
     {
         return await productRepository.Add(product);
     }
@@ -17,7 +17,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         await productRepository.Delete(product);
     }
 
-    public async Task<IEnumerable<BP.Domain.Entities.Product>> GetAllProducts()
+    public async Task<IEnumerable<BP.Domain.Entities.ProductEntity>> GetAllProducts()
     {
         return await productRepository.GetAll();
     }
@@ -28,19 +28,19 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         return result.Count();
     }
 
-    public async Task<BP.Domain.Entities.Product?> GetProductBySku(string sku)
+    public async Task<BP.Domain.Entities.ProductEntity?> GetProductBySku(string sku)
     {
         var categoryCode = GetCategoryCodeFromSku(sku);
         var product = await productRepository.GetById(categoryCode, sku);
         return product;
     }
 
-    public Task<IEnumerable<BP.Domain.Entities.Product>> GetProductsByCategory(string categoryId)
+    public Task<IEnumerable<BP.Domain.Entities.ProductEntity>> GetProductsByCategory(string categoryId)
     {
         throw new NotImplementedException();
     }
 
-    public BP.Domain.Entities.Product UpdateProduct(BP.Domain.Entities.Product product)
+    public BP.Domain.Entities.ProductEntity UpdateProduct(BP.Domain.Entities.ProductEntity product)
     {
         throw new NotImplementedException();
     }
