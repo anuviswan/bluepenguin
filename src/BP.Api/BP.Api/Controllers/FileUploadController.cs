@@ -19,7 +19,7 @@ public class FileUploadController(IFileUploadService fileUploadService, ILogger<
 
         var fileUpload = new FileUpload
         {
-            FileName = file.FileName,
+            FileName = $"{request.SkuId}.jpg",
             ContentType = file.ContentType,
             Content = file.OpenReadStream()
         };
