@@ -24,6 +24,8 @@ const availableMaterials = ref<Material[]>([]);
 const availableFeatures = ref<Feature[]>([]);
 const availableCollections = ref<Collection[]>([]);
 const availableYearCode = ref<KeyValuePair[]>();
+const selectedFile = ref<File | null>(null)
+const previewUrl = ref<string | null>(null)
 
 onMounted(async () => {
   await getCategories();
@@ -32,6 +34,20 @@ onMounted(async () => {
   await getCollections();
   getYearList();
 })
+
+
+const onFileChange = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  const file = target.files?.[0]
+  selectedFile.value = file || null
+
+  if (file) {
+    previewUrl.value = URL.createObjectURL(file)
+  } else {
+    previewUrl.value = null
+  }
+}
+
 
 const getYearList = () => {
   const startId = 22;
@@ -191,6 +207,28 @@ const handleSubmit = async () => {
           />
         </div>
 
+        <div class="form-row">
+          <label class="label-brutal">Product Image</label>
+          <input
+              type="file"
+              @change="onFileChange"
+              accept="image/*"
+              class="border p-2 w-full rounded"
+          />
+        </div>
+
+        <div v-if="previewUrl" class="mt-3">
+          <p class="text-sm text-gray-600 mb-1">Preview:</p>
+          <img
+              :src="previewUrl"
+              alt="Preview"
+              style="width: 200px; height: 200px; object-fit: cover; border: 1px solid #ddd; border-radius: 6px;"
+          />
+
+        </div>
+
+        <div class="form-row">
+        </div>
 
         <!-- Submit -->
         <div class="pt-10 text-center">
