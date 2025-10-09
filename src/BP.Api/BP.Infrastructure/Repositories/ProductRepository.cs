@@ -5,17 +5,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BP.Infrastructure.Repositories;
 
-public class ProductRepository : GenericRepository<Product>, IProductRepository
+public class ProductRepository : GenericRepository<ProductEntity>, IProductRepository
 {
     public ProductRepository([FromKeyedServices("Product")] TableClient tableClient) : base(tableClient)
     {
 
     }
-    public async Task<IEnumerable<Product>> GetProductsByCategory(string categoryCode, int yearCode)
+    public async Task<IEnumerable<ProductEntity>> GetProductsByCategory(string categoryCode, int yearCode)
     {
-        var queryResults = TableClient.QueryAsync<Product>(p => p.PartitionKey == categoryCode && p.YearCode == yearCode);
+        var queryResults = TableClient.QueryAsync<ProductEntity>(p => p.PartitionKey == categoryCode && p.YearCode == yearCode);
 
-        var results = new List<Product>();
+        var results = new List<ProductEntity>();
         await foreach (var entity in queryResults)
         {
             results.Add(entity);

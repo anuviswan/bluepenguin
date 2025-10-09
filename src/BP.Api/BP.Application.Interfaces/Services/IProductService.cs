@@ -4,11 +4,11 @@ namespace BP.Application.Interfaces.Services;
 
 public interface IProductService
 {
-    Task<Product> AddProduct(Product product);
-    Product UpdateProduct(Product product);
+    Task<ProductEntity> AddProduct(ProductEntity product);
+    ProductEntity UpdateProduct(ProductEntity product);
     Task DeleteProduct(string sku);
-    Task<Product?> GetProductBySku(string sku);
-    Task<IEnumerable<Product>> GetAllProducts();
-    Task<IEnumerable<Product>> GetProductsByCategory(string categoryId);
+    Task<ProductEntity?> GetProductBySku(string sku);
+    Task<IEnumerable<ProductEntity>> GetAllProducts();
+    Task<IEnumerable<ProductEntity>> GetProductsByCategory(string categoryId);
     Task<int> GetItemCountForCollection(string collectionCode, int yearCode);
 }

@@ -2,7 +2,7 @@
 
 namespace BP.Domain.Repository;
 
-public interface IProductRepository : IGenericRepository<Product>
+public interface IProductRepository : IGenericRepository<ProductEntity>
 {
-    public Task<IEnumerable<Product>> GetProductsByCategory(string categoryCode, int yearCode);
+    public Task<IEnumerable<ProductEntity>> GetProductsByCategory(string categoryCode, int yearCode);
 }

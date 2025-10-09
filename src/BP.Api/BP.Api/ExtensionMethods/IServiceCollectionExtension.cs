@@ -1,4 +1,5 @@
 ﻿using Azure.Data.Tables;
+using Azure.Storage.Blobs;
 using BP.Application.Interfaces.Services;
 using BP.Application.Services;
 
@@ -49,6 +50,20 @@ public static class IServiceCollectionExtension
 
             var serviceClient = new TableServiceClient(connectionString);
             var client = serviceClient.GetTableClient(tableName);
+            client.CreateIfNotExists();
+            return client;
+        });
+        return services;
+    }
+
+    public static IServiceCollection AddAzureBlobServices(this IServiceCollection services)
+    {
+        services.AddSingleton<BlobContainerClient>(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connectionString = config.GetConnectionString("blobs");
+            var containerName = config["BlobContainerNames:Images"] ?? "images";
+            var client = new BlobContainerClient(connectionString, containerName);
             client.CreateIfNotExists();
             return client;
         });
