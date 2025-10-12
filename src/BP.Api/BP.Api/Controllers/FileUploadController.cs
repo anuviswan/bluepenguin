@@ -17,9 +17,10 @@ public class FileUploadController(IFileUploadService fileUploadService, ILogger<
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
 
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         var fileUpload = new FileUpload
         {
-            FileName = $"{request.SkuId}.png",
+            FileName = $"{request.SkuId}{extension}",
             ContentType = file.ContentType,
             Content = file.OpenReadStream()
         };

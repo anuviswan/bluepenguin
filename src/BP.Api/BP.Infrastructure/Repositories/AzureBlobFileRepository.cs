@@ -11,7 +11,7 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
     {
         await blobContainer.CreateIfNotExistsAsync(PublicAccessType.Blob);
 
-        var blobName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var blobName = file.FileName;
         var blobClient = blobContainer.GetBlobClient(blobName);
 
         await blobClient.UploadAsync(file.Content, new BlobHttpHeaders

@@ -18,6 +18,7 @@ public static class IServiceCollectionExtension
         services.AddTransient<IMaterialService, MaterialService>();
         services.AddKeyedTransient<ISeederService, UserTableSeederService>("User");
         services.AddTransient<ISkuGeneratorService, SkuGeneratorService>();
+        services.AddTransient<IFileUploadService, FileUploadService>();
         return services;
     }
 
@@ -25,6 +26,7 @@ public static class IServiceCollectionExtension
     {
         services.AddTransient<BP.Domain.Repository.IProductRepository, BP.Infrastructure.Repositories.ProductRepository>();
         services.AddTransient<BP.Domain.Repository.IUserRepository, BP.Infrastructure.Repositories.UserRepository>();
+        services.AddTransient<BP.Domain.Repository.IFileUploadRepository, BP.Infrastructure.Repositories.AzureBlobFileRepository>();
         return services;
     }
 

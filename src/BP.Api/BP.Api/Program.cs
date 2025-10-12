@@ -29,6 +29,7 @@ public class Program
         builder.Services.AddOpenApi();
         builder.Services.AddApplicationServices();
         builder.Services.AddAzureTableServices();
+        builder.Services.AddAzureBlobServices();
         builder.Services.AddRepositories();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
