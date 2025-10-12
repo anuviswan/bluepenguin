@@ -21,4 +21,22 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
 
         return blobClient.Uri.ToString();
     }
+
+    public async Task<FileDownload?> DownloadAsync(string blobName)
+    {
+        var blobClient = blobContainer.GetBlobClient(blobName);
+
+        if (await blobClient.ExistsAsync())
+        {
+            var response = await blobClient.DownloadContentAsync();
+            var contentType = response.Value.Details.ContentType ?? "application/octet-stream";
+            return new FileDownload
+            {
+                Content = response.Value.Content.ToStream(),
+                ContentType = contentType
+            };
+        }
+
+        return null;
+    }
 }

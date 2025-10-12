@@ -27,4 +27,16 @@ public class FileUploadController(IFileUploadService fileUploadService, ILogger<
         var url = await fileUploadService.UploadAsync(fileUpload);
         return Ok(new { url });
     }
+
+    [HttpGet("download")]
+    public async Task<IActionResult> DownloadFile([FromQuery] string blobName)
+    {
+        if (string.IsNullOrEmpty(blobName))
+            return BadRequest("Blob name is required.");
+
+        var fileDownload = await fileUploadService.DownloadAsync(blobName);
+        if (fileDownload == null)
+            return NotFound("File not found.");
+        return File(fileDownload.Content, fileDownload.ContentType, Path.GetFileName(blobName));
+    }
 }
