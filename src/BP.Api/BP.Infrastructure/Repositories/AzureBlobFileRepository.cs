@@ -9,7 +9,7 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
 {
     public async Task<string> UploadAsync(FileUpload file)
     {
-        await blobContainer.CreateIfNotExistsAsync(PublicAccessType.Blob);
+        await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
         var blobName = file.FileName;
         var blobClient = blobContainer.GetBlobClient(blobName);
@@ -17,6 +17,7 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
         await blobClient.UploadAsync(file.Content, new BlobHttpHeaders
         {
             ContentType = file.ContentType
+           
         });
 
         return blobClient.Uri.ToString();
