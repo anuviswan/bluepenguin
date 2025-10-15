@@ -19,6 +19,7 @@ public static class IServiceCollectionExtension
         services.AddKeyedTransient<ISeederService, UserTableSeederService>("User");
         services.AddTransient<ISkuGeneratorService, SkuGeneratorService>();
         services.AddTransient<IFileUploadService, FileUploadService>();
+        services.AddTransient<IProductImageService, ProductImageService>();
         return services;
     }
 

@@ -11,16 +11,16 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
     {
         await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
-        var blobName = file.FileName;
+        var blobName = $"products/{file.SkuId}/{file.ImageId}{file.Extension}";
         var blobClient = blobContainer.GetBlobClient(blobName);
 
         await blobClient.UploadAsync(file.Content, new BlobHttpHeaders
         {
-            ContentType = file.ContentType
+            ContentType = file.ContentType,
            
         });
 
-        return blobClient.Uri.ToString();
+        return blobName;
     }
 
     public async Task<FileDownload?> DownloadAsync(string blobName)
