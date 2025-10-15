@@ -2,10 +2,11 @@
 using Azure.Data.Tables;
 using BP.Domain.Entities;
 using BP.Domain.Repository;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BP.Infrastructure.Repositories;
 
-public class ProductImageRepository(TableClient tableClient) : IProductImageRepository
+public class ProductImageRepository([FromKeyedServices("ProductImages")]TableClient tableClient) : IProductImageRepository
 {
     public async Task<ProductImageEntity?> AddProductImage(ProductImageEntity image)
     {
