@@ -11,7 +11,7 @@ public class FileUploadService(IFileUploadRepository fileUploadRepository) : IFi
         return await fileUploadRepository.UploadAsync(file);  
     }
 
-    public async Task<FileDownload?> DownloadAsync(string blobName)
+    public async Task<FileDownload?> DownloadByBlobNameAsync(string blobName)
     {
         return await fileUploadRepository.DownloadAsync(blobName);
     }

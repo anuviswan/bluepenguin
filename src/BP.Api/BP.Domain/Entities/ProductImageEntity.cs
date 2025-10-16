@@ -14,6 +14,5 @@ public record ProductImageEntity: ITableEntity
     public bool IsPrimary { get; set; }
     public bool IsThumbnail { get; set; }
     public string ContentType { get; set; } = null!;
-    public string Extension { get; set; } = null!;
 
 }

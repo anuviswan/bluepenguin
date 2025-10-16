@@ -31,15 +31,28 @@ public class FileUploadController(IProductImageService productImageService, ILog
         return Ok(new { url });
     }
 
-    [HttpGet("download")]
-    public async Task<IActionResult> DownloadFile([FromQuery] string blobName)
+    [HttpGet("downloadByimageId")]
+    public async Task<IActionResult> DownloadFileByImageId([FromQuery] string skuId, [FromQuery] string imageId)
     {
-        if (string.IsNullOrEmpty(blobName))
+        if (string.IsNullOrEmpty(skuId) && string.IsNullOrEmpty(imageId))
             return BadRequest("Blob name is required.");
 
-        var fileDownload = await productImageService.DownloadAsync(blobName);
+        var fileDownload = await productImageService.DownloadByImageIdAsync(skuId,imageId);
         if (fileDownload == null)
             return NotFound("File not found.");
-        return File(fileDownload.Content, fileDownload.ContentType, Path.GetFileName(blobName));
+        return File(fileDownload.Content, fileDownload.ContentType, Path.GetFileName(skuId));
     }
+
+    [HttpGet("getAllImagesForSkuId")]
+    public async Task<IActionResult> GetAllImagesForSkuId([FromQuery] string skuId)
+    {
+        if (string.IsNullOrEmpty(skuId))
+            return BadRequest("SkuId is required.");
+        var files = await productImageService.GetImageIdsForSkuId(skuId);
+        if (files == null || !files.Any())
+            return NotFound("No files found.");
+
+        return Ok(files);
+    }
+
 }
