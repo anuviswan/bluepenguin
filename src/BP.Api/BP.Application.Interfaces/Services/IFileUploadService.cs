@@ -5,4 +5,5 @@ namespace BP.Application.Interfaces.Services;
 public interface IFileUploadService
 {
     Task<string> UploadAsync(FileUpload file);
+    Task<FileDownload?> DownloadByBlobNameAsync(string blobName);
 }

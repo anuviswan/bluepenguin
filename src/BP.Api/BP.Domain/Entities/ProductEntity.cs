@@ -17,4 +17,5 @@ public record ProductEntity : ITableEntity
     public string CollectionCode { get; set; } = null!;
     public string FeatureCodes { get; set; } = null!;
     public int YearCode { get; set; }
+
 }

@@ -18,6 +18,8 @@ public static class IServiceCollectionExtension
         services.AddTransient<IMaterialService, MaterialService>();
         services.AddKeyedTransient<ISeederService, UserTableSeederService>("User");
         services.AddTransient<ISkuGeneratorService, SkuGeneratorService>();
+        services.AddTransient<IFileUploadService, FileUploadService>();
+        services.AddTransient<IProductImageService, ProductImageService>();
         return services;
     }
 
@@ -25,6 +27,8 @@ public static class IServiceCollectionExtension
     {
         services.AddTransient<BP.Domain.Repository.IProductRepository, BP.Infrastructure.Repositories.ProductRepository>();
         services.AddTransient<BP.Domain.Repository.IUserRepository, BP.Infrastructure.Repositories.UserRepository>();
+        services.AddTransient<BP.Domain.Repository.IFileUploadRepository, BP.Infrastructure.Repositories.AzureBlobFileRepository>();
+        services.AddTransient<BP.Domain.Repository.IProductImageRepository, BP.Infrastructure.Repositories.ProductImageRepository>();
         return services;
     }
 
@@ -35,6 +39,18 @@ public static class IServiceCollectionExtension
             var config = sp.GetRequiredService<IConfiguration>();
             var connectionString = config.GetConnectionString("tables");
             var tableName = config["TableNames:Product"] ?? "Products";
+
+            var serviceClient = new TableServiceClient(connectionString);
+            var client = serviceClient.GetTableClient(tableName);
+            client.CreateIfNotExists();
+            return client;
+        });
+
+        services.AddKeyedSingleton<TableClient>("ProductImages", (sp, key) =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connectionString = config.GetConnectionString("tables");
+            var tableName = config["TableNames:ProductImages"] ?? "ProductsImages";
 
             var serviceClient = new TableServiceClient(connectionString);
             var client = serviceClient.GetTableClient(tableName);

@@ -5,4 +5,5 @@ namespace BP.Domain.Repository;
 public interface IFileUploadRepository
 {
     Task<string> UploadAsync(FileUpload file);
+    Task<FileDownload?> DownloadAsync(string blobName);
 }

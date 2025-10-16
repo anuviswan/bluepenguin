@@ -9,16 +9,35 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
 {
     public async Task<string> UploadAsync(FileUpload file)
     {
-        await blobContainer.CreateIfNotExistsAsync(PublicAccessType.Blob);
+        await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
-        var blobName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var blobName = $"products/{file.SkuId}/{file.ImageId}{file.Extension}";
         var blobClient = blobContainer.GetBlobClient(blobName);
 
         await blobClient.UploadAsync(file.Content, new BlobHttpHeaders
         {
-            ContentType = file.ContentType
+            ContentType = file.ContentType,
+           
         });
 
-        return blobClient.Uri.ToString();
+        return blobName;
+    }
+
+    public async Task<FileDownload?> DownloadAsync(string blobName)
+    {
+        var blobClient = blobContainer.GetBlobClient(blobName);
+
+        if (await blobClient.ExistsAsync())
+        {
+            var response = await blobClient.DownloadContentAsync();
+            var contentType = response.Value.Details.ContentType ?? "application/octet-stream";
+            return new FileDownload
+            {
+                Content = response.Value.Content.ToStream(),
+                ContentType = contentType
+            };
+        }
+
+        return null;
     }
 }
