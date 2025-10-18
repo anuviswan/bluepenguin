@@ -11,9 +11,9 @@ export abstract class ApiServiceBase {
         this.httpClient = new HttpClient();
     }
 
-    protected async invoke<T extends IResponseBase>(
+    protected async invoke<T>(
         request: AxiosRequestConfig
-    ): Promise<T> {
+    ): Promise<IResponseBase<T>> {
         return this.httpClient.invoke(request);
     }
 

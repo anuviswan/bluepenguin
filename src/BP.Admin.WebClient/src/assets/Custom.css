@@ -90,7 +90,6 @@ html {
     transform: none;
 }
 
-
 .nb-checkbox {
     width: 22px;
     height: 22px;
@@ -100,6 +99,9 @@ html {
     cursor: pointer;
     transition: transform 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
     position: relative;
+    margin: 0; /* prevents browser default offset */
+    flex-shrink: 0; /* keeps it fixed size, label won’t squish it */
+    align-self: flex-start; /* ensures left edge aligns even if label wraps */
 }
 
 /* checked state — confident, slightly shifted look */

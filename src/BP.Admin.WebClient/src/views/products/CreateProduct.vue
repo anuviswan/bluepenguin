@@ -26,6 +26,7 @@ const availableCollections = ref<Collection[]>([]);
 const availableYearCode = ref<KeyValuePair[]>();
 const selectedFile = ref<File | null>(null)
 const previewUrl = ref<string | null>(null)
+const isPrimaryImage = ref<boolean>(false);
 
 onMounted(async () => {
   await getCategories();
@@ -83,7 +84,7 @@ const handleSubmit = async () => {
     successMessage.value = "";
     await new Promise((r) => setTimeout(r, 800));
 
-    await productService.createProduct({
+    const skuId = await productService.createProduct({
       Category  : form.value.category,
       CollectionCode : form.value.collection,
       Name : form.value.name,
@@ -92,7 +93,22 @@ const handleSubmit = async () => {
       YearCode : String(form.value.yearCode),
       Price : form.value.price
     });
+
+    // Upload image
+    console.log(skuId);
+    if(selectedFile.value)
+    {
+      const response = await productService.uploadProductImage(selectedFile.value,skuId,isPrimaryImage.value);
+      console.log(response);
+    }
+
     successMessage.value = "Product created successfully!";
+
+
+
+    // Reset Form
+
+    /*
     form.value = {
       name: "",
       category: "",
@@ -102,6 +118,8 @@ const handleSubmit = async () => {
       collection: '',
       yearCode:25
     };
+    */
+
   } finally {
     isSubmitting.value = false;
   }
@@ -214,6 +232,16 @@ const handleSubmit = async () => {
               @change="onFileChange"
               accept="image/*"
               class="border p-2 w-full rounded"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="isPrimary" class="label-brutal">Is Primary Image ?</label>
+          <input
+              id="isPrimary"
+              v-model.number="isPrimaryImage"
+              type="checkbox"
+              class="nb-checkbox"
           />
         </div>
 
