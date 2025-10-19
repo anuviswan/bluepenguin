@@ -1,7 +1,10 @@
 ﻿var builder = DistributedApplication.CreateBuilder(args);
 
 var storage = builder.AddAzureStorage("storage")
-                     .RunAsEmulator(); // ensures Azurite is used locally
+                     .RunAsEmulator(emulator =>
+                     {
+                         emulator.WithDataBindMount("product_data");
+                     }); // ensures Azurite is used locally
 
 var tables = storage.AddTables("tables");
 var blobs = storage.AddBlobs("blobs"); // Add blob storage resource
