@@ -11,24 +11,34 @@
             EventName="Loaded"
             Command="{Binding LoadDataCommand}" />
     </ContentPage.Behaviors>
-    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
-        <ScrollView Orientation="Vertical">
-            <FlexLayout
+    <Grid>
+        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+            <ScrollView Orientation="Vertical">
+                <FlexLayout
             Direction="Row"
             Wrap="Wrap"
             JustifyContent="Center"
             Margin="10"
             Padding="10"
             BindableLayout.ItemsSource="{Binding Tags}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="viewModels:TagItemEntry">
-                        <controls:TagItem Text="{Binding Title}" />
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </FlexLayout>
-        </ScrollView>
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:TagItemEntry">
+                            <controls:TagItem Text="{Binding Title}" />
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </ScrollView>
 
-        <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+            <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+        </VerticalStackLayout>
+
+        <BoxView 
+        Color="Black" 
+        Opacity="0.3" 
+        IsVisible="{Binding IsBusy}" 
+        HorizontalOptions="Fill" 
+        VerticalOptions="Fill"
+        ZIndex="9" />
 
         <ActivityIndicator 
             IsRunning="{Binding IsBusy}"
@@ -37,5 +47,5 @@
             VerticalOptions="Fill"
             HorizontalOptions="Fill"
             WidthRequest="50" HeightRequest="50" />
-    </VerticalStackLayout>
+    </Grid>
 </ContentPage>

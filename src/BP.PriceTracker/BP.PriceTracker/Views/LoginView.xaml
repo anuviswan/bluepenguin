@@ -5,11 +5,21 @@
              xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
              x:DataType="viewModels:LoginViewModel"
              >
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Entry Placeholder="Password" Text="{Binding PassKey}" HorizontalTextAlignment="Center"
+    <Grid>
+        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15">
+            <Entry Placeholder="Password" Text="{Binding PassKey}" HorizontalTextAlignment="Center"
                IsPassword="True"  />
-        <Button Text="Login" Command="{Binding ExecuteLoginCommand}" Style="{StaticResource RoundedButtonStyle}"/>
-
+            <Button Text="Login" Command="{Binding ExecuteLoginCommand}" Style="{StaticResource RoundedButtonStyle}"/>
+        </VerticalStackLayout>
+        <!-- Dim overlay -->
+        <BoxView 
+        Color="Black" 
+        Opacity="0.3" 
+        IsVisible="{Binding IsBusy}" 
+        HorizontalOptions="Fill" 
+        VerticalOptions="Fill"
+        ZIndex="9" />
+        
         <ActivityIndicator 
             IsRunning="{Binding IsBusy}"
             IsVisible="{Binding IsBusy}"
@@ -17,5 +27,5 @@
             VerticalOptions="Fill"
             HorizontalOptions="Fill"
             WidthRequest="50" HeightRequest="50" />
-    </VerticalStackLayout>
+    </Grid>
 </ContentPage>
