@@ -7,11 +7,10 @@ using System.Collections.ObjectModel;
 
 namespace BP.PriceTracker.ViewModels;
 
-public partial class CollectionsViewModel(IProductService productService, INavigationCacheService cacheService, ILogger<MaterialsViewModel> logger) : ObservableObject
+public partial class YearsViewModel(INavigationCacheService cacheService, ILogger<YearsViewModel> logger):ObservableObject
 {
     [ObservableProperty]
     private ObservableCollection<TagItemEntry> tags = [];
-
 
     [ObservableProperty]
     private bool isBusy;
@@ -19,31 +18,31 @@ public partial class CollectionsViewModel(IProductService productService, INavig
     [RelayCommand]
     private async Task LoadDataAsync()
     {
-        if(IsBusy)
+        if (IsBusy)
             return;
         try
         {
             IsBusy = true;
-            var collections = await productService.GetCollectionsAsync();
-            Tags = new ObservableCollection<TagItemEntry>(collections.Select(c => new TagItemEntry(c.Name, c.Id, false)));
+            var collections = Enumerable.Range(2023, (DateTime.Today.Year - 2023) + 1).Select(x=> new TagItemEntry(x.ToString(), x.ToString(), false)).ToList();
+            Tags = new ObservableCollection<TagItemEntry>(collections);
         }
         catch (Exception e)
         {
             IsBusy = false;
-            logger.LogError("Failed to load collections {0}",e.Message);
-            await Snackbar.Make("Unable to retrieve collections", async () => await LoadDataAsync(), "Retry", new TimeSpan(0, 0, 5)).Show();
+            logger.LogError("Failed to load Year List {0}", e.Message);
+            await Snackbar.Make("Unable to retrieve Year list", async () => await LoadDataAsync(), "Retry", new TimeSpan(0, 0, 5)).Show();
         }
         finally
         {
             IsBusy = false;
         }
-        
+
     }
 
     [RelayCommand]
     private async Task MoveNext()
     {
         cacheService.Add<IEnumerable<TagItemEntry>>("SelectedCollections", Tags.Where(t => t.IsSelected));
-        await Shell.Current.GoToAsync(Constants.Routes.YearsView);
+        await Shell.Current.GoToAsync(Constants.Routes.FeatureView);
     }
 }
