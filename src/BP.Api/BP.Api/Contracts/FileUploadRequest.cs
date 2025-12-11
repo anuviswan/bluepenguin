@@ -5,8 +5,8 @@ namespace BP.Api.Contracts;
 public class FileUploadRequest
 {
     [Required]
-    public string SkuId { get; set; }
+    public string SkuId { get; set; } = null!;
 
     [Required]
-    public IFormFile File { get; set; }
+    public IFormFile File { get; set; } = null!;
 }

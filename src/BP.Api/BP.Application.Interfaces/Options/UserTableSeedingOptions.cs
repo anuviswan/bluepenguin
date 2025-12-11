@@ -7,6 +7,6 @@ public record UserTableSeedingOptions
 
 public record UserSeedValue
 {
-    public string userName { get; init; }
-    public string password { get; init; }
+    public string userName { get; init; } = null!;
+    public string password { get; init; } = null!;
 };

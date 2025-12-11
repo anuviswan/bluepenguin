@@ -12,9 +12,13 @@ public class ProductImageService(IFileUploadService fileUploadService, IProductI
         var metaInfo = await productImageRepository.GetProductImageById(skuId,imageId);
         if (metaInfo == null) return null;
         var fileDownload = await fileUploadService.DownloadByBlobNameAsync(metaInfo.BlobName);
+
+        if(fileDownload == null) 
+            return null;
+
         return new FileDownload
         {
-            Content = fileDownload?.Content,
+            Content = fileDownload.Content,
             ContentType = metaInfo.ContentType
         };
     }
