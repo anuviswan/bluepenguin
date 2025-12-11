@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="BP.PriceTracker.Views.FeaturesView"
-             xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
+             x:Class="BP.PriceTracker.Views.YearsView"
              xmlns:controls="clr-namespace:BP.PriceTracker.Controls.Controls;assembly=BP.PriceTracker.Controls"
+             xmlns:viewModels="clr-namespace:BP.PriceTracker.ViewModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             Title="Features">
+             Title="Years">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="Loaded"
@@ -15,12 +15,12 @@
         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
             <ScrollView Orientation="Vertical">
                 <FlexLayout
-            Direction="Row"
-            Wrap="Wrap"
-            JustifyContent="Center"
-            Margin="10"
-            Padding="10"
-            BindableLayout.ItemsSource="{Binding Tags}">
+        Direction="Row"
+        Wrap="Wrap"
+        JustifyContent="Center"
+        Margin="10"
+        Padding="10"
+        BindableLayout.ItemsSource="{Binding Tags}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:TagItemEntry">
                             <controls:TagItem Text="{Binding Title}" />
@@ -39,13 +39,13 @@
         HorizontalOptions="Fill" 
         VerticalOptions="Fill"
         ZIndex="9" />
-
+        
         <ActivityIndicator 
-            IsRunning="{Binding IsBusy}"
-            IsVisible="{Binding IsBusy}"
-            Color="Blue"
-            VerticalOptions="Fill"
-            HorizontalOptions="Fill"
-            WidthRequest="50" HeightRequest="50" />
+        IsRunning="{Binding IsBusy}"
+        IsVisible="{Binding IsBusy}"
+        Color="Blue"
+        VerticalOptions="Fill"
+        HorizontalOptions="Fill"
+        WidthRequest="50" HeightRequest="50" />
     </Grid>
 </ContentPage>

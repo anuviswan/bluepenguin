@@ -1,15 +1,12 @@
-﻿using Microsoft.Extensions.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BP.PriceTracker.Services.Types;
+﻿namespace BP.PriceTracker.Services.Types;
 
 public record SearchFilter
 {
-    public string Category { get; set; }
-    public string Material { get; set; }
+    public IEnumerable<string> Categories { get; set; } = null!;
+    public IEnumerable<string> Materials { get; set; } = null!;
+    public IEnumerable<string> Features { get; set; } = null!;
+    public IEnumerable<string> Collections { get; set; } = null!;
+    public IEnumerable<string> YearCodes { get; set; } = null!;
+
 
 }
