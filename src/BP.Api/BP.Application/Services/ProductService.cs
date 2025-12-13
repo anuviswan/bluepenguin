@@ -73,7 +73,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         foreach (var kvp in filters)
         {
             var key = (kvp.Key ?? string.Empty).Trim().ToLowerInvariant();
-            var values = (kvp.Value ?? Enumerable.Empty<string>())
+            var values = (kvp.Value ?? [])
                          .Where(v => !string.IsNullOrWhiteSpace(v))
                          .Select(v => v!.Trim())
                          .ToList();
@@ -133,7 +133,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         }
 
         // Materialize results before returning
-        return results.ToList();
+        return results;
     }
 
 
