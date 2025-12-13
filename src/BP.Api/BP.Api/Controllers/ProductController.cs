@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
 
+/// <summary>
+/// Controller for product operations.
+/// Base route: <c>api/product</c>.
+/// </summary>
 [ApiController]
 [Route("api/[controller]")]
 public class ProductController(IProductService productService, ISkuGeneratorService skuGeneratorService, ILogger<ProductController> logger) : BaseController(logger)
@@ -12,6 +16,17 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     private IProductService ProductService => productService;
     private ISkuGeneratorService SkuGeneratorService => skuGeneratorService;
 
+    /// <summary>
+    /// Create a new product.
+    /// </summary>
+    /// <remarks>
+    /// Endpoint: POST <c>/api/product/create</c>
+    /// Request body: <see cref="CreateProductRequest"/>.
+    /// Success: Returns 200 OK with the created product SKU as a string.
+    /// Failure: Returns 400 Bad Request for invalid model state or on exception.
+    /// </remarks>
+    /// <param name="product">The product creation request payload.</param>
+    /// <returns>The SKU string of the created product or an error result.</returns>
     [HttpPost]
     [Route("create")]
     public async Task<IActionResult> CreateProduct(CreateProductRequest product)
@@ -52,6 +67,18 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
 
     }
 
+    /// <summary>
+    /// Get a product by SKU.
+    /// </summary>
+    /// <remarks>
+    /// Endpoint: GET <c>/api/product/getbysku</c>?sku={sku}
+    /// Query parameter: <c>sku</c> (string) - the product SKU to lookup.
+    /// Success: Returns 200 OK with the product entity.
+    /// Not Found: Returns 404 if no product matches the provided SKU.
+    /// Failure: Returns 400 Bad Request for invalid SKU or on exception.
+    /// </remarks>
+    /// <param name="sku">The SKU of the product to retrieve.</param>
+    /// <returns>The matching product or an error result.</returns>
     [HttpGet]
     [Route("getbysku")]
     public async Task<IActionResult> GetProduct([FromQuery] string sku)
@@ -78,6 +105,15 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
         }
     }
 
+    /// <summary>
+    /// Get all products.
+    /// </summary>
+    /// <remarks>
+    /// Endpoint: GET <c>/api/product/getall</c>
+    /// Success: Returns 200 OK with a collection of products.
+    /// Failure: Returns 400 Bad Request on exception.
+    /// </remarks>
+    /// <returns>List of all products or an error result.</returns>
     [HttpGet]
     [Route("getall")]
     public async Task<IActionResult> GetAllProducts()
@@ -90,6 +126,46 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
         }
         catch (Exception e)
         {
+            return BadRequest(e);
+        }
+    }
+
+    /// <summary>
+    /// Search products by a set of filters.
+    /// </summary>
+    /// <remarks>
+    /// Endpoint: POST <c>/api/product/search</c>
+    /// Body: JSON object where each key is an attribute name (e.g. "Category", "MaterialCode",
+    /// "CollectionCode", "FeatureCodes", "YearCode") and the value is an array of allowed values.
+    /// Example:
+    /// {
+    ///   "Category": ["Rings", "Necklaces"],
+    ///   "MaterialCode": ["M1", "M2"],
+    ///   "FeatureCodes": ["F1","F2"]
+    /// }
+    /// Success: 200 OK with matching products.
+    /// Failure: 400 Bad Request on invalid input or exception.
+    /// </remarks>
+    [HttpPost]
+    [Route("search")]
+    public async Task<IActionResult> SearchProducts([FromBody] Dictionary<string, IEnumerable<string>> filters)
+    {
+        Logger.LogInformation("Searching products with filters");
+
+        try
+        {
+            if (filters == null || filters.Count == 0)
+            {
+                Logger.LogWarning("SearchProducts called with empty filters");
+                return BadRequest("No filters provided");
+            }
+
+            var results = await ProductService.SearchProductsAsync(filters);
+            return Ok(results);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error searching products");
             return BadRequest(e);
         }
     }

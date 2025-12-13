@@ -11,4 +11,5 @@ public interface IProductService
     Task<IEnumerable<ProductEntity>> GetAllProducts();
     Task<IEnumerable<ProductEntity>> GetProductsByCategory(string categoryId);
     Task<int> GetItemCountForCollection(string collectionCode, int yearCode);
+    Task<IEnumerable<ProductEntity>> SearchProductsAsync(Dictionary<string, IEnumerable<string>> filters);
 }
