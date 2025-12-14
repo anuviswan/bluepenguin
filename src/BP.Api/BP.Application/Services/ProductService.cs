@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BP.Application.Interfaces.Services;
+﻿using BP.Application.Interfaces.Services;
 using BP.Domain.Entities;
 using BP.Domain.Repository;
 
@@ -50,89 +46,82 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     }
 
     /// <summary>
-    /// Search products using a dictionary of filters. Supported keys (case-insensitive):
-    /// - "Category" / "Categories"        -> matches product.PartitionKey
-    /// - "MaterialCode" / "Material(s)"  -> matches product.MaterialCode
-    /// - "CollectionCode" / "Collections"-> matches product.CollectionCode
-    /// - "FeatureCodes" / "Features"     -> matches any feature contained in product.FeatureCodes (CSV)
-    /// - "YearCode" / "YearCodes"        -> matches product.YearCode (ToString comparison)
-    /// Unknown keys are ignored.
+    /// Search products using SearchProductsRequest DTO.
     /// </summary>
-    /// <param name="filters">Dictionary where key = attribute name and value = allowed values list.</param>
+    /// <param name="filters">DTO containing lists for supported attributes.</param>
     /// <returns>Filtered product list.</returns>
-    public async Task<IEnumerable<ProductEntity>> SearchProductsAsync(Dictionary<string, IEnumerable<string>> filters)
+    public async Task<IEnumerable<ProductEntity>> SearchProductsAsync(
+        IEnumerable<string>? selectedCategories,
+        IEnumerable<string>? selectedMaterials,
+        IEnumerable<string>? selectedCollections,
+        IEnumerable<string>? selectedFeatures,
+        IEnumerable<string>? selectedYears)
     {
-        if (filters == null || filters.Count == 0)
+        // Maintain previous behavior: if caller provided no filters at all, return empty set
+        if (selectedCategories == null &&
+            selectedMaterials == null &&
+            selectedCollections == null &&
+            selectedFeatures == null &&
+            selectedYears == null)
         {
-            return [];
+            return Array.Empty<ProductEntity>();
         }
 
         var allProducts = await productRepository.GetAll();
-        IEnumerable<ProductEntity> results = allProducts ?? [];
+        IEnumerable<ProductEntity> results = allProducts ?? Array.Empty<ProductEntity>();
 
-        foreach (var kvp in filters)
+        List<string>? Normalize(IEnumerable<string>? seq)
         {
-            var key = (kvp.Key ?? string.Empty).Trim().ToLowerInvariant();
-            var values = (kvp.Value ?? [])
-                         .Where(v => !string.IsNullOrWhiteSpace(v))
-                         .Select(v => v!.Trim())
-                         .ToList();
-
-            if (!values.Any())
-            {
-                continue;
-            }
-
-            switch (key)
-            {
-                case "SelectedCategories":
-                    results = results.Where(p =>
-                        !string.IsNullOrWhiteSpace(p.PartitionKey) &&
-                        values.Contains(p.PartitionKey, StringComparer.OrdinalIgnoreCase));
-                    break;
-
-                case "SelectedMaterials":
-                    results = results.Where(p =>
-                        !string.IsNullOrWhiteSpace(p.MaterialCode) &&
-                        values.Contains(p.MaterialCode, StringComparer.OrdinalIgnoreCase));
-                    break;
-
-                case "SelectedCollections":
-                    results = results.Where(p =>
-                        !string.IsNullOrWhiteSpace(p.CollectionCode) &&
-                        values.Contains(p.CollectionCode, StringComparer.OrdinalIgnoreCase));
-                    break;
-
-                case "SelectedFeatures":
-                    results = results.Where(p =>
-                    {
-                        if (string.IsNullOrWhiteSpace(p.FeatureCodes))
-                        {
-                            return false;
-                        }
-                        var productFeatures = p.FeatureCodes
-                                                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                                 .Select(f => f.Trim());
-                        return productFeatures.Intersect(values, StringComparer.OrdinalIgnoreCase).Any();
-                    });
-                    break;
-
-                case "SelectedYears":
-                    results = results.Where(p =>
-                    {
-                        var yearStr = p.YearCode.ToString();
-                        return !string.IsNullOrWhiteSpace(yearStr) &&
-                               values.Contains(yearStr, StringComparer.OrdinalIgnoreCase);
-                    });
-                    break;
-
-                default:
-                    // Unknown filter key - ignore
-                    break;
-            }
+            return seq?
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .Select(v => v.Trim())
+                .ToList();
         }
 
-        // Materialize results before returning
+        var categories = Normalize(selectedCategories);
+        if (categories != null && categories.Any())
+        {
+            results = results.Where(p => !string.IsNullOrWhiteSpace(p.PartitionKey)
+                                         && categories.Contains(p.PartitionKey, StringComparer.OrdinalIgnoreCase));
+        }
+
+        var materials = Normalize(selectedMaterials);
+        if (materials != null && materials.Any())
+        {
+            results = results.Where(p => !string.IsNullOrWhiteSpace(p.MaterialCode)
+                                         && materials.Contains(p.MaterialCode, StringComparer.OrdinalIgnoreCase));
+        }
+
+        var collections = Normalize(selectedCollections);
+        if (collections != null && collections.Any())
+        {
+            results = results.Where(p => !string.IsNullOrWhiteSpace(p.CollectionCode)
+                                         && collections.Contains(p.CollectionCode, StringComparer.OrdinalIgnoreCase));
+        }
+
+        var features = Normalize(selectedFeatures);
+        if (features != null && features.Any())
+        {
+            results = results.Where(p =>
+            {
+                if (string.IsNullOrWhiteSpace(p.FeatureCodes)) return false;
+                var productFeatures = p.FeatureCodes
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(f => f.Trim());
+                return productFeatures.Intersect(features, StringComparer.OrdinalIgnoreCase).Any();
+            });
+        }
+
+        var years = Normalize(selectedYears);
+        if (years != null && years.Any())
+        {
+            results = results.Where(p =>
+            {
+                var yearStr = p.YearCode.ToString();
+                return !string.IsNullOrWhiteSpace(yearStr) && years.Contains(yearStr, StringComparer.OrdinalIgnoreCase);
+            });
+        }
+
         return results;
     }
 

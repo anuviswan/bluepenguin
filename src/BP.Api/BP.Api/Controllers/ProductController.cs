@@ -29,7 +29,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// <returns>The SKU string of the created product or an error result.</returns>
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateProduct(CreateProductRequest product)
+    public async Task<IActionResult> CreateProduct([FromBody]CreateProductRequest product)
     {
         Logger.LogInformation("Creating Product");
 
@@ -135,33 +135,45 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// </summary>
     /// <remarks>
     /// Endpoint: POST <c>/api/product/search</c>
-    /// Body: JSON object where each key is an attribute name (e.g. "Category", "MaterialCode",
-    /// "CollectionCode", "FeatureCodes", "YearCode") and the value is an array of allowed values.
-    /// Example:
+    /// Body: Object that lists allowed values for each supported attribute. Example:
     /// {
-    ///   "Category": ["Rings", "Necklaces"],
-    ///   "MaterialCode": ["M1", "M2"],
-    ///   "FeatureCodes": ["F1","F2"]
+    ///   "SelectedCategories": ["Rings", "Necklaces"],
+    ///   "SelectedMaterials": ["M1", "M2"],
+    ///   "SelectedFeatures": ["F1","F2"]
     /// }
     /// Success: 200 OK with matching products.
     /// Failure: 400 Bad Request on invalid input or exception.
     /// </remarks>
     [HttpPost]
     [Route("search")]
-    public async Task<IActionResult> SearchProducts([FromBody] Dictionary<string, IEnumerable<string>> filters)
+    public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters)
     {
         Logger.LogInformation("Searching products with filters");
 
         try
         {
-            if (filters == null || filters.Count == 0)
+            if (filters == null ||
+                (filters.SelectedCategories == null || !filters.SelectedCategories.Any()) &&
+                (filters.SelectedMaterials == null || !filters.SelectedMaterials.Any()) &&
+                (filters.SelectedCollections == null || !filters.SelectedCollections.Any()) &&
+                (filters.SelectedFeatures == null || !filters.SelectedFeatures.Any()) &&
+                (filters.SelectedYears == null || !filters.SelectedYears.Any()))
             {
                 Logger.LogWarning("SearchProducts called with empty filters");
                 return BadRequest("No filters provided");
             }
 
-            var results = await ProductService.SearchProductsAsync(filters);
+            var results = await ProductService.SearchProductsAsync(filters.SelectedCategories,
+                filters.SelectedMaterials,
+                filters.SelectedCollections, 
+                filters.SelectedFeatures, 
+                filters.SelectedYears);
             return Ok(results);
+        }
+        catch (OperationCanceledException)
+        {
+            Logger.LogInformation("SearchProducts request cancelled");
+            return BadRequest("Request cancelled");
         }
         catch (Exception e)
         {
