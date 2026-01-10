@@ -45,6 +45,86 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Search products using SearchProductsRequest DTO.
+    /// </summary>
+    /// <param name="filters">DTO containing lists for supported attributes.</param>
+    /// <returns>Filtered product list.</returns>
+    public async Task<IEnumerable<ProductEntity>> SearchProductsAsync(
+        IEnumerable<string>? selectedCategories,
+        IEnumerable<string>? selectedMaterials,
+        IEnumerable<string>? selectedCollections,
+        IEnumerable<string>? selectedFeatures,
+        IEnumerable<string>? selectedYears)
+    {
+        // Maintain previous behavior: if caller provided no filters at all, return empty set
+        if (selectedCategories == null &&
+            selectedMaterials == null &&
+            selectedCollections == null &&
+            selectedFeatures == null &&
+            selectedYears == null)
+        {
+            return Array.Empty<ProductEntity>();
+        }
+
+        var allProducts = await productRepository.GetAll();
+        IEnumerable<ProductEntity> results = allProducts ?? Array.Empty<ProductEntity>();
+
+        List<string>? Normalize(IEnumerable<string>? seq)
+        {
+            return seq?
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .Select(v => v.Trim())
+                .ToList();
+        }
+
+        var categories = Normalize(selectedCategories);
+        if (categories != null && categories.Any())
+        {
+            results = results.Where(p => !string.IsNullOrWhiteSpace(p.PartitionKey)
+                                         && categories.Contains(p.PartitionKey, StringComparer.OrdinalIgnoreCase));
+        }
+
+        var materials = Normalize(selectedMaterials);
+        if (materials != null && materials.Any())
+        {
+            results = results.Where(p => !string.IsNullOrWhiteSpace(p.MaterialCode)
+                                         && materials.Contains(p.MaterialCode, StringComparer.OrdinalIgnoreCase));
+        }
+
+        var collections = Normalize(selectedCollections);
+        if (collections != null && collections.Any())
+        {
+            results = results.Where(p => !string.IsNullOrWhiteSpace(p.CollectionCode)
+                                         && collections.Contains(p.CollectionCode, StringComparer.OrdinalIgnoreCase));
+        }
+
+        var features = Normalize(selectedFeatures);
+        if (features != null && features.Any())
+        {
+            results = results.Where(p =>
+            {
+                if (string.IsNullOrWhiteSpace(p.FeatureCodes)) return false;
+                var productFeatures = p.FeatureCodes
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(f => f.Trim());
+                return productFeatures.Intersect(features, StringComparer.OrdinalIgnoreCase).Any();
+            });
+        }
+
+        var years = Normalize(selectedYears);
+        if (years != null && years.Any())
+        {
+            results = results.Where(p =>
+            {
+                var yearStr = p.YearCode.ToString();
+                return !string.IsNullOrWhiteSpace(yearStr) && years.Contains(yearStr, StringComparer.OrdinalIgnoreCase);
+            });
+        }
+
+        return results;
+    }
+
 
 
     private string GetCategoryCodeFromSku(string sku)

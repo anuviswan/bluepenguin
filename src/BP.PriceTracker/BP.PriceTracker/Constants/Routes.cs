@@ -14,4 +14,6 @@ public static class Routes
     public const string FeatureView = "Features";
     public const string CollectionView = "Collections";
     public const string YearsView = "Years";
+
+    public const string SearchListView = "SearchList";
 }

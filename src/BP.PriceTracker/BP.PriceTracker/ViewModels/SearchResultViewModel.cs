@@ -1,12 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
-namespace BP.PriceTracker.ViewModels
+namespace BP.PriceTracker.ViewModels;
+
+public partial class SearchResultViewModel:ObservableObject
 {
-    internal class SearchResultViewModel
+    [ObservableProperty]
+    private bool isBusy;
+
+    [RelayCommand]
+    private async Task LoadDataAsync()
     {
+        if (IsBusy) return;
+
+        try
+        {
+            IsBusy = true;
+            // Load Data from Api   
+
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 }
