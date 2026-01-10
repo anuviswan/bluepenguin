@@ -11,7 +11,7 @@ namespace BP.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class ProductController(IProductService productService, ISkuGeneratorService skuGeneratorService, ILogger<ProductController> logger) : BaseController(logger)
+public class ProductController(IProductService productService, ISkuGeneratorService skuGeneratorService, ILogger<ProductController> logger) : BaseController(logger), IProductController
 {
     private IProductService ProductService => productService;
     private ISkuGeneratorService SkuGeneratorService => skuGeneratorService;
@@ -29,7 +29,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// <returns>The SKU string of the created product or an error result.</returns>
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateProduct([FromBody]CreateProductRequest product)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product)
     {
         Logger.LogInformation("Creating Product");
 
@@ -165,8 +165,8 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
 
             var results = await ProductService.SearchProductsAsync(filters.SelectedCategories,
                 filters.SelectedMaterials,
-                filters.SelectedCollections, 
-                filters.SelectedFeatures, 
+                filters.SelectedCollections,
+                filters.SelectedFeatures,
                 filters.SelectedYears);
             return Ok(results);
         }

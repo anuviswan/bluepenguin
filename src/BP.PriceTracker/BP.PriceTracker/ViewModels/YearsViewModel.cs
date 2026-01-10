@@ -43,6 +43,6 @@ public partial class YearsViewModel(INavigationCacheService cacheService, ILogge
     private async Task MoveNext()
     {
         cacheService.Add<IEnumerable<TagItemEntry>>("SelectedYears", Tags.Where(t => t.IsSelected));
-        await Shell.Current.GoToAsync(Constants.Routes.FeatureView);
+        await Shell.Current.GoToAsync(Constants.Routes.SearchListView);
     }
 }
