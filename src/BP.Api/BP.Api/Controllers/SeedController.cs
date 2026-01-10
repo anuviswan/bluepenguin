@@ -3,12 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 using BP.Api.Contracts;
 using BP.Application.Interfaces.SkuAttributes;
 using Microsoft.AspNetCore.Authorization;
+using BP.Shared.Types;
+using System.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 
 namespace BP.Api.Controllers;
 
-public class SeedController(IProductController productController): Controller
+public class SeedController(IProductController productController, IProductImageService productImageService): Controller
 {
     private IProductController ProductController => productController;
+    private IProductImageService ProductImageService => productImageService;
 
     [AllowAnonymous]
     [HttpPost]
@@ -141,13 +148,46 @@ public class SeedController(IProductController productController): Controller
             try
             {
                 var res = await ProductController.CreateProduct(seed);
+                string? sku = null;
                 if (res is ObjectResult or)
                 {
                     created.Add(or.Value);
+                    sku = or.Value as string;
                 }
                 else
                 {
                     created.Add(null);
+                }
+
+                if (!string.IsNullOrWhiteSpace(sku))
+                {
+                    // generate a dummy 200x300 PNG using ImageSharp
+                    using var image = new Image<Rgba32>(200, 300);
+                    image.Mutate(ctx => ctx.BackgroundColor(new Rgba32(211,211,211)));
+
+                    await using var ms = new MemoryStream();
+                    await image.SaveAsPngAsync(ms);
+                    ms.Position = 0;
+
+                    var fileUpload = new FileUpload
+                    {
+                        SkuId = sku,
+                        ImageId = Guid.NewGuid().ToString(),
+                        ContentType = "image/png",
+                        Content = new MemoryStream(ms.ToArray()),
+                        Extension = ".png"
+                    };
+                    fileUpload.Content.Position = 0;
+
+                    try
+                    {
+                        var url = await ProductImageService.UploadAsync(fileUpload, true);
+                        created.Add(new { sku, imageUrl = url });
+                    }
+                    catch (Exception ex)
+                    {
+                        created.Add(new { sku, uploadError = ex.Message });
+                    }
                 }
             }
             catch (Exception ex)
