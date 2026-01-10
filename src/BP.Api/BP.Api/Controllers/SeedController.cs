@@ -166,14 +166,16 @@ public class SeedController(IProductController productController, IProductImageS
                     {
                         var url = await ProductImageService.UploadAsync(fileUpload, true);
                     }
-                    catch (Exception ex)
+                    catch 
                     {
+                        throw;
                         // Decide what to do if image upload fails
                     }
                 }
             }
-            catch (Exception ex)
+            catch 
             {
+                throw;
                 // Decide what to do if product creation fails
             }
         }
