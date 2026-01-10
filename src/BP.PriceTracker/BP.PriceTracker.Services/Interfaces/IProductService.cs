@@ -9,4 +9,6 @@ public interface IProductService
     Task<IEnumerable<Feature>> GetFeaturesAsync();
     Task<IEnumerable<Collection>> GetCollectionsAsync();
 
+    Task<IEnumerable<ProductDto>> SearchProductsAsync(SearchFilter filters);
+
 }
