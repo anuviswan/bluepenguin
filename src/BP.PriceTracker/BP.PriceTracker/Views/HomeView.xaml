@@ -24,7 +24,7 @@
             BindableLayout.ItemsSource="{Binding Tags}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:TagItemEntry">
-                            <controls:TagItem Text="{Binding Title}" />
+                            <controls:TagItem Text="{Binding Title}" IsSelected="{Binding IsSelected,Mode=TwoWay}" />
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </FlexLayout>

@@ -1,5 +1,6 @@
 ﻿using Azure.Data.Tables;
 using Azure.Storage.Blobs;
+using BP.Api.Controllers;
 using BP.Application.Interfaces.Services;
 using BP.Application.Services;
 
@@ -9,6 +10,7 @@ public static class IServiceCollectionExtension
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        services.AddTransient<IProductController, ProductController>();
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IAuthenticationService, AuthenticationService>();
         services.AddTransient<IProductService, ProductService>();
