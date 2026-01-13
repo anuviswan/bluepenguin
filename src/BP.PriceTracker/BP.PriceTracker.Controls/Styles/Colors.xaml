@@ -21,6 +21,7 @@
     <Color x:Key="AccentGreen">#22C55E</Color>
     <!-- success, positive -->
     <Color x:Key="AccentPurple">#9D4EDD</Color>
+    <Color x:Key="AccentGrey">#9CA3AF</Color>
     <!-- discovery, secondary -->
 
     <!-- ===================== -->

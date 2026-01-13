@@ -29,7 +29,10 @@
                 </FlexLayout>
             </ScrollView>
 
-            <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+            <HorizontalStackLayout Spacing="12" HorizontalOptions="Center">
+                <Button Text="Clear" Style="{StaticResource SecondaryRoundedButtonStyle}" Command="{Binding ClearCommand}" />
+                <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+            </HorizontalStackLayout>
         </VerticalStackLayout>
 
         <BoxView 
