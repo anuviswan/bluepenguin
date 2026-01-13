@@ -30,7 +30,16 @@
                 </FlexLayout>
             </ScrollView>
 
-            <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Text="Clear" Style="{StaticResource RoundedButtonStyle}" Command="{Binding ClearCommand}"/>
+                <Button Grid.Column="1" Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+            </Grid>
+            
         </VerticalStackLayout>
         <BoxView 
         Color="Black" 

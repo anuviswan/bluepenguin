@@ -44,4 +44,18 @@ public partial class HomeViewModel(IProductService productService,INavigationCac
         cacheService.Add<IEnumerable<TagItemEntry>>("SelectedCategories", Tags.Where(t => t.IsSelected));
         await Shell.Current.GoToAsync(Constants.Routes.MaterialView);
     }
+
+
+    [RelayCommand]
+    private async Task Clear()
+    {
+        cacheService.Remove("SelectedCategories");
+        for(int i=0; i < Tags.Count; i++)
+        {
+            var tag = Tags[i];
+            Tags[i] = tag with { IsSelected = false  };
+        }
+        OnPropertyChanged(nameof(Tags));
+    }
+
 }
