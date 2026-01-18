@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36408.4
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.PriceTracker", "BP.PriceTracker\BP.PriceTracker.csproj", "{6B2C3248-7CF8-43EA-B093-9E9A881E87D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.PriceTracker.Services", "BP.PriceTracker.Services\BP.PriceTracker.Services.csproj", "{1C71FD86-1097-49EF-8544-ABD42FFFA1FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.PriceTracker.Controls", "BP.PriceTracker.Controls\BP.PriceTracker.Controls.csproj", "{C3CD1B8A-D28F-45A2-9BCB-C6264A36993E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiSchema", "ApiSchema", "{30828B7E-D574-447C-B9AC-AA685EA49153}"
+	ProjectSection(SolutionItems) = preProject
+		..\BP.Docs\bp.webapi.json = ..\BP.Docs\bp.webapi.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

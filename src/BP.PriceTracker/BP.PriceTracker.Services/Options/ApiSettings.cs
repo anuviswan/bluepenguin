@@ -8,4 +8,5 @@ public record ApiSettings
     public string GetMaterialsEndpoint { get; init; } = string.Empty;
     public string GetFeaturesEndpoint { get; init; } = string.Empty;
     public string GetCollectionsEndpoint { get; init; } = string.Empty;
+    public string SearchProductsEndpoint { get; init; } = string.Empty;
 }

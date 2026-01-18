@@ -46,4 +46,17 @@ public partial class CollectionsViewModel(IProductService productService, INavig
         cacheService.Add<IEnumerable<TagItemEntry>>("SelectedCollections", Tags.Where(t => t.IsSelected));
         await Shell.Current.GoToAsync(Constants.Routes.YearsView);
     }
+
+    [RelayCommand]
+    private Task Clear()
+    {
+        cacheService.Remove("SelectedCollections");
+        for (int i = 0; i < Tags.Count; i++)
+        {
+            var tag = Tags[i];
+            Tags[i] = tag with { IsSelected = false };
+        }
+        OnPropertyChanged(nameof(Tags));
+        return Task.CompletedTask;
+    }
 }

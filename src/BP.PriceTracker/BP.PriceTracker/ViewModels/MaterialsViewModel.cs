@@ -45,4 +45,17 @@ public partial class MaterialsViewModel(IProductService productService, INavigat
         cacheService.Add<IEnumerable<TagItemEntry>>("SelectedMaterials", Tags.Where(t => t.IsSelected));
         await Shell.Current.GoToAsync(Constants.Routes.FeatureView);
     }
+
+    [RelayCommand]
+    private Task Clear()
+    {
+        cacheService.Remove("SelectedMaterials");
+        for (int i = 0; i < Tags.Count; i++)
+        {
+            var tag = Tags[i];
+            Tags[i] = tag with { IsSelected = false };
+        }
+        OnPropertyChanged(nameof(Tags));
+        return Task.CompletedTask;
+    }
 }

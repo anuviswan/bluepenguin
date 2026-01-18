@@ -24,13 +24,22 @@
             BindableLayout.ItemsSource="{Binding Tags}">
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="viewModels:TagItemEntry">
-                            <controls:TagItem Text="{Binding Title}" />
+                            <controls:TagItem Text="{Binding Title}" IsSelected="{Binding IsSelected,Mode=TwoWay}" />
                         </DataTemplate>
                     </BindableLayout.ItemTemplate>
                 </FlexLayout>
             </ScrollView>
 
-            <Button Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Text="Clear" Style="{StaticResource SecondaryRoundedButtonStyle}" Command="{Binding ClearCommand}"/>
+                <Button Grid.Column="1" Text="Next" Style="{StaticResource RoundedButtonStyle}" Command="{Binding MoveNextCommand}"/>
+            </Grid>
+            
         </VerticalStackLayout>
         <BoxView 
         Color="Black" 

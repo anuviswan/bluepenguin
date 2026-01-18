@@ -48,10 +48,10 @@ namespace BP.PriceTracker
             builder.Services.AddTransientWithShellRoute<Views.SearchResultView,ViewModels.SearchResultViewModel>(Constants.Routes.SearchListView);
 
 
-            builder.Services.AddTransient<INavigationCacheService, NavigationCacheService>();
-            builder.Services.AddTransient<IUserService,UserService>();
-            builder.Services.AddTransient<IApiService,ApiService>();
-            builder.Services.AddTransient<IProductService,ProductService>();
+            builder.Services.AddScoped<INavigationCacheService, NavigationCacheService>();
+            builder.Services.AddScoped<IUserService,UserService>();
+            builder.Services.AddScoped<IApiService,ApiService>();
+            builder.Services.AddScoped<IProductService,ProductService>();
 
             return builder.Build();
         }

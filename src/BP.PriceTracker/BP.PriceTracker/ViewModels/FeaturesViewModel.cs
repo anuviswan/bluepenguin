@@ -45,4 +45,17 @@ public partial class FeaturesViewModel(IProductService productService, INavigati
         cacheService.Add<IEnumerable<TagItemEntry>>("SelectedFeatures", Tags.Where(t => t.IsSelected));
         await Shell.Current.GoToAsync(Constants.Routes.CollectionView);
     }
+
+    [RelayCommand]
+    private Task Clear()
+    {
+        cacheService.Remove("SelectedFeatures");
+        for (int i = 0; i < Tags.Count; i++)
+        {
+            var tag = Tags[i];
+            Tags[i] = tag with { IsSelected = false };
+        }
+        OnPropertyChanged(nameof(Tags));
+        return Task.CompletedTask;
+    }
 }

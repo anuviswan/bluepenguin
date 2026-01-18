@@ -3,16 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="BP.PriceTracker.Views.SearchResultView"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             Title="SearchResultView">
+             Title="Search Results">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             EventName="Loaded"
             Command="{Binding LoadDataCommand}" />
     </ContentPage.Behaviors>
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+
+    <VerticalStackLayout Padding="12" Spacing="10">
+        <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" HeightRequest="40" />
+
+        <CollectionView ItemsSource="{Binding Products}" SelectionMode="None">
+            <CollectionView.EmptyView>
+                <StackLayout HorizontalOptions="Center" VerticalOptions="CenterAndExpand" Padding="20">
+                    <Label Text="No products found" HorizontalOptions="Center" />
+                </StackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame CornerRadius="8" Padding="10" Margin="0,4" BorderColor="#E0E0E0">
+                        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                            <Label Text="{Binding ProductName}" FontAttributes="Bold" Grid.Row="0" Grid.Column="0" />
+                            <Label Text="{Binding Price, StringFormat='₹{0:N2}'}" Grid.Row="0" Grid.Column="1" HorizontalOptions="End" />
+
+                            <Label Text="{Binding SKU}" FontSize="12" TextColor="Gray" Grid.Row="1" Grid.Column="0" />
+                            <Label Text="{Binding MaterialCode}" FontSize="12" TextColor="Gray" Grid.Row="1" Grid.Column="1" HorizontalOptions="End" />
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </VerticalStackLayout>
 </ContentPage>
