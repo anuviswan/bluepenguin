@@ -11,4 +11,7 @@ public record ProductDto
     public string CollectionCode { get; init; } = string.Empty;
     public string FeatureCodes { get; init; } = string.Empty;
     public int YearCode { get; init; }
+
+    // Primary image URL (if available) for display in lists
+    public string? PrimaryImageUrl { get; init; }
 }
