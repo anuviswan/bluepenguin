@@ -8,4 +8,5 @@ public interface IApiService
     Task<ApiResult<TResponse>> PostAsync<TRequest, TResponse>(string endpoint, TRequest data, string? authToken = null);
     Task<ApiResult<TResponse>> PutAsync<TRequest,TResponse>(string endpoint, TRequest data, string? authToken = null);
     Task DeleteAsync(string endpoint, string? authToken = null);
+    Task<ApiResult<byte[]>> GetBlobAsync(string endpoint, string? authToken = null);
 }

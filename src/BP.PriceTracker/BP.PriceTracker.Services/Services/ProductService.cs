@@ -73,4 +73,42 @@ public class ProductService(IApiService apiService, IOptions<ApiSettings> apiOpt
 
         return Enumerable.Empty<ProductDto>();
     }
+
+    public async Task<string?> GetProductImageAsync(string skuId, string imageId)
+    {
+        // Build endpoint from ApiSettings if provided, else use default
+        var baseEndpoint = "/api/FileUpload/downloadByimageId";
+        var endpoint = string.IsNullOrWhiteSpace(ApiSettings.SearchProductsEndpoint) ? baseEndpoint : baseEndpoint; // keep default for now
+
+        // Append query params
+        var url = $"{endpoint}?skuId={Uri.EscapeDataString(skuId)}&imageId={Uri.EscapeDataString(imageId)}";
+
+        var result = await _apiService.GetBlobAsync(url);
+        if (!result.IsSuccess || result.Data == null || result.Data.Length == 0)
+            return null;
+
+        // Try to detect content type; assume jpeg if unknown
+        // For now, return base64 data URL
+        var base64 = Convert.ToBase64String(result.Data);
+        var dataUrl = $"data:image/jpeg;base64,{base64}";
+        return dataUrl;
+    }
+
+    public async Task<string?> GetPrimaryImageForSkuAsync(string skuId)
+    {
+        // call getAll images for sku
+        var baseEndpoint = "/api/FileUpload/getAllImagesForSkuId";
+        var url = $"{baseEndpoint}?skuId={Uri.EscapeDataString(skuId)}";
+
+        var idsResult = await _apiService.GetAsync<IEnumerable<string>>(url);
+        if (!idsResult.IsSuccess || idsResult.Data == null)
+            return null;
+
+        var ids = idsResult.Data.ToList();
+        if (!ids.Any()) return null;
+
+        // Download the first image
+        var firstId = ids.First();
+        return await GetProductImageAsync(skuId, firstId);
+    }
 }
