@@ -153,11 +153,11 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
         try
         {
             if (filters == null ||
-                (filters.SelectedCategories == null || !filters.SelectedCategories.Any()) &&
-                (filters.SelectedMaterials == null || !filters.SelectedMaterials.Any()) &&
-                (filters.SelectedCollections == null || !filters.SelectedCollections.Any()) &&
-                (filters.SelectedFeatures == null || !filters.SelectedFeatures.Any()) &&
-                (filters.SelectedYears == null || !filters.SelectedYears.Any()))
+                (filters.SelectedCategories == null) &&
+                (filters.SelectedMaterials == null) &&
+                (filters.SelectedCollections == null) &&
+                (filters.SelectedFeatures == null) &&
+                (filters.SelectedYears == null))
             {
                 Logger.LogWarning("SearchProducts called with empty filters");
                 return BadRequest("No filters provided");

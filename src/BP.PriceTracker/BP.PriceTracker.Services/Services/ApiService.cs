@@ -76,6 +76,37 @@ public class ApiService : IApiService
         };
     }
 
+    public async Task<ApiResult<byte[]>> GetBlobAsync(string endpoint, string? authToken = null)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+
+        if (!string.IsNullOrWhiteSpace(authToken))
+        {
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+        }
+
+        using var response = await _httpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var bytes = await response.Content.ReadAsByteArrayAsync();
+            return new ApiResult<byte[]>
+            {
+                IsSuccess = true,
+                Data = bytes,
+                StatusCode = response.StatusCode
+            };
+        }
+
+        return new ApiResult<byte[]>
+        {
+            IsSuccess = false,
+            Data = default,
+            StatusCode = response.StatusCode,
+            ErrorMessage = await response.Content.ReadAsStringAsync()
+        };
+    }
+
     public async Task<ApiResult<TResponse>> PostAsync<TRequest, TResponse>(string endpoint, TRequest data, string? authToken = null)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, endpoint)

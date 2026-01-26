@@ -11,4 +11,7 @@ public interface IProductService
 
     Task<IEnumerable<ProductDto>> SearchProductsAsync(SearchFilter filters);
 
+    // Fetch primary image (data URL) for a SKU if available
+    Task<string?> GetPrimaryImageForSkuAsync(string skuId);
+
 }
