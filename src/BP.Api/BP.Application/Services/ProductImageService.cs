@@ -49,6 +49,12 @@ public class ProductImageService(IFileUploadService fileUploadService, IProductI
         return metaInfos.Select(mi => mi.RowKey);
     }
 
+    public async Task<string?> GetPrimaryImageIdForSkuId(string skuId)
+    {
+        var metaInfos = await productImageRepository.GetProductImagesBySku(skuId);
+        return metaInfos.FirstOrDefault(mi => mi.IsPrimary)?.RowKey;
+    }
+
     public async Task<string> UploadAsync(FileUpload file, bool isPrimary = false)
     {
         var blobName = await fileUploadService.UploadAsync(file);

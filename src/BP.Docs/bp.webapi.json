@@ -228,6 +228,27 @@
         }
       }
     },
+    "/api/FileUpload/getPrimaryImageIdForSkuId": {
+      "get": {
+        "tags": [
+          "FileUpload"
+        ],
+        "parameters": [
+          {
+            "name": "skuId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Material/getall": {
       "get": {
         "tags": [
