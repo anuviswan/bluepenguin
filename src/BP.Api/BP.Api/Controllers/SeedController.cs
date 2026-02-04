@@ -1,19 +1,22 @@
-﻿using BP.Api.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
 using BP.Application.Interfaces.SkuAttributes;
 using BP.Shared.Types;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 namespace BP.Api.Controllers;
 
-public class SeedController(IProductController productController, IProductImageService productImageService): Controller
+public class SeedController(IProductController productController, IProductImageService productImageService, IWebHostEnvironment env): Controller
 {
     private IProductController ProductController => productController;
     private IProductImageService ProductImageService => productImageService;
+    private IWebHostEnvironment Env => env;
 
     [AllowAnonymous]
     [HttpPost]
@@ -28,37 +31,41 @@ public class SeedController(IProductController productController, IProductImageS
     {
         var seeds = new List<CreateProductRequest>
         {
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Onam Floral Ring",
                 Price = 199.99,
                 Category = Category.RI.ToString(),
                 Material = Material.RS.ToString(),
-                FeatureCodes = [Feature.FL.ToString()],
+                FeatureCodes = new[] { Feature.FL.ToString() },
                 CollectionCode = Collection.ONM.ToString(),
                 YearCode = 2024,
                 SequenceCode = 1
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Christmas Mirror Pendant",
                 Price = 249.5,
                 Category = Category.PD.ToString(),
                 Material = Material.CY.ToString(),
-                FeatureCodes = [Feature.MR.ToString(), Feature.PL.ToString()],
+                FeatureCodes = new[] { Feature.MR.ToString(), Feature.PL.ToString() },
                 CollectionCode = Collection.CMS.ToString(),
                 YearCode = 2023,
                 SequenceCode = 1
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Ocean Sea Elements Necklace",
                 Price = 299.0,
                 Category = Category.NK.ToString(),
                 Material = Material.BD.ToString(),
-                FeatureCodes = [Feature.SE.ToString(), Feature.ST.ToString()],
+                FeatureCodes = new[] { Feature.SE.ToString(), Feature.ST.ToString() },
                 CollectionCode = Collection.OCN.ToString(),
                 YearCode = 2024,
                 SequenceCode = 2
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Nature Embedded Bracelet",
                 Price = 149.75,
                 Category = Category.BR.ToString(),
@@ -68,62 +75,68 @@ public class SeedController(IProductController productController, IProductImageS
                 YearCode = 2022,
                 SequenceCode = 1
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Traditional Glitter Earrings",
                 Price = 129.0,
                 Category = Category.ER.ToString(),
                 Material = Material.CY.ToString(),
-                FeatureCodes = [Feature.GL.ToString(), Feature.SC.ToString()],
+                FeatureCodes = new[] { Feature.GL.ToString(), Feature.SC.ToString() },
                 CollectionCode = Collection.TRD.ToString(),
                 YearCode = 2021,
                 SequenceCode = 3
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Spotlight Multi-color Ring",
                 Price = 219.99,
                 Category = Category.RI.ToString(),
                 Material = Material.BD.ToString(),
-                FeatureCodes = [Feature.MC.ToString(), Feature.FD.ToString()],
+                FeatureCodes = new[] { Feature.MC.ToString(), Feature.FD.ToString() },
                 CollectionCode = Collection.SLT.ToString(),
                 YearCode = 2024,
                 SequenceCode = 4
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Signature Pendant Metallic",
                 Price = 329.0,
                 Category = Category.PD.ToString(),
                 Material = Material.RS.ToString(),
-                FeatureCodes = [Feature.MT.ToString(), Feature.PL.ToString()],
+                FeatureCodes = new[] { Feature.MT.ToString(), Feature.PL.ToString() },
                 CollectionCode = Collection.SGN.ToString(),
                 YearCode = 2020,
                 SequenceCode = 2
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Vintage Framed Necklace",
                 Price = 279.5,
                 Category = Category.NK.ToString(),
                 Material = Material.CY.ToString(),
-                FeatureCodes = [Feature.FR.ToString(), Feature.PS.ToString()],
+                FeatureCodes = new[] { Feature.FR.ToString(), Feature.PS.ToString() },
                 CollectionCode = Collection.VIN.ToString(),
                 YearCode = 2019,
                 SequenceCode = 5
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Onam Custom Charm Bracelet",
                 Price = 159.0,
                 Category = Category.BR.ToString(),
                 Material = Material.BD.ToString(),
-                FeatureCodes = [Feature.CH.ToString(), Feature.PR.ToString()],
+                FeatureCodes = new[] { Feature.CH.ToString(), Feature.PR.ToString() },
                 CollectionCode = Collection.ONM.ToString(),
                 YearCode = 2024,
                 SequenceCode = 6
             },
-            new() {
+            new CreateProductRequest
+            {
                 Name = "Spotlight Waves Earrings",
                 Price = 139.99,
                 Category = Category.ER.ToString(),
                 Material = Material.RS.ToString(),
-                FeatureCodes = [Feature.WV.ToString(), Feature.IN.ToString()],
+                FeatureCodes = new[] { Feature.WV.ToString(), Feature.IN.ToString() },
                 CollectionCode = Collection.SLT.ToString(),
                 YearCode = 2023,
                 SequenceCode = 2
@@ -144,32 +157,56 @@ public class SeedController(IProductController productController, IProductImageS
 
                 if (!string.IsNullOrWhiteSpace(sku))
                 {
-                    // generate a dummy 200x300 PNG using ImageSharp
-                    using var image = new Image<Rgba32>(200, 300);
-                    image.Mutate(ctx => ctx.BackgroundColor(new Rgba32(211,211,211)));
+                    // Use a static image file stored under the API project's images folder
+                    var imagesFolder = Path.Combine(Env.ContentRootPath, "images");
+                    Directory.CreateDirectory(imagesFolder);
+                    var imagePath = Path.Combine(imagesFolder, "seed.png");
+                    var base64Path = Path.Combine(imagesFolder, "seed.png.base64");
 
-                    await using var ms = new MemoryStream();
-                    await image.SaveAsPngAsync(ms);
-                    ms.Position = 0;
-
-                    var fileUpload = new FileUpload
+                    if (!System.IO.File.Exists(imagePath))
                     {
-                        SkuId = sku,
-                        ImageId = Guid.NewGuid().ToString(),
-                        ContentType = "image/png",
-                        Content = new MemoryStream(ms.ToArray()),
-                        Extension = ".png"
-                    };
-                    fileUpload.Content.Position = 0;
-
-                    try
-                    {
-                        var url = await ProductImageService.UploadAsync(fileUpload, true);
+                        if (System.IO.File.Exists(base64Path))
+                        {
+                            var b64 = await System.IO.File.ReadAllTextAsync(base64Path);
+                            try
+                            {
+                                var bytes = Convert.FromBase64String(b64);
+                                await System.IO.File.WriteAllBytesAsync(imagePath, bytes);
+                            }
+                            catch
+                            {
+                                // ignore failures; fallthrough
+                            }
+                        }
+                        else
+                        {
+                            // fallback: write a minimal 1x1 PNG from embedded base64
+                            var minimal = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=";
+                            var bytes = Convert.FromBase64String(minimal);
+                            await System.IO.File.WriteAllBytesAsync(imagePath, bytes);
+                        }
                     }
-                    catch 
+
+                    if (System.IO.File.Exists(imagePath))
                     {
-                        throw;
-                        // Decide what to do if image upload fails
+                        var imgBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
+                        var fileUpload = new FileUpload
+                        {
+                            SkuId = sku,
+                            ImageId = Guid.NewGuid().ToString(),
+                            ContentType = "image/png",
+                            Content = new MemoryStream(imgBytes),
+                            Extension = ".png"
+                        };
+
+                        try
+                        {
+                            var url = await ProductImageService.UploadAsync(fileUpload, true);
+                        }
+                        catch
+                        {
+                            // decide what to do if upload fails
+                        }
                     }
                 }
             }

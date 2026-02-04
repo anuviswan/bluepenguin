@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36408.4
+# Visual Studio Version 18
+VisualStudioVersion = 18.2.11415.280 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.Api", "BP.Api\BP.Api.csproj", "{D939985A-80DC-292F-844C-AC88CAADF471}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.Application.Interfaces", "BP.Application.Interfaces\BP.Application.Interfaces.csproj", "{09A8F39B-B30F-4B37-B4DE-083238029416}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.Shared", "BP.Shared\BP.Shared.csproj", "{9949A389-6979-4BDD-B438-BE8E4533EEC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BP.Api.Tests", "tests\BP.Api.Tests\BP.Api.Tests.csproj", "{EE096BE3-F664-BEB5-0334-16D893684649}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{9949A389-6979-4BDD-B438-BE8E4533EEC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9949A389-6979-4BDD-B438-BE8E4533EEC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9949A389-6979-4BDD-B438-BE8E4533EEC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE096BE3-F664-BEB5-0334-16D893684649}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE096BE3-F664-BEB5-0334-16D893684649}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE096BE3-F664-BEB5-0334-16D893684649}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE096BE3-F664-BEB5-0334-16D893684649}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
