@@ -8,4 +8,5 @@ public interface IProductImageRepository
     Task<IEnumerable<ProductImageEntity>> GetProductImagesBySku(string sku);
     Task<ProductImageEntity?> GetProductImageById(string sku, string imageId);
     Task<bool> DeleteProductImage(string sku, string imageId);
+    Task DeleteAllAsync();
 }

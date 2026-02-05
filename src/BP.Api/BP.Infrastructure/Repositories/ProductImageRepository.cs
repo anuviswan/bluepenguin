@@ -49,4 +49,19 @@ public class ProductImageRepository([FromKeyedServices("ProductImages")]TableCli
         }
         return results;
     }
+
+    public async Task DeleteAllAsync()
+    {
+        await foreach (var entity in tableClient.QueryAsync<ProductImageEntity>())
+        {
+            try
+            {
+                await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey);
+            }
+            catch
+            {
+                // ignore per-entity failures
+            }
+        }
+    }
 }

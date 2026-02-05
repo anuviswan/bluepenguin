@@ -25,4 +25,13 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
         return results;
 
     }
+
+    public async Task DeleteAllAsync()
+    {
+        // Delete all entities in the table by querying and deleting
+        await foreach (var entity in TableClient.QueryAsync<ProductEntity>())
+        {
+            await TableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey);
+        }
+    }
 }
