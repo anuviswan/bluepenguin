@@ -12,11 +12,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
 
-public class SeedController(IProductController productController, IProductImageService productImageService, IWebHostEnvironment env): Controller
+using Azure.Storage.Blobs;
+
+public class SeedController(IProductController productController, IProductImageService productImageService, IWebHostEnvironment env, BP.Domain.Repository.IProductRepository productRepository, BP.Domain.Repository.IProductImageRepository productImageRepository, BlobContainerClient blobContainer) : Controller
 {
     private IProductController ProductController => productController;
     private IProductImageService ProductImageService => productImageService;
     private IWebHostEnvironment Env => env;
+    private BP.Domain.Repository.IProductRepository ProductRepository => productRepository;
+    private BP.Domain.Repository.IProductImageRepository ProductImageRepository => productImageRepository;
+    private BlobContainerClient BlobContainer => blobContainer;
 
     [AllowAnonymous]
     [HttpPost]
@@ -25,6 +30,52 @@ public class SeedController(IProductController productController, IProductImageS
     {
         await SeedProducts();
         return Ok();
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    [Route("seed/clear")]
+    public async Task<IActionResult> ClearSeed()
+    {
+        try
+        {
+            var allProducts = await ProductRepository.GetAll();
+            var prodList = allProducts?.ToList() ?? new List<BP.Domain.Entities.ProductEntity>();
+            int deletedProducts = 0;
+            int deletedImages = 0;
+
+            // Instead of fetching and deleting each row individually (may miss untracked items),
+            // delete all image metadata rows, then attempt to delete all blobs in the container,
+            // then delete all product rows. This avoids relying on GetAll for complete state.
+
+            // Delete all product image metadata rows
+            await ProductImageRepository.DeleteAllAsync();
+
+            // Delete all blobs under the container (best-effort)
+            await foreach (var blobItem in BlobContainer.GetBlobsAsync())
+            {
+                try
+                {
+                    var blob = BlobContainer.GetBlobClient(blobItem.Name);
+                    await blob.DeleteIfExistsAsync();
+                    deletedImages++;
+                }
+                catch
+                {
+                    // ignore per-blob failures
+                }
+            }
+
+            // Delete all product rows
+            await ProductRepository.DeleteAllAsync();
+
+            // We don't have exact counts for products; return best-effort image count
+            return Ok(new { deletedProducts = -1, deletedImages });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     private async Task SeedProducts()
