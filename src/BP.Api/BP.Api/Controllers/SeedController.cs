@@ -14,9 +14,16 @@ namespace BP.Api.Controllers;
 
 using Azure.Storage.Blobs;
 
-public class SeedController(IProductController productController, IProductImageService productImageService, IWebHostEnvironment env, BP.Domain.Repository.IProductRepository productRepository, BP.Domain.Repository.IProductImageRepository productImageRepository, BlobContainerClient blobContainer) : Controller
+public class SeedController(IProductController productController, 
+    IFeatureService featureService,
+    IProductImageService productImageService, 
+    IWebHostEnvironment env, 
+    BP.Domain.Repository.IProductRepository productRepository, 
+    BP.Domain.Repository.IProductImageRepository productImageRepository, 
+    BlobContainerClient blobContainer) : Controller
 {
     private IProductController ProductController => productController;
+    private IFeatureService FeatureService => featureService;
     private IProductImageService ProductImageService => productImageService;
     private IWebHostEnvironment Env => env;
     private BP.Domain.Repository.IProductRepository ProductRepository => productRepository;
@@ -28,6 +35,7 @@ public class SeedController(IProductController productController, IProductImageS
     [Route("seed/execute")]
     public async Task<IActionResult> ExecuteSeed()
     {
+        await SeedFeatures();
         await SeedProducts();
         return Ok();
     }
@@ -39,8 +47,6 @@ public class SeedController(IProductController productController, IProductImageS
     {
         try
         {
-            var allProducts = await ProductRepository.GetAll();
-            var prodList = allProducts?.ToList() ?? new List<BP.Domain.Entities.ProductEntity>();
             int deletedProducts = 0;
             int deletedImages = 0;
 
@@ -78,6 +84,59 @@ public class SeedController(IProductController productController, IProductImageS
         }
     }
 
+
+    private Dictionary<string, string> Features => new Dictionary<string, string>
+    {
+        { "FL", "Floral Inclusion" },
+        { "EM", "Embedded Object" },
+        { "MR", "Mirror Work" },
+        { "SE", "Sea Elements" },
+        { "ST", "Stones" },
+        { "PR", "Personal Elements" },
+        { "GL", "Glitter" },
+        { "FR", "Framed Finish" },
+        { "CH", "Metal Charm" },
+        { "MC", "Multi Color" },
+        { "SC", "Single Color" },
+        { "MT", "Metalic Bead" },
+        { "FD", "Flower Bead" },
+        { "CD", "Crackle Bead" },
+        { "PL", "Pendant Large" },
+        { "PS", "Pendant Small" },
+        { "WV", "Waves" },
+        { "AG", "Artificial Grass" },
+        { "IN", "Invisible" },
+        { "RS", "Rhine Stone" },
+        { "CE", "CatEyeBead" },
+        { "GG", "Gungru" },
+        { "FS", "Frameless" },
+        { "BL", "Pendant Bail" },
+        { "JB", "Jelly Bead" },
+        { "MF", "Matt Finish Bead" },
+        { "AP", "Artificial Pearl" },
+        { "ML", "Mona Lisa Pendant" },
+        { "GP", "Glass Pearl Bead" },
+        { "CR", "Crystal Rondelle Bead" },
+        { "CG", "Crysal Glass Bead" },
+        { "AB", "Agate Bead" },
+        { "TG", "Crystal Tyre Glass Bead" },
+        { "MH", "Multi Howlite" }
+    };
+
+    private async Task SeedFeatures()
+    {
+        foreach (var feature in Features)
+        {
+            try
+            {
+                await FeatureService.Add(feature.Key,feature.Value);
+            }
+            catch
+            {
+                // decide what to do if feature creation fails; for now, ignore and continue
+            }
+        }
+    }
     private async Task SeedProducts()
     {
         var seeds = new List<CreateProductRequest>
@@ -88,7 +147,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 199.99,
                 Category = Category.RI.ToString(),
                 Material = Material.RS.ToString(),
-                FeatureCodes = new[] { Feature.FL.ToString() },
+                FeatureCodes = new[] { Features["FL"] },
                 CollectionCode = Collection.ONM.ToString(),
                 YearCode = 2024,
                 SequenceCode = 1
@@ -99,7 +158,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 249.5,
                 Category = Category.PD.ToString(),
                 Material = Material.CY.ToString(),
-                FeatureCodes = new[] { Feature.MR.ToString(), Feature.PL.ToString() },
+                FeatureCodes = new[] { Features["MR"], Features["PL"]},
                 CollectionCode = Collection.CMS.ToString(),
                 YearCode = 2023,
                 SequenceCode = 1
@@ -110,7 +169,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 299.0,
                 Category = Category.NK.ToString(),
                 Material = Material.BD.ToString(),
-                FeatureCodes = new[] { Feature.SE.ToString(), Feature.ST.ToString() },
+                FeatureCodes = new[] { Features["SE"], Features["ST"]},
                 CollectionCode = Collection.OCN.ToString(),
                 YearCode = 2024,
                 SequenceCode = 2
@@ -121,7 +180,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 149.75,
                 Category = Category.BR.ToString(),
                 Material = Material.RS.ToString(),
-                FeatureCodes = new[] { Feature.EM.ToString() },
+                FeatureCodes = new[] { Features["EM"] },
                 CollectionCode = Collection.NAT.ToString(),
                 YearCode = 2022,
                 SequenceCode = 1
@@ -132,7 +191,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 129.0,
                 Category = Category.ER.ToString(),
                 Material = Material.CY.ToString(),
-                FeatureCodes = new[] { Feature.GL.ToString(), Feature.SC.ToString() },
+                FeatureCodes = new[] { Features["GL"], Features["SC"]},
                 CollectionCode = Collection.TRD.ToString(),
                 YearCode = 2021,
                 SequenceCode = 3
@@ -143,7 +202,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 219.99,
                 Category = Category.RI.ToString(),
                 Material = Material.BD.ToString(),
-                FeatureCodes = new[] { Feature.MC.ToString(), Feature.FD.ToString() },
+                FeatureCodes = new[] { Features["MC"], Features["FD"]},
                 CollectionCode = Collection.SLT.ToString(),
                 YearCode = 2024,
                 SequenceCode = 4
@@ -154,7 +213,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 329.0,
                 Category = Category.PD.ToString(),
                 Material = Material.RS.ToString(),
-                FeatureCodes = new[] { Feature.MT.ToString(), Feature.PL.ToString() },
+                FeatureCodes = new[] { Features["MT"], Features["PL"]},
                 CollectionCode = Collection.SGN.ToString(),
                 YearCode = 2020,
                 SequenceCode = 2
@@ -165,7 +224,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 279.5,
                 Category = Category.NK.ToString(),
                 Material = Material.CY.ToString(),
-                FeatureCodes = new[] { Feature.FR.ToString(), Feature.PS.ToString() },
+                FeatureCodes = new[] { Features["FR"], Features["PS"] },
                 CollectionCode = Collection.VIN.ToString(),
                 YearCode = 2019,
                 SequenceCode = 5
@@ -176,7 +235,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 159.0,
                 Category = Category.BR.ToString(),
                 Material = Material.BD.ToString(),
-                FeatureCodes = new[] { Feature.CH.ToString(), Feature.PR.ToString() },
+                FeatureCodes = new[] { Features["CH"], Features["PR"]},
                 CollectionCode = Collection.ONM.ToString(),
                 YearCode = 2024,
                 SequenceCode = 6
@@ -187,7 +246,7 @@ public class SeedController(IProductController productController, IProductImageS
                 Price = 139.99,
                 Category = Category.ER.ToString(),
                 Material = Material.RS.ToString(),
-                FeatureCodes = new[] { Feature.WV.ToString(), Feature.IN.ToString() },
+                FeatureCodes = new[] { Features["WV"], Features["IN"] },
                 CollectionCode = Collection.SLT.ToString(),
                 YearCode = 2023,
                 SequenceCode = 2

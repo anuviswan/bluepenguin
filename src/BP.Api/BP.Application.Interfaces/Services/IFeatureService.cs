@@ -1,8 +1,9 @@
-﻿namespace BP.Application.Interfaces.Services;
+﻿using BP.Domain.Entities;
 
-using BP.Application.Interfaces.SkuAttributes;
+namespace BP.Application.Interfaces.Services;
 
 public interface IFeatureService
 {
-    IEnumerable<Feature> GetAllFeatures();
+    Task Add(string featureId, string featureName);
+    Task<IEnumerable<MetaDataEntity>> GetAllFeatures();
 }
