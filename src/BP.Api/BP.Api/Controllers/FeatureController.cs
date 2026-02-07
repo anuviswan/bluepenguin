@@ -1,4 +1,4 @@
-﻿using BP.Api.ExtensionMethods;
+﻿using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,17 +17,36 @@ public class FeatureController : BaseController
 
     [HttpGet]
     [Route("getall")]
-    public Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll()
     {
         Logger.LogInformation("Get All Features");
         try
         {
-            var features = _featureService.GetAllFeatures().Select(x => new { Id = x.ToString(), Name = x.GetDescription() });
-            return Task.FromResult<IActionResult>(Ok(features));
+            var features = await _featureService.GetAllFeatures();
+            var response = features.Select(x => new { Id = x.RowKey, Name = x.Title });
+            return Ok(response);
         }
         catch (Exception e)
         {
-            return Task.FromResult<IActionResult>(BadRequest(e));
+            return BadRequest(e);
         }
+    }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateFeature([FromBody] AddFeatureRequest feature)
+    {
+        try
+        {
+            if (feature == null || string.IsNullOrWhiteSpace(feature.FeatureId) || string.IsNullOrWhiteSpace(feature.FeatureName))
+                return BadRequest("Invalid feature");
+
+            await _featureService.Add(feature.FeatureId, feature.FeatureName);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
+
     }
 }

@@ -11,6 +11,7 @@ public static class IServiceCollectionExtension
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddTransient<IProductController, ProductController>();
+        services.AddTransient<IMetaDataService, MetaDataService>();
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IAuthenticationService, AuthenticationService>();
         services.AddTransient<IProductService, ProductService>();
@@ -31,6 +32,7 @@ public static class IServiceCollectionExtension
         services.AddTransient<BP.Domain.Repository.IUserRepository, BP.Infrastructure.Repositories.UserRepository>();
         services.AddTransient<BP.Domain.Repository.IFileUploadRepository, BP.Infrastructure.Repositories.AzureBlobFileRepository>();
         services.AddTransient<BP.Domain.Repository.IProductImageRepository, BP.Infrastructure.Repositories.ProductImageRepository>();
+        services.AddTransient<BP.Domain.Repository.IMetaDataRepository, BP.Infrastructure.Repositories.MetaDataRepository>();
         return services;
     }
 
@@ -65,6 +67,19 @@ public static class IServiceCollectionExtension
             var config = sp.GetRequiredService<IConfiguration>();
             var connectionString = config.GetConnectionString("tables");
             var tableName = config["TableNames:User"] ?? "Users";
+
+            var serviceClient = new TableServiceClient(connectionString);
+            var client = serviceClient.GetTableClient(tableName);
+            client.CreateIfNotExists();
+            return client;
+        });
+
+
+        services.AddKeyedSingleton<TableClient>("MetaData", (sp, key) =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connectionString = config.GetConnectionString("tables");
+            var tableName = config["TableNames:MetaData"] ?? "MetaData";
 
             var serviceClient = new TableServiceClient(connectionString);
             var client = serviceClient.GetTableClient(tableName);

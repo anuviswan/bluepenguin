@@ -1,12 +1,26 @@
 ﻿using BP.Application.Interfaces.Services;
-using BP.Application.Interfaces.SkuAttributes;
+using BP.Domain.Entities;
 
 namespace BP.Application.Services;
 
-public class FeatureService : IFeatureService
+public class FeatureService(IMetaDataService metaDataService) : IFeatureService
 {
-    public IEnumerable<Feature> GetAllFeatures()
+    public const string FEATURE_KEY = "Feature";
+    public IMetaDataService MetaDataService => metaDataService;
+
+    public async Task Add(string featureId, string featureName)
     {
-        return Enum.GetValues(typeof(Feature)).Cast<Feature>();
+        await MetaDataService.Add(new MetaDataEntity
+        {
+            PartitionKey = FEATURE_KEY,
+            RowKey = featureId,
+            Title = featureName
+        });
     }
+
+    public async Task<IEnumerable<MetaDataEntity>> GetAllFeatures()
+    {
+        return await MetaDataService.GetByPartition(FEATURE_KEY);
+    }
+
 }
