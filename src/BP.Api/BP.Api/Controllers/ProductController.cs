@@ -122,7 +122,19 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
         try
         {
             var products = await ProductService.GetAllProducts();
-            return Ok(products);
+            var response = products.Select(p => new
+            {
+                p.SKU,
+                CategoryCode =  p.PartitionKey,
+                p.ProductName,
+                p.Price,
+                p.Stock,
+                p.MaterialCode,
+                p.CollectionCode,
+                p.FeatureCodes,
+                p.YearCode
+            });
+            return Ok(response);
         }
         catch (Exception e)
         {
