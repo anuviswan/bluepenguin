@@ -25,6 +25,21 @@ public class MetaDataRepository([FromKeyedServices("MetaData")] TableClient tabl
         }
     }
 
+    public async Task DeleteAllAsync()
+    {
+        await foreach (var entity in tableClient.QueryAsync<MetaDataEntity>())
+        {
+            try
+            {
+                await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey);
+            }
+            catch
+            {
+                // ignore per-entity failures
+            }
+        }
+    }
+
     public async Task<IEnumerable<MetaDataEntity>> GetByPartition(string partitionKey)
     {
         var results = new List<MetaDataEntity>();
