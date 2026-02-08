@@ -1,5 +1,7 @@
 ﻿using Azure;
 using Azure.Data.Tables;
+using System.Runtime.Serialization;
+using System.Text.Json;
 
 namespace BP.Domain.Entities;
 
@@ -7,6 +9,24 @@ public record ProductEntity : ITableEntity
 {
     public string? ProductName { get; set; }
     public string? ProductDescription { get; set; }
+    public string ProductCareInstructionsJson
+    {
+        get => JsonSerializer.Serialize(ProductCareInstructions);
+        set => ProductCareInstructions = JsonSerializer.Deserialize<List<string>>(value) ?? [];
+    }
+
+    [IgnoreDataMember]
+    public IEnumerable<string> ProductCareInstructions { get; set; } = [];
+    
+    public string SpecificationsJson
+    {
+        get => JsonSerializer.Serialize(Specifications);
+        set => Specifications = JsonSerializer.Deserialize<List<string>>(value) ?? [];
+    }
+
+    [IgnoreDataMember]
+    public IEnumerable<string> Specifications { get; set; } = [];
+
     public string SKU { get; set; } = null!;
     public double Price { get; set; }
     public int Stock { get; set; }

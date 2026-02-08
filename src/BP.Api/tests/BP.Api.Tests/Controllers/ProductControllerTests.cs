@@ -30,10 +30,12 @@ public class ProductControllerTests
 
         var req = new CreateProductRequest
         {
-            Name = "Test",
+            ProductName = "Test",
             Description = "Test Description",
+            ProductCareInstructions = new[] { "Care1", "Care2" },
+            Specifications = new[] { "Spec1", "Spec2" },
             Price = 10,
-            Category = "RI",
+            CategoryCode = "RI",
             Material = "RS",
             FeatureCodes = new[] { "FL" },
             CollectionCode = "ONM",

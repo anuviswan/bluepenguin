@@ -6,8 +6,8 @@ namespace BP.Api.Controllers
     public interface IProductController
     {
         Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product);
-        Task<IActionResult> GetAllProducts();
+        Task<IActionResult> GetAllProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 5);
         Task<IActionResult> GetProduct([FromQuery] string sku);
-        Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters);
+        Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50);
     }
 }

@@ -2,11 +2,14 @@
 
 public record CreateProductRequest
 {
-    public string Name { get; init; } = null!;
+    public string ProductName { get; init; } = null!;
     public string Description { get; init; } = string.Empty;
+    public IEnumerable<string> Specifications { get; init; } = [];
+
+    public IEnumerable<string> ProductCareInstructions { get; init; } = [];
     public double Price { get; init; }
 
-    public string Category { get; init; } = null!;
+    public string CategoryCode { get; init; } = null!;
 
     public string Material { get; init; } = null!;
     public IEnumerable<string> FeatureCodes { get; init; } = [];
