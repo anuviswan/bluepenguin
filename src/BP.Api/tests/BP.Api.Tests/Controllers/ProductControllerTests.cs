@@ -32,6 +32,8 @@ public class ProductControllerTests
         {
             Name = "Test",
             Description = "Test Description",
+            ProductCareInstructions = new[] { "Care1", "Care2" },
+            Specifications = new[] { "Spec1", "Spec2" },
             Price = 10,
             Category = "RI",
             Material = "RS",
