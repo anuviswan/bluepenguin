@@ -31,6 +31,7 @@ public class ProductControllerTests
         var req = new CreateProductRequest
         {
             Name = "Test",
+            Description = "Test Description",
             Price = 10,
             Category = "RI",
             Material = "RS",

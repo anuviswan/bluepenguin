@@ -6,6 +6,7 @@ namespace BP.Domain.Entities;
 public record ProductEntity : ITableEntity
 {
     public string? ProductName { get; set; }
+    public string? ProductDescription { get; set; }
     public string SKU { get; set; } = null!;
     public double Price { get; set; }
     public int Stock { get; set; }
