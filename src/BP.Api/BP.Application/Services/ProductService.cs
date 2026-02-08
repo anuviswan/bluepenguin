@@ -133,7 +133,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         var parts = sku.Split('-');
         if (parts.Length > 0)
         {
-            return parts[0]; // Return the category part
+            return parts[0].Substring(0,2); // Return the category part
         }
         throw new ArgumentException("Invalid SKU format");
     }
