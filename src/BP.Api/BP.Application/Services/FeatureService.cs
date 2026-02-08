@@ -8,13 +8,14 @@ public class FeatureService(IMetaDataService metaDataService) : IFeatureService
     public const string FEATURE_KEY = "Feature";
     public IMetaDataService MetaDataService => metaDataService;
 
-    public async Task Add(string featureId, string featureName)
+    public async Task Add(string featureId, string featureName, string? symbolic = null)
     {
         await MetaDataService.Add(new MetaDataEntity
         {
             PartitionKey = FEATURE_KEY,
             RowKey = featureId,
-            Title = featureName
+            Title = featureName,
+            Notes = symbolic
         });
     }
 
