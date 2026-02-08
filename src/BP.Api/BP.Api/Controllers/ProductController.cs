@@ -42,13 +42,15 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             }
 
             // use SKU Generator service to create SKU
-            var skuCode = await SkuGeneratorService.GetSkuCode(product.Category, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode);
+            var skuCode = await SkuGeneratorService.GetSkuCode(product.CategoryCode, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode);
             var newProduct = new ProductEntity
             {
-                PartitionKey = product.Category,
+                PartitionKey = product.CategoryCode,
                 RowKey = skuCode,
-                ProductName = product.Name,
+                ProductName = product.ProductName,
                 ProductDescription = product.Description,
+                ProductCareInstructions = product.ProductCareInstructions,
+                Specifications = product.Specifications,
                 Price = product.Price,
                 SKU = skuCode,
                 Stock = 0,
@@ -129,6 +131,8 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 CategoryCode =  p.PartitionKey,
                 p.ProductName,
                 p.ProductDescription,
+                p.ProductCareInstructions,
+                p.Specifications,
                 p.Price,
                 p.Stock,
                 p.MaterialCode,
