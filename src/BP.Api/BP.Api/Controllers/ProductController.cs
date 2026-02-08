@@ -119,28 +119,37 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// <returns>List of all products or an error result.</returns>
     [HttpGet]
     [Route("getall")]
-    public async Task<IActionResult> GetAllProducts()
+    public async Task<IActionResult> GetAllProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
     {
         Logger.LogInformation("Getting all Products");
         try
         {
-            var products = await ProductService.GetAllProducts();
-            var response = products.Select(p => new
-            {
-                p.SKU,
-                CategoryCode =  p.PartitionKey,
-                p.ProductName,
-                p.ProductDescription,
-                p.ProductCareInstructions,
-                p.Specifications,
-                p.Price,
-                p.Stock,
-                p.MaterialCode,
-                p.CollectionCode,
-                p.FeatureCodes,
-                p.YearCode
-            });
-            return Ok(response);
+            var products = (await ProductService.GetAllProducts()).ToList();
+
+            var totalCount = products.Count;
+            if (page <= 0) page = 1;
+            if (pageSize <= 0) pageSize = 50;
+
+            var paged = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new
+                {
+                    p.SKU,
+                    CategoryCode = p.PartitionKey,
+                    p.ProductName,
+                    p.ProductDescription,
+                    p.ProductCareInstructions,
+                    p.Specifications,
+                    p.Price,
+                    p.Stock,
+                    p.MaterialCode,
+                    p.CollectionCode,
+                    p.FeatureCodes,
+                    p.YearCode
+                });
+
+            return Ok(new { totalCount, page, pageSize, items = paged });
         }
         catch (Exception e)
         {
@@ -164,7 +173,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// </remarks>
     [HttpPost]
     [Route("search")]
-    public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters)
+    public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50)
     {
         Logger.LogInformation("Searching products with filters");
 
@@ -181,12 +190,18 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 return BadRequest("No filters provided");
             }
 
-            var results = await ProductService.SearchProductsAsync(filters.SelectedCategories,
+            var results = (await ProductService.SearchProductsAsync(filters.SelectedCategories,
                 filters.SelectedMaterials,
                 filters.SelectedCollections,
                 filters.SelectedFeatures,
-                filters.SelectedYears);
-            return Ok(results);
+                filters.SelectedYears)).ToList();
+
+            var totalCount = results.Count;
+            if (page <= 0) page = 1;
+            if (pageSize <= 0) pageSize = 50;
+
+            var paged = results.Skip((page - 1) * pageSize).Take(pageSize);
+            return Ok(new { totalCount, page, pageSize, items = paged });
         }
         catch (OperationCanceledException)
         {
