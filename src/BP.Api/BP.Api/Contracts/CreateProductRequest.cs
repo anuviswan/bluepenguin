@@ -3,6 +3,7 @@
 public record CreateProductRequest
 {
     public string Name { get; init; } = null!;
+    public string Description { get; init; } = string.Empty;
     public double Price { get; init; }
 
     public string Category { get; init; } = null!;

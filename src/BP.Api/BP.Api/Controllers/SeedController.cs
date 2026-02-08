@@ -147,6 +147,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Onam Floral Ring",
+                Description = "Celebrate the spirit of Onam with this exquisite floral ring, featuring vibrant blooms and intricate craftsmanship that captures the essence of the festival.",
                 Price = 199.99,
                 Category = Category.RI.ToString(),
                 Material = Material.RS.ToString(),
@@ -158,6 +159,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Christmas Mirror Pendant",
+                Description = "Add a touch of festive sparkle to your holiday ensemble with this Christmas mirror pendant, reflecting the joy and warmth of the season in its shimmering design.",
                 Price = 249.5,
                 Category = Category.PD.ToString(),
                 Material = Material.CY.ToString(),
@@ -169,6 +171,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Ocean Sea Elements Necklace",
+                Description = "Dive into the beauty of the ocean with this sea elements necklace, featuring a blend of shells, stones, and marine-inspired charms that evoke the tranquility and allure of the sea.",
                 Price = 299.0,
                 Category = Category.NK.ToString(),
                 Material = Material.BD.ToString(),
@@ -180,6 +183,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Nature Embedded Bracelet",
+                Description = "Embrace the beauty of nature with this embedded bracelet, showcasing real flowers and natural elements encased in resin, creating a wearable piece of art that celebrates the wonders of the outdoors.",
                 Price = 149.75,
                 Category = Category.BR.ToString(),
                 Material = Material.RS.ToString(),
@@ -191,6 +195,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Traditional Glitter Earrings",
+                Description = "Add a touch of sparkle to your traditional attire with these glitter earrings, featuring a dazzling design that combines classic elegance with a modern twist, perfect for festive occasions and celebrations.",
                 Price = 129.0,
                 Category = Category.ER.ToString(),
                 Material = Material.CY.ToString(),
@@ -202,6 +207,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Spotlight Multi-color Ring",
+                Description = "Make a bold statement with this spotlight multi-color ring, featuring a vibrant array of stones that catch the light from every angle, creating a dazzling display of color and brilliance on your finger.",
                 Price = 219.99,
                 Category = Category.RI.ToString(),
                 Material = Material.BD.ToString(),
@@ -213,6 +219,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Signature Pendant Metallic",
+                Description = "Elevate your style with this signature pendant metallic, featuring a sleek and modern design adorned with metallic beads that add a touch of sophistication and shine to any outfit.",
                 Price = 329.0,
                 Category = Category.PD.ToString(),
                 Material = Material.RS.ToString(),
@@ -224,6 +231,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Vintage Framed Necklace",
+                Description = "Step back in time with this vintage framed necklace, featuring an elegant pendant encased in a delicate frame, evoking the charm and sophistication of bygone eras for a timeless accessory.",
                 Price = 279.5,
                 Category = Category.NK.ToString(),
                 Material = Material.CY.ToString(),
@@ -235,6 +243,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Onam Custom Charm Bracelet",
+                Description = "Celebrate Onam with a custom charm bracelet, featuring a collection of meaningful charms that represent the spirit of the festival, allowing you to create a personalized piece that tells your unique story.",
                 Price = 159.0,
                 Category = Category.BR.ToString(),
                 Material = Material.BD.ToString(),
@@ -246,6 +255,7 @@ public class SeedController(IProductController productController,
             new CreateProductRequest
             {
                 Name = "Spotlight Waves Earrings",
+                Description = "Make a splash with these spotlight waves earrings, featuring a dynamic design that captures the movement and energy of ocean waves, creating a stunning accessory that adds a touch of drama to your look.",
                 Price = 139.99,
                 Category = Category.ER.ToString(),
                 Material = Material.RS.ToString(),
