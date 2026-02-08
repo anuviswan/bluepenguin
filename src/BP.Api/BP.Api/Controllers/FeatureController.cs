@@ -23,7 +23,7 @@ public class FeatureController : BaseController
         try
         {
             var features = await _featureService.GetAllFeatures();
-            var response = features.Select(x => new { Id = x.RowKey, Name = x.Title });
+            var response = features.Select(x => new { Id = x.RowKey, Name = x.Title, SymbolicText = x.Notes });
             return Ok(response);
         }
         catch (Exception e)
@@ -40,7 +40,7 @@ public class FeatureController : BaseController
             if (feature == null || string.IsNullOrWhiteSpace(feature.FeatureId) || string.IsNullOrWhiteSpace(feature.FeatureName))
                 return BadRequest("Invalid feature");
 
-            await _featureService.Add(feature.FeatureId, feature.FeatureName);
+            await _featureService.Add(feature.FeatureId, feature.FeatureName, feature.symbolic);
             return Ok();
         }
         catch (Exception e)

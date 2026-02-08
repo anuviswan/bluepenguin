@@ -87,43 +87,43 @@ public class SeedController(IProductController productController,
         }
     }
 
-
-    private Dictionary<string, string> Features => new Dictionary<string, string>
+    private record FeatureSeed(string Code,  string Name, string symbolicText);
+    private List<FeatureSeed> Features => new List<FeatureSeed>
     {
-        { "FL", "Floral Inclusion" },
-        { "EM", "Embedded Object" },
-        { "MR", "Mirror Work" },
-        { "SE", "Sea Elements" },
-        { "ST", "Stones" },
-        { "PR", "Personal Elements" },
-        { "GL", "Glitter" },
-        { "FR", "Framed Finish" },
-        { "CH", "Metal Charm" },
-        { "MC", "Multi Color" },
-        { "SC", "Single Color" },
-        { "MT", "Metalic Bead" },
-        { "FD", "Flower Bead" },
-        { "CD", "Crackle Bead" },
-        { "PL", "Pendant Large" },
-        { "PS", "Pendant Small" },
-        { "WV", "Waves" },
-        { "AG", "Artificial Grass" },
-        { "IN", "Invisible" },
-        { "RS", "Rhine Stone" },
-        { "CE", "CatEyeBead" },
-        { "GG", "Gungru" },
-        { "FS", "Frameless" },
-        { "BL", "Pendant Bail" },
-        { "JB", "Jelly Bead" },
-        { "MF", "Matt Finish Bead" },
-        { "AP", "Artificial Pearl" },
-        { "ML", "Mona Lisa Pendant" },
-        { "GP", "Glass Pearl Bead" },
-        { "CR", "Crystal Rondelle Bead" },
-        { "CG", "Crysal Glass Bead" },
-        { "AB", "Agate Bead" },
-        { "TG", "Crystal Tyre Glass Bead" },
-        { "MH", "Multi Howlite" }
+        new("FL", "Floral Inclusion", "Joy, creativity"),
+        new("EM", "Embedded Object", "Personal meaning"),
+        new("MR", "Mirror Work", "Reflection, brilliance"),
+        new("SE", "Sea Elements", "Calm, flow"),
+        new("ST", "Stones", "Strength, grounding"),
+        new("PR", "Personal Elements", "Identity, connection"),
+        new("GL", "Glitter", "Sparkle, celebration"),
+        new("FR", "Framed Finish", "Structure, emphasis"),
+        new("CH", "Metal Charm", "Strength, protection"),
+        new("MC", "Multi Color", "Vibrance, diversity"),
+        new("SC", "Single Color", "Simplicity, focus"),
+        new("MT", "Metalic Bead", "Strength, grounding"),
+        new("FD", "Flower Bead", "Joy, creativity"),
+        new("CD", "Crackle Bead", "Transformation, balance"),
+        new("PL", "Pendant Large", "Bold presence"),
+        new("PS", "Pendant Small", "Subtle elegance"),
+        new("WV", "Waves", "Movement, rhythm"),
+        new("AG", "Artificial Grass", "Nature-inspired"),
+        new("IN", "Invisible", "Minimal presence"),
+        new("RS", "Rhine Stone", "Confidence, sparkle"),
+        new("CE", "CatEyeBead", "Protection, focus"),
+        new("GG", "Gungru", "Energy, movement"),
+        new("FS", "Frameless", "Freedom, openness"),
+        new("BL", "Pendant Bail", "Connection, support"),
+        new("JB", "Jelly Bead", "Playfulness"),
+        new("MF", "Matt Finish Bead", "Calm, grounding"),
+        new("AP", "Artificial Pearl", "Peace, elegance"),
+        new("ML", "Mona Lisa Pendant", "Confidence, expression"),
+        new("GP", "Glass Pearl Bead", "Harmony, soothing"),
+        new("CR", "Crystal Rondelle Bead", "Clarity, intention"),
+        new("CG", "Crysal Glass Bead", "Clarity, positivity"),
+        new("AB", "Agate Bead", "Grounding, stability"),
+        new("TG", "Crystal Tyre Glass Bead", "Protection, resilience"),
+        new("MH", "Multi Howlite", "Calm, patience")
     };
 
     private async Task SeedFeatures()
@@ -132,7 +132,7 @@ public class SeedController(IProductController productController,
         {
             try
             {
-                await FeatureService.Add(feature.Key,feature.Value);
+                await FeatureService.Add(feature.Code,feature.Name, feature.symbolicText);
             }
             catch
             {

@@ -1,3 +1,3 @@
 ﻿namespace BP.Api.Contracts;
 
-public record AddFeatureRequest(string FeatureId, string FeatureName);
+public record AddFeatureRequest(string FeatureId, string FeatureName,string? symbolic);
