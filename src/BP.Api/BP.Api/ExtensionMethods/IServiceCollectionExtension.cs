@@ -13,6 +13,7 @@ public static class IServiceCollectionExtension
         services.AddTransient<IProductController, ProductController>();
         services.AddTransient<IMetaDataService, MetaDataService>();
         services.AddTransient<ITokenService, TokenService>();
+        services.AddTransient<ICollectionService, CollectionService>();
         services.AddTransient<IAuthenticationService, AuthenticationService>();
         services.AddTransient<IProductService, ProductService>();
         services.AddTransient<ICollectionService, CollectionService>();

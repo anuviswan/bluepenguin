@@ -1,8 +1,9 @@
-﻿namespace BP.Application.Interfaces.Services;
+﻿using BP.Domain.Entities;
 
-using BP.Application.Interfaces.SkuAttributes;
+namespace BP.Application.Interfaces.Services;
 
 public interface ICollectionService
 {
-    IEnumerable<Collection> GetAllCollections();
+    Task Add(string code, string title);
+    Task<IEnumerable<MetaDataEntity>> GetAllCollections();
 }
