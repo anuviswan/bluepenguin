@@ -1,12 +1,25 @@
 ﻿using BP.Application.Interfaces.Services;
-using BP.Application.Interfaces.SkuAttributes;
+using BP.Domain.Entities;
 
 namespace BP.Application.Services;
 
-public class CollectionService : ICollectionService
+public class CollectionService(IMetaDataService metaDataService) : ICollectionService
 {
-    public IEnumerable<Collection> GetAllCollections()
+    public const string COLLECTION_KEY = "Collection";
+    public IMetaDataService MetaDataService => metaDataService;
+
+    public async Task Add(string code, string title)
     {
-        return Enum.GetValues(typeof(Collection)).Cast<Collection>();
+        await MetaDataService.Add(new MetaDataEntity
+        {
+            PartitionKey = COLLECTION_KEY,
+            RowKey = code,
+            Title = title
+        });
+    }
+
+    public async Task<IEnumerable<MetaDataEntity>> GetAllCollections()
+    {
+        return await MetaDataService.GetByPartition(COLLECTION_KEY);
     }
 }

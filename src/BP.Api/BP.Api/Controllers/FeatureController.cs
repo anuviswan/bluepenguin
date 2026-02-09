@@ -23,7 +23,7 @@ public class FeatureController : BaseController
         try
         {
             var features = await _featureService.GetAllFeatures();
-            var response = features.Select(x => new { Id = x.RowKey, Name = x.Title, SymbolicText = x.Notes });
+            var response = features.Select(x => new { Id = x.RowKey, Name = x.Title});
             return Ok(response);
         }
         catch (Exception e)

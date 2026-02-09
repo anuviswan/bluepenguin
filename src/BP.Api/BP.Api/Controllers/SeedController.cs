@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using BP.Api.Contracts;
+﻿using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
 using BP.Application.Interfaces.SkuAttributes;
 using BP.Shared.Types;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -16,6 +11,7 @@ using Azure.Storage.Blobs;
 
 public class SeedController(IProductController productController, 
     IFeatureService featureService,
+    ICollectionService collectionService,
     IProductImageService productImageService, 
     IWebHostEnvironment env, 
     BP.Domain.Repository.IProductRepository productRepository, 
@@ -25,6 +21,7 @@ public class SeedController(IProductController productController,
 {
     private IProductController ProductController => productController;
     private IFeatureService FeatureService => featureService;
+    private ICollectionService CollectionService => collectionService;
     private IProductImageService ProductImageService => productImageService;
     private IWebHostEnvironment Env => env;
     private BP.Domain.Repository.IProductRepository ProductRepository => productRepository;
@@ -36,6 +33,7 @@ public class SeedController(IProductController productController,
     [Route("seed/execute")]
     public async Task<IActionResult> ExecuteSeed()
     {
+        await SeedCollections();
         await SeedFeatures();
         await SeedProducts();
         return Ok();
@@ -87,6 +85,20 @@ public class SeedController(IProductController productController,
         }
     }
 
+    private record CollectionSeed(string Code, string Title);
+
+    private List<CollectionSeed> Collections => new List<CollectionSeed>
+    {
+        new("ONM", "Onam Collection"),
+        new("CMS", "Christmas Collection"),
+        new("OCN", "Ocean Collection"),
+        new("NAT", "Nature Collection"),
+        new("TRD", "Traditional Collection"),
+        new("SLT", "Spotlight Collection"),
+        new("SGN", "Signature Collection"),
+        new("VIN", "Vintage Collection")
+    };
+
     private record FeatureSeed(string Code,  string Name, string symbolicText);
     private List<FeatureSeed> Features => new List<FeatureSeed>
     {
@@ -126,6 +138,20 @@ public class SeedController(IProductController productController,
         new("MH", "Multi Howlite", "Calm, patience")
     };
 
+    private async Task SeedCollections()
+    {
+        foreach (var collection in Collections)
+        {
+            try
+            {
+                await CollectionService.Add(collection.Code, collection.Title);
+            }
+            catch
+            {
+                // decide what to do if collection creation fails; for now, ignore and continue
+            }
+        }
+    }
     private async Task SeedFeatures()
     {
         foreach (var feature in Features)
