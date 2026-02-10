@@ -100,7 +100,23 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 Logger.LogWarning($"Product with SKU {sku} not found");
                 return NotFound($"Product with SKU {sku} not found");
             }
-            return Ok(product);
+
+            var response = new 
+            {
+                product.SKU,
+                CategoryCode = product.PartitionKey,
+                product.ProductName,
+                product.ProductDescription,
+                product.ProductCareInstructions,
+                product.Specifications,
+                product.Price,
+                product.Stock,
+                product.MaterialCode,
+                product.CollectionCode,
+                FeatureCodes = product.FeatureCodes.Split(','),
+                product.YearCode
+            };
+            return Ok(response);
         }
         catch (Exception e)
         {
