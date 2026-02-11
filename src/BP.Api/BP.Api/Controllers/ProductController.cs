@@ -1,6 +1,7 @@
 ﻿using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
 using BP.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -29,6 +30,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// <returns>The SKU string of the created product or an error result.</returns>
     [HttpPost]
     [Route("create")]
+    [Authorize]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product)
     {
         Logger.LogInformation("Creating Product");

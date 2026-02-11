@@ -1,8 +1,10 @@
 ﻿
 using BP.Api.Contracts;
+using BP.Api.Options;
 using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace BP.Api.Controllers;
 
@@ -11,12 +13,12 @@ public class AuthenticationController : BaseController
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly ITokenService _tokenService;
-    private readonly IConfiguration _configuration;
-    public AuthenticationController(IAuthenticationService authenticationService, ITokenService tokenService, IConfiguration config, ILogger<AuthenticationController> logger) : base(logger)
+    private readonly JwtOptions _jwtOptions;
+    public AuthenticationController(IAuthenticationService authenticationService, ITokenService tokenService,  IOptions<JwtOptions> jwtOptions, ILogger<AuthenticationController> logger) : base(logger)
     {
         _authenticationService = authenticationService;
         _tokenService = tokenService;
-        _configuration = config;
+        _jwtOptions = jwtOptions.Value;
     }
 
     [AllowAnonymous]
@@ -30,16 +32,18 @@ public class AuthenticationController : BaseController
         {
             var response = await _authenticationService.Authenticate(request.Username, request.Password);
 
+
             if (response == true)
             {
                 Logger.LogWarning($"Authentication Succeeded for {request.Username}");
 
-                var generatedToken = _tokenService.BuildToken(_configuration["JwtOptions:Key"]!.ToString(), _configuration["JwtOptions:Issuer"]!.ToString(), request.Username);
+                var generatedToken = _tokenService.BuildToken(_jwtOptions.Key,_jwtOptions.Issuer,_jwtOptions.Audience, request.Username);
 
                 return Ok(new AuthenticationResponse
                 {
                     Token = generatedToken,
                     UserId = request.Username,
+                    Expiration = DateTime.UtcNow.AddDays(1)
                 });
             }
 

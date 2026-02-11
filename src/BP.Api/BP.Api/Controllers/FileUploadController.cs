@@ -1,6 +1,7 @@
 ﻿using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
 using BP.Shared.Types;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -18,6 +19,7 @@ public class FileUploadController(IProductImageService productImageService, ILog
     /// <returns></returns>
     [HttpPost("uploadproduct")]
     [Consumes("multipart/form-data")]
+    [Authorize]
     public async Task<IActionResult> UploadProductImage([FromForm] FileUploadRequest request,bool isPrimaryImage)
     {
         var file = request.File;

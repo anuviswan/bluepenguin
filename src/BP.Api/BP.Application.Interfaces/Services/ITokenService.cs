@@ -2,5 +2,5 @@
 
 public interface ITokenService
 {
-    string BuildToken(string key, string issuer, string userName);
+    string BuildToken(string key, string issuer,List<string> audience, string userName);
 }

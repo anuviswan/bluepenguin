@@ -15,20 +15,21 @@ public class MetaDataController : Controller
         _metaService = metaService;
     }
 
-    [HttpPost("feature/create")]
-    public async Task<IActionResult> CreateFeature([FromBody] MetaDataEntity feature)
-    {
-        if (feature == null || string.IsNullOrWhiteSpace(feature.PartitionKey) || string.IsNullOrWhiteSpace(feature.RowKey))
-            return BadRequest("Invalid feature");
+    //[HttpPost("feature/create")]
 
-        var res = await _metaService.Add(feature);
-        return Ok(res);
-    }
+    //public async Task<IActionResult> CreateFeature([FromBody] MetaDataEntity feature)
+    //{
+    //    if (feature == null || string.IsNullOrWhiteSpace(feature.PartitionKey) || string.IsNullOrWhiteSpace(feature.RowKey))
+    //        return BadRequest("Invalid feature");
 
-    [HttpGet("feature/getall")]
-    public async Task<IActionResult> GetAllFeatures()
-    {
-        var res = await _metaService.GetByPartition("Feature");
-        return Ok(res);
-    }
+    //    var res = await _metaService.Add(feature);
+    //    return Ok(res);
+    //}
+
+    //[HttpGet("feature/getall")]
+    //public async Task<IActionResult> GetAllFeatures()
+    //{
+    //    var res = await _metaService.GetByPartition("Feature");
+    //    return Ok(res);
+    //}
 }
