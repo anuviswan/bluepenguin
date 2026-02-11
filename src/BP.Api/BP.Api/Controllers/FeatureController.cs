@@ -1,5 +1,6 @@
 ﻿using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -33,6 +34,7 @@ public class FeatureController : BaseController
     }
 
     [HttpPost("create")]
+    [Authorize]
     public async Task<IActionResult> CreateFeature([FromBody] AddFeatureRequest feature)
     {
         try

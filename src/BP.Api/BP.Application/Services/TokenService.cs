@@ -8,8 +8,8 @@ namespace BP.Application.Services;
 
 public class TokenService : ITokenService
 {
-    private TimeSpan ExpiryDuration = new TimeSpan(0, 30, 0);
-    public string BuildToken(string key, string issuer, string userName)
+    private TimeSpan ExpiryDuration = new TimeSpan(24, 0, 0);
+    public string BuildToken(string key, string issuer, List<string> audience, string userName)
     {
         var claims = new[]
         {
@@ -21,8 +21,9 @@ public class TokenService : ITokenService
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
-        var tokenDescriptor = new JwtSecurityToken(issuer, issuer, claims,
-            expires: DateTime.Now.Add(ExpiryDuration), signingCredentials: credentials);
+        var tokenDescriptor = new JwtSecurityToken(issuer, audience[0], claims,
+            expires: DateTime.UtcNow.Add(ExpiryDuration), signingCredentials: credentials);
+        tokenDescriptor.Payload["aud"] = audience; // Add the full list of audiences to the token payload
         return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
     }
 }

@@ -23,7 +23,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = _jwtOptions.Issuer,
-            ValidAudience = _jwtOptions.Audience,
+            ValidAudiences = _jwtOptions.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key))
         };
     }

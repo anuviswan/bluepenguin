@@ -1,6 +1,7 @@
-﻿using BP.Api.ExtensionMethods;
-using BP.Api.Contracts;
+﻿using BP.Api.Contracts;
+using BP.Api.ExtensionMethods;
 using BP.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -34,6 +35,7 @@ public class CollectionController : BaseController
     }
 
     [HttpPost("create")]
+    [Authorize]
     public async Task<IActionResult> CreateCollection([FromBody] AddFeatureRequest req)
     {
         try
