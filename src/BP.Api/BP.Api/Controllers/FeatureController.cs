@@ -1,5 +1,6 @@
 ﻿using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
+using BP.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,12 @@ namespace BP.Api.Controllers;
 public class FeatureController : BaseController
 {
     private readonly IFeatureService _featureService;
+    private readonly IMetaDataService _metaDataService;
 
-    public FeatureController(IFeatureService featureService, ILogger<FeatureController> logger) : base(logger)
+    public FeatureController(IFeatureService featureService, IMetaDataService metaDataService, ILogger<FeatureController> logger) : base(logger)
     {
         _featureService = featureService;
+        _metaDataService = metaDataService;
     }
 
     [HttpGet]
@@ -49,6 +52,31 @@ public class FeatureController : BaseController
         {
             return BadRequest(e);
         }
+    }
 
+    [HttpPut("update")]
+    [Authorize]
+    public async Task<IActionResult> UpdateFeature([FromBody] AddFeatureRequest feature)
+    {
+        try
+        {
+            if (feature == null || string.IsNullOrWhiteSpace(feature.FeatureId))
+                return BadRequest("Invalid feature");
+
+            var entity = new MetaDataEntity
+            {
+                PartitionKey = "Feature",
+                RowKey = feature.FeatureId,
+                Title = feature.FeatureName ?? string.Empty,
+                Notes = feature.symbolic
+            };
+
+            await _featureService.Update(feature.FeatureId, feature.FeatureName!, feature.symbolic);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
     }
 }

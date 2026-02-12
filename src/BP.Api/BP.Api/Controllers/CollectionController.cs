@@ -1,6 +1,7 @@
 ﻿using BP.Api.Contracts;
 using BP.Api.ExtensionMethods;
 using BP.Application.Interfaces.Services;
+using BP.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,14 +37,32 @@ public class CollectionController : BaseController
 
     [HttpPost("create")]
     [Authorize]
-    public async Task<IActionResult> CreateCollection([FromBody] AddFeatureRequest req)
+    public async Task<IActionResult> CreateCollection([FromBody] AddCollectionRequest req)
     {
         try
         {
-            if (req == null || string.IsNullOrWhiteSpace(req.FeatureId) || string.IsNullOrWhiteSpace(req.FeatureName))
+            if (req == null || string.IsNullOrWhiteSpace(req.CollectionId) || string.IsNullOrWhiteSpace(req.CollectionName))
                 return BadRequest("Invalid request");
 
-            await _collectionService.Add(req.FeatureId, req.FeatureName);
+            await _collectionService.Add(req.CollectionId, req.CollectionName);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e);
+        }
+    }
+
+    [HttpPut("update")]
+    [Authorize]
+    public async Task<IActionResult> UpdateCollection([FromBody] AddCollectionRequest req)
+    {
+        try
+        {
+            if (req == null || string.IsNullOrWhiteSpace(req.CollectionId))
+                return BadRequest("Invalid request");
+
+            await _collectionService.Update(req.CollectionId,req.CollectionName);
             return Ok();
         }
         catch (Exception e)
