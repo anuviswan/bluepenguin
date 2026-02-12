@@ -24,4 +24,17 @@ public class FeatureService(IMetaDataService metaDataService) : IFeatureService
         return await MetaDataService.GetByPartition(FEATURE_KEY);
     }
 
+    public async Task<MetaDataEntity> Update(string featureId, string featureName, string? symbolic = null)
+    {
+        var feature = await MetaDataService.GetByPartitionAndRowKey(FEATURE_KEY, featureId);
+
+        if (feature is not null)
+        {
+            feature.Title = featureName;
+            feature.Notes = symbolic;
+            return await MetaDataService.Update(feature);
+        }
+
+        throw new InvalidOperationException($"Feature with id {featureId} does not exist.");
+    }
 }

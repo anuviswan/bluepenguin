@@ -6,4 +6,5 @@ public interface ICollectionService
 {
     Task Add(string code, string title);
     Task<IEnumerable<MetaDataEntity>> GetAllCollections();
+    Task<MetaDataEntity> Update(string code, string title);
 }

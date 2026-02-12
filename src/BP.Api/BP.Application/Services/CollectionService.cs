@@ -22,4 +22,17 @@ public class CollectionService(IMetaDataService metaDataService) : ICollectionSe
     {
         return await MetaDataService.GetByPartition(COLLECTION_KEY);
     }
+
+    public async Task<MetaDataEntity> Update(string code, string title)
+    {
+        var collection = await MetaDataService.GetByPartitionAndRowKey(COLLECTION_KEY, code);
+
+        if (collection is not null)
+        {
+            collection.Title = title;
+            return await MetaDataService.Update(collection);
+        }
+
+        throw new InvalidOperationException($"Collection with id {code} does not exist.");
+    }
 }

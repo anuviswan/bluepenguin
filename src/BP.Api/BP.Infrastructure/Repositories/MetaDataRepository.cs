@@ -13,6 +13,12 @@ public class MetaDataRepository([FromKeyedServices("MetaData")] TableClient tabl
         return entity;
     }
 
+    public async Task<MetaDataEntity> Update(MetaDataEntity entity)
+    {
+        await tableClient.UpsertEntityAsync(entity, TableUpdateMode.Replace);
+        return entity;
+    }
+
     public async Task Delete(string partitionKey, string rowKey)
     {
         try
@@ -48,5 +54,18 @@ public class MetaDataRepository([FromKeyedServices("MetaData")] TableClient tabl
             results.Add(e);
         }
         return results;
+    }
+
+    public async Task<MetaDataEntity> GetByPartitionAndRowKey(string partitionKey,string rowKey)
+    {
+        var data = await tableClient.GetEntityIfExistsAsync<MetaDataEntity>(partitionKey,rowKey);
+        if(data.HasValue)
+        {
+            return data.Value!;
+        }
+        else
+        {
+            throw new KeyNotFoundException($"No entity found with PartitionKey: {partitionKey} and RowKey: {rowKey}");
+        }
     }
 }
