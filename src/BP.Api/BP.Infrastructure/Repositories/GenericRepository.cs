@@ -43,8 +43,9 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class, ITabl
         return await TableClient.GetEntityAsync<T>(partitionKey: paritionId, rowKey: searchKey);
     }
 
-    public async Task Update(T entity)
+    public async Task<T> Update(T entity)
     {
         await TableClient.UpdateEntityAsync(entity, entity.ETag, TableUpdateMode.Replace);
+        return entity;
     }
 }

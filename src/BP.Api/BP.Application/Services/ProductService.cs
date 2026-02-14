@@ -40,9 +40,18 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         throw new NotImplementedException();
     }
 
-    public BP.Domain.Entities.ProductEntity UpdateProduct(BP.Domain.Entities.ProductEntity product)
+    public async Task<ProductEntity> UpdateProduct(ProductEntity product)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(product?.SKU))
+            throw new ArgumentException("SKU is required for update");
+
+        // Get the existing product to check if it exists
+        var existingProduct = await GetProductBySku(product.SKU);
+        if (existingProduct == null)
+            throw new InvalidOperationException($"Product with SKU {product.SKU} not found.");
+
+        // Update the product in repository
+        return await productRepository.Update(product);
     }
 
     /// <summary>

@@ -193,43 +193,119 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     [Route("search")]
     public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50)
     {
-        Logger.LogInformation("Searching products with filters");
+                    Logger.LogInformation("Searching products with filters");
 
-        try
-        {
-            if (filters == null ||
-                (filters.SelectedCategories == null) &&
-                (filters.SelectedMaterials == null) &&
-                (filters.SelectedCollections == null) &&
-                (filters.SelectedFeatures == null) &&
-                (filters.SelectedYears == null))
-            {
-                Logger.LogWarning("SearchProducts called with empty filters");
-                return BadRequest("No filters provided");
+                try
+                {
+                    if (filters == null ||
+                        (filters.SelectedCategories == null) &&
+                        (filters.SelectedMaterials == null) &&
+                        (filters.SelectedCollections == null) &&
+                        (filters.SelectedFeatures == null) &&
+                        (filters.SelectedYears == null))
+                    {
+                        Logger.LogWarning("SearchProducts called with empty filters");
+                        return BadRequest("No filters provided");
+                    }
+
+                    var results = (await ProductService.SearchProductsAsync(filters.SelectedCategories,
+                        filters.SelectedMaterials,
+                        filters.SelectedCollections,
+                        filters.SelectedFeatures,
+                        filters.SelectedYears)).ToList();
+
+                    var totalCount = results.Count;
+                    if (page <= 0) page = 1;
+                    if (pageSize <= 0) pageSize = 50;
+
+                    var paged = results.Skip((page - 1) * pageSize).Take(pageSize);
+                    return Ok(new { totalCount, page, pageSize, items = paged });
+                }
+                catch (OperationCanceledException)
+                {
+                    Logger.LogInformation("SearchProducts request cancelled");
+                    return BadRequest("Request cancelled");
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "Error searching products");
+                    return BadRequest(e);
+                }
             }
 
-            var results = (await ProductService.SearchProductsAsync(filters.SelectedCategories,
-                filters.SelectedMaterials,
-                filters.SelectedCollections,
-                filters.SelectedFeatures,
-                filters.SelectedYears)).ToList();
+            /// <summary>
+            /// Update an existing product.
+            /// </summary>
+            /// <remarks>
+            /// Endpoint: PUT <c>/api/product/update</c>
+            /// Authorization: Required ([Authorize])
+            /// Request body: <see cref="UpdateProductRequest"/>.
+            /// Success: Returns 200 OK with the updated product SKU.
+            /// Failure: Returns 400 Bad Request if SKU already exists or on exception.
+            /// </remarks>
+            /// <param name="request">The product update request payload.</param>
+            /// <returns>The SKU of the updated product or an error result.</returns>
+            [HttpPut]
+            [Route("update")]
+            [Authorize]
+            public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductRequest request)
+            {
+                Logger.LogInformation("Updating Product");
 
-            var totalCount = results.Count;
-            if (page <= 0) page = 1;
-            if (pageSize <= 0) pageSize = 50;
+                try
+                {
+                    if (request == null || string.IsNullOrWhiteSpace(request.SKU))
+                    {
+                        Logger.LogError("Invalid update request: SKU is required");
+                        return BadRequest("Invalid update request: SKU is required");
+                    }
 
-            var paged = results.Skip((page - 1) * pageSize).Take(pageSize);
-            return Ok(new { totalCount, page, pageSize, items = paged });
+                    // Get the existing product
+                    var existingProduct = await ProductService.GetProductBySku(request.SKU);
+                    if (existingProduct == null)
+                    {
+                        Logger.LogWarning($"Product with SKU {request.SKU} not found");
+                        return NotFound($"Product with SKU {request.SKU} not found");
+                    }
+
+                    // Update only the provided fields
+                    if (!string.IsNullOrWhiteSpace(request.ProductName))
+                        existingProduct.ProductName = request.ProductName;
+
+                    if (!string.IsNullOrWhiteSpace(request.Description))
+                        existingProduct.ProductDescription = request.Description;
+
+                    if (request.Price.HasValue)
+                        existingProduct.Price = request.Price.Value;
+
+                    if (request.Stock.HasValue)
+                        existingProduct.Stock = request.Stock.Value;
+
+                    if (request.Specifications != null && request.Specifications.Any())
+                        existingProduct.Specifications = request.Specifications;
+
+                    if (request.ProductCareInstructions != null && request.ProductCareInstructions.Any())
+                        existingProduct.ProductCareInstructions = request.ProductCareInstructions;
+
+                    // Call service to update (which validates SKU)
+                    var updatedProduct = await ProductService.UpdateProduct(existingProduct);
+
+                    return Ok(new { message = "Product updated successfully", sku = updatedProduct.SKU });
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Logger.LogWarning(ex, "Invalid operation while updating product");
+                    return BadRequest(ex.Message);
+                }
+                catch (ArgumentException ex)
+                {
+                    Logger.LogWarning(ex, "Invalid argument while updating product");
+                    return BadRequest(ex.Message);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "Error updating product");
+                    return BadRequest(e.Message);
+                }
+            }
         }
-        catch (OperationCanceledException)
-        {
-            Logger.LogInformation("SearchProducts request cancelled");
-            return BadRequest("Request cancelled");
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Error searching products");
-            return BadRequest(e);
-        }
-    }
-}
