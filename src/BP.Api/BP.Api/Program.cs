@@ -120,7 +120,7 @@ public class Program
         app.UseRateLimiter();
         app.UseAuthentication();
         app.UseAuthorization();
-
+        app.MapGet("/ping", () => "pong");
 
         app.MapControllers();
 
