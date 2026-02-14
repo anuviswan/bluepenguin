@@ -9,6 +9,9 @@ namespace BP.Api.Controllers;
 
 using Azure.Storage.Blobs;
 
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
 public class SeedController(IProductController productController, 
     IFeatureService featureService,
     ICollectionService collectionService,
@@ -28,9 +31,7 @@ public class SeedController(IProductController productController,
     private BP.Domain.Repository.IProductImageRepository ProductImageRepository => productImageRepository;
     private BlobContainerClient BlobContainer => blobContainer;
 
-    [AllowAnonymous]
-    [HttpPost]
-    [Route("seed/execute")]
+    [HttpPost("execute")]
     public async Task<IActionResult> ExecuteSeed()
     {
         await SeedCollections();
@@ -39,9 +40,7 @@ public class SeedController(IProductController productController,
         return Ok();
     }
 
-    [AllowAnonymous]
-    [HttpPost]
-    [Route("seed/clear")]
+    [HttpPost("clear")]
     public async Task<IActionResult> ClearSeed()
     {
         try
