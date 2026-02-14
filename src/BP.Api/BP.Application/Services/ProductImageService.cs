@@ -69,4 +69,9 @@ public class ProductImageService(IFileUploadService fileUploadService, IProductI
 
         return blobName;
     }
+
+    public async Task<bool> DeleteProductImageAsync(string skuId, string imageId)
+    {
+        return await productImageRepository.DeleteProductImage(skuId, imageId);
+    }
 }

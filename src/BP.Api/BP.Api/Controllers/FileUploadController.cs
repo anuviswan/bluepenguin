@@ -8,7 +8,10 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class FileUploadController(IProductImageService productImageService, ILogger<FileUploadController> logger) : BaseController(logger)
+public class FileUploadController(
+    IProductImageService productImageService,
+    IProductService productService,
+    ILogger<FileUploadController> logger) : BaseController(logger)
 {
     /// <summary>
     /// Upload Product Image
@@ -82,6 +85,60 @@ public class FileUploadController(IProductImageService productImageService, ILog
     }
 
     /// <summary>
+    /// Get detailed information about all images for a product.
+    /// </summary>
+    /// <remarks>
+    /// Endpoint: GET <c>/api/fileupload/getproductimagesdetails</c>?skuId={skuId}
+    /// Success: Returns 200 OK with a list of product image details including ImageId, BlobName, IsPrimary, ContentType, and DownloadUrl.
+    /// Not Found: Returns 404 if no images exist for the product.
+    /// Failure: Returns 400 Bad Request for invalid SKU or on exception.
+    /// </remarks>
+    /// <param name="skuId">The SKU of the product to retrieve images for.</param>
+    /// <returns>List of detailed image information or an error result.</returns>
+    [HttpGet("getproductimagesdetails")]
+    public async Task<IActionResult> GetProductImagesDetails([FromQuery] string skuId)
+    {
+        Logger.LogInformation("Getting image details for product SKU: {SkuId}", skuId);
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(skuId))
+            {
+                Logger.LogWarning("GetProductImagesDetails: SkuId is required");
+                return BadRequest("SkuId is required");
+            }
+
+            var imageIds = await productImageService.GetImageIdsForSkuId(skuId);
+            if (imageIds == null || !imageIds.Any())
+            {
+                Logger.LogInformation("GetProductImagesDetails: No images found for SKU {SkuId}", skuId);
+                return NotFound($"No images found for product {skuId}");
+            }
+
+            var imageResponses = new List<ProductImageResponse>();
+
+            foreach (var imageId in imageIds)
+            {
+                imageResponses.Add(new ProductImageResponse
+                {
+                    ImageId = imageId,
+                    BlobName = imageId,  // You may want to fetch actual blob name from repository
+                    IsPrimary = imageId == await productImageService.GetPrimaryImageIdForSkuId(skuId),
+                    ContentType = "image/jpeg", // Default; consider fetching from repository
+                    DownloadUrl = Url.Action(nameof(DownloadFileByImageId), "FileUpload", new { skuId, imageId }, Request.Scheme)
+                });
+            }
+
+            return Ok(imageResponses);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error retrieving image details for product SKU: {SkuId}", skuId);
+            return BadRequest(new { error = "Failed to retrieve image details", details = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Retrieves the primary image identifier associated with the specified SKU identifier.
     /// </summary>
     /// <param name="skuId">The unique identifier of the SKU for which to retrieve the primary image ID. Cannot be null or empty.</param>
@@ -96,6 +153,152 @@ public class FileUploadController(IProductImageService productImageService, ILog
         if (imageId == null)
             return NotFound("No primary image found.");
         return Ok(imageId);
+    }
+
+    /// <summary>
+    /// Add an additional image to an existing product.
+    /// </summary>
+    /// <remarks>
+    /// Endpoint: POST <c>/api/fileupload/addproductimage</c>
+    /// Authorization: Required ([Authorize])
+    /// Request body: Multipart form data with File and SkuId.
+    /// Success: Returns 201 Created with image metadata (ImageId, BlobName, IsPrimary, ContentType).
+    /// Failure: Returns 400 Bad Request for missing/invalid file, 404 Not Found if product doesn't exist, or on exception.
+    /// </remarks>
+    /// <param name="request">The request payload containing product SKU and image file.</param>
+    /// <param name="isPrimaryImage">Indicates whether this image should replace the current primary image (default: false).</param>
+    /// <returns>Image metadata including ImageId and BlobName, or an error result.</returns>
+    [HttpPost("addproductimage")]
+    [Consumes("multipart/form-data")]
+    [Authorize]
+    public async Task<IActionResult> AddProductImage([FromForm] FileUploadRequest request, [FromQuery] bool isPrimaryImage = false)
+    {
+        Logger.LogInformation("Adding image for product SKU: {SkuId}", request.SkuId);
+
+        try
+        {
+            // Validate request
+            if (string.IsNullOrWhiteSpace(request.SkuId))
+            {
+                Logger.LogWarning("AddProductImage: SKU is required");
+                return BadRequest("SKU is required");
+            }
+
+            if (request.File == null || request.File.Length == 0)
+            {
+                Logger.LogWarning("AddProductImage: No file provided for SKU {SkuId}", request.SkuId);
+                return BadRequest("No file uploaded");
+            }
+
+            // Verify product exists
+            var product = await productService.GetProductBySku(request.SkuId);
+            if (product == null)
+            {
+                Logger.LogWarning("AddProductImage: Product with SKU {SkuId} not found", request.SkuId);
+                return NotFound($"Product with SKU {request.SkuId} not found");
+            }
+
+            // Validate file
+            const long maxFileSize = 10 * 1024 * 1024; // 10 MB
+            var allowedContentTypes = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
+
+            if (request.File.Length > maxFileSize)
+            {
+                Logger.LogWarning("AddProductImage: File size exceeds limit for SKU {SkuId}", request.SkuId);
+                return BadRequest($"File size exceeds maximum allowed size of {maxFileSize / (1024 * 1024)} MB");
+            }
+
+            if (!allowedContentTypes.Contains(request.File.ContentType?.ToLowerInvariant() ?? string.Empty))
+            {
+                Logger.LogWarning("AddProductImage: Invalid content type {ContentType} for SKU {SkuId}", request.File.ContentType, request.SkuId);
+                return BadRequest($"Invalid file type. Allowed types: {string.Join(", ", allowedContentTypes)}");
+            }
+
+            // Prepare file for upload
+            var extension = Path.GetExtension(request.File.FileName).ToLowerInvariant();
+            var fileUpload = new FileUpload
+            {
+                SkuId = request.SkuId,
+                ImageId = Guid.NewGuid().ToString(),
+                ContentType = request.File.ContentType ?? "image/jpeg",
+                Content = request.File.OpenReadStream(),
+                Extension = extension
+            };
+
+            // Upload image
+            var blobName = await productImageService.UploadAsync(fileUpload, isPrimaryImage);
+
+            Logger.LogInformation("Image added successfully for SKU {SkuId}. ImageId: {ImageId}", request.SkuId, fileUpload.ImageId);
+
+            return CreatedAtAction(
+                nameof(DownloadFileByImageId),
+                new { skuId = request.SkuId, imageId = fileUpload.ImageId },
+                new
+                {
+                    ImageId = fileUpload.ImageId,
+                    BlobName = blobName,
+                    IsPrimary = isPrimaryImage,
+                    ContentType = request.File.ContentType
+                });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error adding image for product SKU: {SkuId}", request.SkuId);
+            return BadRequest(new { error = "Failed to add image", details = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Delete an image from a product.
+    /// </summary>
+    /// <remarks>
+    /// Endpoint: DELETE <c>/api/fileupload/deleteproductimage</c>?skuId={skuId}&amp;imageId={imageId}
+    /// Authorization: Required ([Authorize])
+    /// Query parameters: skuId and imageId (both required).
+    /// Success: Returns 204 No Content if image is deleted successfully.
+    /// Failure: Returns 400 Bad Request for missing parameters, 404 Not Found if image doesn't exist, or on exception.
+    /// </remarks>
+    /// <param name="skuId">The SKU of the product.</param>
+    /// <param name="imageId">The unique identifier of the image to delete.</param>
+    /// <returns>204 No Content on success, or an error result.</returns>
+    [HttpDelete("deleteproductimage")]
+    [Authorize]
+    public async Task<IActionResult> DeleteProductImage([FromQuery] string skuId, [FromQuery] string imageId)
+    {
+        Logger.LogInformation("Deleting image {ImageId} from product SKU: {SkuId}", imageId, skuId);
+
+        try
+        {
+            // Validate parameters
+            if (string.IsNullOrWhiteSpace(skuId))
+            {
+                Logger.LogWarning("DeleteProductImage: SKU is required");
+                return BadRequest("SKU is required");
+            }
+
+            if (string.IsNullOrWhiteSpace(imageId))
+            {
+                Logger.LogWarning("DeleteProductImage: ImageId is required");
+                return BadRequest("ImageId is required");
+            }
+
+            // Delete the image
+            var deleted = await productImageService.DeleteProductImageAsync(skuId, imageId);
+
+            if (!deleted)
+            {
+                Logger.LogWarning("DeleteProductImage: Image {ImageId} not found for SKU {SkuId}", imageId, skuId);
+                return NotFound($"Image {imageId} not found for product {skuId}");
+            }
+
+            Logger.LogInformation("Image {ImageId} deleted successfully from product SKU: {SkuId}", imageId, skuId);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error deleting image {ImageId} from product SKU: {SkuId}", imageId, skuId);
+            return BadRequest(new { error = "Failed to delete image", details = ex.Message });
+        }
     }
 
 }
