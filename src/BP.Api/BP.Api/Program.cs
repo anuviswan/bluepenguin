@@ -3,7 +3,10 @@ using BP.Api.Options;
 using BP.Application.Interfaces.Options;
 using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using System.Threading.RateLimiting;
 
 namespace BP.Api;
 
@@ -19,7 +22,12 @@ public class Program
 
         //builder.WebHost.UseUrls("http://0.0.0.0:5000");
         builder.AddServiceDefaults();
-        builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+        builder.Services.AddOptions<JwtOptions>()
+            .Bind(builder.Configuration.GetSection(nameof(JwtOptions)))
+            .Validate(o => !string.IsNullOrWhiteSpace(o.Key) && o.Key.Length >= 32, "JwtOptions:Key must be at least 32 characters.")
+            .Validate(o => !string.IsNullOrWhiteSpace(o.Issuer), "JwtOptions:Issuer is required.")
+            .Validate(o => o.Audience is { Count: > 0 }, "JwtOptions:Audience must include at least one value.")
+            .ValidateOnStart();
         builder.Services.Configure<UserTableSeedingOptions>(builder.Configuration.GetSection(nameof(UserTableSeedingOptions)));
 
         // Add services to the container.
@@ -35,6 +43,22 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
+        builder.Services.AddAuthorizationBuilder()
+            .SetFallbackPolicy(new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build());
+
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+            options.AddFixedWindowLimiter("login", rateOptions =>
+            {
+                rateOptions.PermitLimit = 5;
+                rateOptions.Window = TimeSpan.FromMinutes(1);
+                rateOptions.QueueLimit = 0;
+                rateOptions.AutoReplenishment = true;
+            });
+        });
 
         builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
 
@@ -81,7 +105,7 @@ public class Program
 
         }
 
-        //app.UseHttpsRedirection();
+        app.UseHttpsRedirection();
 
         // Use CORS policy based on environment
         if (app.Environment.IsDevelopment())
@@ -93,6 +117,7 @@ public class Program
             app.UseCors("AllowSpecificOrigins");
         }
 
+        app.UseRateLimiter();
         app.UseAuthentication();
         app.UseAuthorization();
 

@@ -4,6 +4,7 @@ using BP.Api.Options;
 using BP.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 
 namespace BP.Api.Controllers;
@@ -22,6 +23,7 @@ public class AuthenticationController : BaseController
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting("login")]
     [Route("login")]
     [HttpPost]
     public async Task<ActionResult<AuthenticationResponse>> Authenticate([FromBody] AuthenticationRequest request)
@@ -59,7 +61,7 @@ public class AuthenticationController : BaseController
 
     [HttpGet]
     [Route("hashme/{key}")]
-    [AllowAnonymous]
+    [Authorize]
     public ActionResult<string> Hashme(string key)
     {
         return Ok(_authenticationService.HashPassword(key));
