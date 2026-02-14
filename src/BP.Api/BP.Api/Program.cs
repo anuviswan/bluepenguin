@@ -34,7 +34,7 @@ public class Program
 
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-        builder.Services.AddOpenApi();
+        // Removed AddOpenApi (not available in net8-compatible packages); using Swagger (AddSwaggerGen) and EndpointsApiExplorer instead
         builder.Services.AddApplicationServices();
         builder.Services.AddAzureTableServices();
         builder.Services.AddAzureBlobServices();
@@ -96,7 +96,7 @@ public class Program
             await seeder.SeedAsync();
 
 
-            app.MapOpenApi();
+            // MapOpenApi was removed because net8-compatible OpenAPI extensions are not available; UseSwagger + UseSwaggerUI are used instead
             // Serve OpenAPI JSON at /swagger/v1/swagger.json
             app.UseSwagger();
 

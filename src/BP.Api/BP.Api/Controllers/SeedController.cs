@@ -45,7 +45,6 @@ public class SeedController(IProductController productController,
     {
         try
         {
-            int deletedProducts = 0;
             int deletedImages = 0;
 
             // Instead of fetching and deleting each row individually (may miss untracked items),
@@ -151,6 +150,7 @@ public class SeedController(IProductController productController,
             }
         }
     }
+
     private async Task SeedFeatures()
     {
         foreach (var feature in Features)
@@ -165,6 +165,7 @@ public class SeedController(IProductController productController,
             }
         }
     }
+
     private async Task SeedProducts()
     {
         var seeds = new List<CreateProductRequest>
