@@ -23,7 +23,7 @@ public class Program
 
         //builder.WebHost.UseUrls("http://0.0.0.0:5000");
 
-        //builder.AddServiceDefaults();
+        builder.AddServiceDefaults();
         builder.Services.AddOptions<JwtOptions>()
             .Bind(builder.Configuration.GetSection(nameof(JwtOptions)))
             .Validate(o => !string.IsNullOrWhiteSpace(o.Key) && o.Key.Length >= 32, "JwtOptions:Key must be at least 32 characters.")
