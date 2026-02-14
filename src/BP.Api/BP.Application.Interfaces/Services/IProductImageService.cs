@@ -8,7 +8,7 @@ public interface IProductImageService
     Task<string> UploadAsync(FileUpload file, bool isPrimary = false);
 
     // Downloads a product image by SKU ID and image ID.
-    Task<FileDownload?> DownloadByImageIdAsync(string skuId,string imageId);
+    Task<FileDownload?> DownloadByImageIdAsync(string skuId, string imageId);
 
     // Downloads all product images associated with a SKU ID.
     Task<IEnumerable<FileDownload>> DownloadBySkuIdAsync(string skuId);
@@ -18,4 +18,7 @@ public interface IProductImageService
 
     // Retrieves the primary image Id for a given SKU ID.
     Task<string?> GetPrimaryImageIdForSkuId(string skuId);
+
+    // Deletes an image from a product by SKU ID and image ID.
+    Task<bool> DeleteProductImageAsync(string skuId, string imageId);
 }

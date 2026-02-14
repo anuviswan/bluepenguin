@@ -18,10 +18,11 @@ public class FileUploadControllerTests
     [Fact]
     public async Task UploadProductImage_ReturnsUrl_OnSuccess()
     {
-        var mockService = new Mock<IProductImageService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockProductService = new Mock<IProductService>();
         var mockLogger = new Mock<ILogger<FileUploadController>>();
 
-        var controller = new FileUploadController(mockService.Object, mockLogger.Object);
+        var controller = new FileUploadController(mockImageService.Object, mockProductService.Object, mockLogger.Object);
 
         var content = "dummy";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
@@ -33,7 +34,7 @@ public class FileUploadControllerTests
 
         var req = new FileUploadRequest { SkuId = "RI-1", File = formFile };
 
-        mockService.Setup(s => s.UploadAsync(It.IsAny<FileUpload>(), It.IsAny<bool>())).ReturnsAsync("http://image.url/test.png");
+        mockImageService.Setup(s => s.UploadAsync(It.IsAny<FileUpload>(), It.IsAny<bool>())).ReturnsAsync("http://image.url/test.png");
 
         var result = await controller.UploadProductImage(req, true);
         var ok = Assert.IsType<OkObjectResult>(result);
