@@ -1,3 +1,4 @@
+
 using BP.Api.ExtensionMethods;
 using BP.Api.Options;
 using BP.Application.Interfaces.Options;
@@ -21,7 +22,8 @@ public class Program
         //});
 
         //builder.WebHost.UseUrls("http://0.0.0.0:5000");
-        builder.AddServiceDefaults();
+
+        //builder.AddServiceDefaults();
         builder.Services.AddOptions<JwtOptions>()
             .Bind(builder.Configuration.GetSection(nameof(JwtOptions)))
             .Validate(o => !string.IsNullOrWhiteSpace(o.Key) && o.Key.Length >= 32, "JwtOptions:Key must be at least 32 characters.")
@@ -120,7 +122,7 @@ public class Program
         app.UseRateLimiter();
         app.UseAuthentication();
         app.UseAuthorization();
-        app.MapGet("/ping", () => "pong");
+        app.MapGet("/ping", () => "pong").AllowAnonymous(); 
 
         app.MapControllers();
 

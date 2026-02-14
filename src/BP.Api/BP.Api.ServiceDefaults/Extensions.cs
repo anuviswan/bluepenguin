@@ -23,16 +23,32 @@ public static class Extensions
 
         builder.AddDefaultHealthChecks();
 
-        builder.Services.AddServiceDiscovery();
-
-        builder.Services.ConfigureHttpClientDefaults(http =>
+        // Service discovery and resilience are .NET 9+ features
+        // For .NET 8 compatibility, these are commented out
+        // Uncomment and remove the try-catch when targeting .NET 9+
+        try
         {
-            // Turn on resilience by default
-            http.AddStandardResilienceHandler();
+            builder.Services.AddServiceDiscovery();
 
-            // Turn on service discovery by default
-            http.AddServiceDiscovery();
-        });
+            builder.Services.ConfigureHttpClientDefaults(http =>
+            {
+                // Turn on resilience by default
+                http.AddStandardResilienceHandler();
+
+                // Turn on service discovery by default
+                http.AddServiceDiscovery();
+            });
+        }
+        catch
+        {
+            // Service discovery and resilience are not available in .NET 8
+            // Fall back to basic HTTP client configuration
+            builder.Services.ConfigureHttpClientDefaults(http =>
+            {
+                // Basic timeout configuration for .NET 8
+                http.SetHandlerLifetime(TimeSpan.FromMinutes(5));
+            });
+        }
 
         // Uncomment the following to restrict the allowed schemes for service discovery.
         // builder.Services.Configure<ServiceDiscoveryOptions>(options =>
