@@ -55,6 +55,7 @@ public class FileUploadController(
     /// <returns>An <see cref="IActionResult"/> that contains the file to download if found; otherwise, a Bad Request or Not
     /// Found result.</returns>
     [HttpGet("downloadByimageId")]
+    [AllowAnonymous]
     public async Task<IActionResult> DownloadFileByImageId([FromQuery] string skuId, [FromQuery] string imageId)
     {
         if (string.IsNullOrEmpty(skuId) || string.IsNullOrEmpty(imageId))
@@ -73,6 +74,7 @@ public class FileUploadController(
     /// <returns>An <see cref="IActionResult"/> containing a collection of image IDs if found; otherwise, a response indicating
     /// that no files were found or that the SKU ID is required.</returns>
     [HttpGet("getAllImagesForSkuId")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllImagesForSkuId([FromQuery] string skuId)
     {
         if (string.IsNullOrEmpty(skuId))
@@ -96,6 +98,7 @@ public class FileUploadController(
     /// <param name="skuId">The SKU of the product to retrieve images for.</param>
     /// <returns>List of detailed image information or an error result.</returns>
     [HttpGet("getproductimagesdetails")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetProductImagesDetails([FromQuery] string skuId)
     {
         Logger.LogInformation("Getting image details for product SKU: {SkuId}", skuId);
@@ -145,6 +148,7 @@ public class FileUploadController(
     /// <returns>An HTTP 200 response containing the primary image ID if found; otherwise, an HTTP 404 response if no primary
     /// image exists for the specified SKU, or an HTTP 400 response if the SKU identifier is missing.</returns>
     [HttpGet("getPrimaryImageIdForSkuId")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetPrimaryImageIdForSkuId([FromQuery] string skuId)
     {
         if (string.IsNullOrEmpty(skuId))

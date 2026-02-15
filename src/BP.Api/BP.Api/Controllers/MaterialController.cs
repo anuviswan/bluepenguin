@@ -1,5 +1,6 @@
 ﻿using BP.Api.ExtensionMethods;
 using BP.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BP.Api.Controllers;
@@ -15,6 +16,7 @@ public class MaterialController : BaseController
     }
     [HttpGet]
     [Route("getall")]
+    [AllowAnonymous]
     public Task<IActionResult> GetAll()
     {
         Logger.LogInformation("Get All Materials");

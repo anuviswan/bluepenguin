@@ -24,10 +24,12 @@ public class Program
         builder.AddServiceDefaults();
         builder.Services.AddOptions<JwtOptions>()
             .Bind(builder.Configuration.GetSection(nameof(JwtOptions)))
-            .Validate(o => !string.IsNullOrWhiteSpace(o.Key) && o.Key.Length >= 32, "JwtOptions:Key must be at least 32 characters.")
+            .Validate(o => !string.IsNullOrWhiteSpace(o.Key) && o.Key.Length >= 32, $"JwtOptions:Key must be at least 32 characters.")
             .Validate(o => !string.IsNullOrWhiteSpace(o.Issuer), "JwtOptions:Issuer is required.")
             .Validate(o => o.Audience is { Count: > 0 }, "JwtOptions:Audience must include at least one value.")
             .ValidateOnStart();
+
+        System.Diagnostics.Debug.WriteLine("JwtOptions configured with Key length: " + builder.Configuration.GetSection(nameof(JwtOptions)).GetValue<string>("Key")?.Length);
         builder.Services.Configure<UserTableSeedingOptions>(builder.Configuration.GetSection(nameof(UserTableSeedingOptions)));
 
         // Add services to the container.
@@ -43,10 +45,7 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
-        builder.Services.AddAuthorizationBuilder()
-            .SetFallbackPolicy(new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .Build());
+        builder.Services.AddAuthorization(); // No fallback policy
 
         builder.Services.AddRateLimiter(options =>
         {
@@ -83,9 +82,12 @@ public class Program
             });
         });
 
+        builder.Services.AddHealthChecks();
+
         var app = builder.Build();
 
-        app.MapDefaultEndpoints();
+        //app.MapDefaultEndpoints();
+        app.MapHealthChecks("/health").AllowAnonymous();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

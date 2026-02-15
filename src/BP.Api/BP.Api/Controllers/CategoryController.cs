@@ -16,6 +16,7 @@ public class CategoryController : BaseController
     }
     [HttpGet]
     [Route("getall")]
+    [AllowAnonymous]
     
     public Task<IActionResult> GetAll()
     {
