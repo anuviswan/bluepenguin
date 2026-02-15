@@ -32,6 +32,7 @@ public class SeedController(IProductController productController,
     private BlobContainerClient BlobContainer => blobContainer;
 
     [HttpPost("execute")]
+    [Authorize]
     public async Task<IActionResult> ExecuteSeed()
     {
         await SeedCollections();
@@ -41,6 +42,7 @@ public class SeedController(IProductController productController,
     }
 
     [HttpPost("clear")]
+    [Authorize]
     public async Task<IActionResult> ClearSeed()
     {
         try

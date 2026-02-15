@@ -86,6 +86,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// <returns>The matching product or an error result.</returns>
     [HttpGet]
     [Route("getbysku")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetProduct([FromQuery] string sku)
     {
         Logger.LogInformation("Getting Product");
@@ -137,6 +138,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// <returns>List of all products or an error result.</returns>
     [HttpGet]
     [Route("getall")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
     {
         Logger.LogInformation("Getting all Products");
@@ -191,6 +193,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     /// </remarks>
     [HttpPost]
     [Route("search")]
+    [AllowAnonymous]
     public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50)
     {
                     Logger.LogInformation("Searching products with filters");

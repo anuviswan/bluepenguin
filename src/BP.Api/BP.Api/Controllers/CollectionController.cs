@@ -20,6 +20,7 @@ public class CollectionController : BaseController
 
     [HttpGet]
     [Route("getall")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll()
     {
         Logger.LogInformation("Get All Collections");
