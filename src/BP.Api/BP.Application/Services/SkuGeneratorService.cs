@@ -7,9 +7,9 @@ public class SkuGeneratorService(IProductService productService) : ISkuGenerator
     private IProductService ProductService => productService;
     public async Task<string> GetSkuCode(string categoryCode,string materialCode, string[] featureCodes, string collectionCode, int yearCode)
     {
-        var lastGeneratedCollectionSequenceCode = await ProductService.GetItemCountForCollection(collectionCode, yearCode);
+        var lastGeneratedCollectionSequenceCode = await ProductService.GetItemCountForCollection(collectionCode, yearCode).ConfigureAwait(false);
         var newCollectionSequenceCode = lastGeneratedCollectionSequenceCode  + 1;
-        var skuCode = $"{categoryCode}{materialCode}-{string.Join('-', featureCodes)}-{collectionCode}{yearCode}{newCollectionSequenceCode:D3}";
+        var skuCode = $"{categoryCode}{materialCode}-{string.Join(string.Empty, featureCodes)}-{collectionCode}{Math.Abs(yearCode % 100)}{newCollectionSequenceCode:D2}";
         return skuCode;
     }
 }
