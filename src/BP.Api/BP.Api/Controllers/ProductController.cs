@@ -31,7 +31,8 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     [HttpPost]
     [Route("create")]
     [Authorize]
-    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product)
+    public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product,
+        [FromQuery] string? skuId = null)
     {
         Logger.LogInformation("Creating Product");
 
@@ -44,7 +45,8 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             }
 
             // use SKU Generator service to create SKU
-            var skuCode = await SkuGeneratorService.GetSkuCode(product.CategoryCode, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode);
+            var skuCode = skuId ?? await SkuGeneratorService.GetSkuCode(product.CategoryCode, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode);
+
             var newProduct = new ProductEntity
             {
                 PartitionKey = product.CategoryCode,
