@@ -25,6 +25,7 @@ Rules:
  - Infrastructure layer handles Azure SDK interactions.
  - Controllers must not directly use Azure SDK clients.
  - Use dependency injection for all services.
+ - Use primary constructor whereever applicable
  - No static service access.
 
 ---
