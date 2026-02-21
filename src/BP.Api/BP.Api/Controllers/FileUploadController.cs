@@ -252,6 +252,30 @@ public class FileUploadController(
         }
     }
 
+
+    /// <summary>
+    /// Marks a specific product image as the primary image for the given SKU.
+    /// </summary>
+    /// <param name="skuId">The SKU ID for the product.</param>
+    /// <param name="imageId">The image ID to mark as primary.</param>
+    /// <returns>200 OK when successful, otherwise 400 or 404 depending on validation/result.</returns>
+    [HttpPost("markprimaryimage")]
+    [Authorize]
+    public async Task<IActionResult> MarkPrimaryImage([FromQuery] string skuId, [FromQuery] string imageId)
+    {
+        if (string.IsNullOrWhiteSpace(skuId))
+            return BadRequest("SkuId is required.");
+
+        if (string.IsNullOrWhiteSpace(imageId))
+            return BadRequest("ImageId is required.");
+
+        var updated = await productImageService.SetPrimaryImageAsync(skuId, imageId);
+        if (!updated)
+            return NotFound($"Image {imageId} not found for product {skuId}");
+
+        return Ok(new { skuId, imageId, isPrimary = true });
+    }
+
     /// <summary>
     /// Delete an image from a product.
     /// </summary>
