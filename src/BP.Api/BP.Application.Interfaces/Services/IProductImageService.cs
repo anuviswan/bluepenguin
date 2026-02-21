@@ -19,6 +19,9 @@ public interface IProductImageService
     // Retrieves the primary image Id for a given SKU ID.
     Task<string?> GetPrimaryImageIdForSkuId(string skuId);
 
+    // Marks a specific image as primary for a SKU.
+    Task<bool> SetPrimaryImageAsync(string skuId, string imageId);
+
     // Deletes an image from a product by SKU ID and image ID.
     Task<bool> DeleteProductImageAsync(string skuId, string imageId);
 }

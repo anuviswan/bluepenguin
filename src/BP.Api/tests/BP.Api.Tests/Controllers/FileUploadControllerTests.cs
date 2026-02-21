@@ -40,4 +40,41 @@ public class FileUploadControllerTests
         var ok = Assert.IsType<OkObjectResult>(result);
         Assert.NotNull(ok.Value);
     }
+
+    [Fact]
+    public async Task MarkPrimaryImage_ReturnsOk_WhenSuccessful()
+    {
+        var mockImageService = new Mock<IProductImageService>();
+        var mockProductService = new Mock<IProductService>();
+        var mockLogger = new Mock<ILogger<FileUploadController>>();
+
+        mockImageService
+            .Setup(s => s.SetPrimaryImageAsync("RI-1", "IMG-1"))
+            .ReturnsAsync(true);
+
+        var controller = new FileUploadController(mockImageService.Object, mockProductService.Object, mockLogger.Object);
+
+        var result = await controller.MarkPrimaryImage("RI-1", "IMG-1");
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        Assert.NotNull(ok.Value);
+    }
+
+    [Fact]
+    public async Task MarkPrimaryImage_ReturnsNotFound_WhenImageDoesNotExist()
+    {
+        var mockImageService = new Mock<IProductImageService>();
+        var mockProductService = new Mock<IProductService>();
+        var mockLogger = new Mock<ILogger<FileUploadController>>();
+
+        mockImageService
+            .Setup(s => s.SetPrimaryImageAsync("RI-1", "IMG-X"))
+            .ReturnsAsync(false);
+
+        var controller = new FileUploadController(mockImageService.Object, mockProductService.Object, mockLogger.Object);
+
+        var result = await controller.MarkPrimaryImage("RI-1", "IMG-X");
+
+        Assert.IsType<NotFoundObjectResult>(result);
+    }
 }

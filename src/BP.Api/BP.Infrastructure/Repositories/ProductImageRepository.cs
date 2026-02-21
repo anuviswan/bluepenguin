@@ -14,6 +14,13 @@ public class ProductImageRepository([FromKeyedServices("ProductImages")]TableCli
         return image;
     }
 
+
+    public async Task<ProductImageEntity?> UpdateProductImage(ProductImageEntity image)
+    {
+        await tableClient.UpsertEntityAsync(image, TableUpdateMode.Replace);
+        return image;
+    }
+
     public async Task<bool> DeleteProductImage(string sku, string imageId)
     {
         try

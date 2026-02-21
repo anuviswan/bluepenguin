@@ -70,6 +70,31 @@ public class ProductImageService(IFileUploadService fileUploadService, IProductI
         return blobName;
     }
 
+
+    public async Task<bool> SetPrimaryImageAsync(string skuId, string imageId)
+    {
+        var targetImage = await productImageRepository.GetProductImageById(skuId, imageId);
+        if (targetImage == null)
+            return false;
+
+        var imagesForSku = await productImageRepository.GetProductImagesBySku(skuId);
+        var currentPrimaryImage = imagesForSku.FirstOrDefault(image => image.IsPrimary && image.RowKey != imageId);
+
+        if (currentPrimaryImage != null)
+        {
+            currentPrimaryImage.IsPrimary = false;
+            await productImageRepository.UpdateProductImage(currentPrimaryImage);
+        }
+
+        if (!targetImage.IsPrimary)
+        {
+            targetImage.IsPrimary = true;
+            await productImageRepository.UpdateProductImage(targetImage);
+        }
+
+        return true;
+    }
+
     public async Task<bool> DeleteProductImageAsync(string skuId, string imageId)
     {
         return await productImageRepository.DeleteProductImage(skuId, imageId);
