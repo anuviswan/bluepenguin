@@ -45,7 +45,12 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             }
 
             // use SKU Generator service to create SKU
-            var skuCode = skuId ?? await SkuGeneratorService.GetSkuCode(product.CategoryCode, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode);
+            var skuCode = skuId ?? await SkuGeneratorService.GetSkuCode(product.CategoryCode, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode).ConfigureAwait(false);
+
+            if(await skuGeneratorService.CheckIfSkuExists(skuCode))
+            {
+                return BadRequest($"SKU {skuCode} already exists");
+            }
 
             var newProduct = new ProductEntity
             {

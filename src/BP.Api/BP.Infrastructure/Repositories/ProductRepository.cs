@@ -34,4 +34,16 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
             await TableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey);
         }
     }
+
+    public async Task<bool> CheckIfSkuExistsAsync(string sku)
+    {
+        var filter = TableClient.CreateQueryFilter<ProductEntity>(e => e.SKU == sku);
+
+        await foreach (var _ in TableClient.QueryAsync<ProductEntity>(filter))
+        {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -12,4 +12,10 @@ public class SkuGeneratorService(IProductService productService) : ISkuGenerator
         var skuCode = $"{categoryCode}{materialCode}-{string.Join(string.Empty, featureCodes)}-{collectionCode}{Math.Abs(yearCode % 100)}{newCollectionSequenceCode:D2}";
         return skuCode;
     }
+
+    public async Task<bool> CheckIfSkuExists(string sku)
+    {
+        return await ProductService.CheckIfSkuExistsAsync(sku).ConfigureAwait(false);
+    }
+   
 }
