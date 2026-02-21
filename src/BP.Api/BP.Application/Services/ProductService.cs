@@ -146,4 +146,9 @@ public class ProductService(IProductRepository productRepository) : IProductServ
         }
         throw new ArgumentException("Invalid SKU format");
     }
+
+    public async Task<bool> CheckIfSkuExistsAsync(string sku)
+    {
+        return await productRepository.CheckIfSkuExistsAsync(sku);
+    }
 }
