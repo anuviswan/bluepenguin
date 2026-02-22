@@ -5,6 +5,8 @@ public record ProductDto
     public string? ProductName { get; init; }
     public string SKU { get; init; } = string.Empty;
     public double Price { get; init; }
+    public double? DiscountPrice { get; init; }
+    public DateTimeOffset? DiscountExpiryDate { get; init; }
     public int Stock { get; init; }
     public string PartitionKey { get; init; } = string.Empty;
     public string MaterialCode { get; init; } = string.Empty;

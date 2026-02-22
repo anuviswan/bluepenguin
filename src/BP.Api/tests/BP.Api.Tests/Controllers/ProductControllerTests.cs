@@ -37,6 +37,8 @@ public class ProductControllerTests
             ProductCareInstructions = new[] { "Care1", "Care2" },
             Specifications = new[] { "Spec1", "Spec2" },
             Price = 10,
+            DiscountPrice = 7.5,
+            DiscountExpiryDate = DateTimeOffset.UtcNow.AddDays(10),
             CategoryCode = "RI",
             Material = "RS",
             FeatureCodes = new[] { "FL" },
@@ -94,4 +96,102 @@ public class ProductControllerTests
         var sku = first.GetType().GetProperty("SKU")!.GetValue(first) as string;
         Assert.Equal("SKU-OLDER", sku);
     }
+
+    [Fact]
+    public async Task GetProduct_ReturnsDiscountPrice_WhenPresent()
+    {
+        var mockProductService = new Mock<IProductService>();
+        var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockLogger = new Mock<ILogger<ProductController>>();
+
+        mockProductService.Setup(s => s.GetProductBySku("RI-RS-FL-ONM-2024-1")).ReturnsAsync(new ProductEntity
+        {
+            SKU = "RI-RS-FL-ONM-2024-1",
+            PartitionKey = "RI",
+            ProductName = "Test",
+            ProductDescription = "Desc",
+            Price = 10,
+            DiscountPrice = 8,
+            DiscountExpiryDate = DateTimeOffset.UtcNow.AddDays(2),
+            Stock = 3,
+            MaterialCode = "RS",
+            CollectionCode = "ONM",
+            FeatureCodes = "FL",
+            YearCode = 2024
+        });
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+
+        var result = await controller.GetProduct("RI-RS-FL-ONM-2024-1");
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var discountProp = ok.Value!.GetType().GetProperty("DiscountPrice");
+        Assert.NotNull(discountProp);
+        Assert.Equal(8d, discountProp!.GetValue(ok.Value));
+    }
+
+    [Fact]
+    public async Task GetProduct_ReturnsPriceAsDiscountPrice_WhenDiscountExpired()
+    {
+        var mockProductService = new Mock<IProductService>();
+        var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockLogger = new Mock<ILogger<ProductController>>();
+
+        mockProductService.Setup(s => s.GetProductBySku("RI-RS-FL-ONM-2024-1")).ReturnsAsync(new ProductEntity
+        {
+            SKU = "RI-RS-FL-ONM-2024-1",
+            PartitionKey = "RI",
+            ProductName = "Test",
+            ProductDescription = "Desc",
+            Price = 10,
+            DiscountPrice = 8,
+            DiscountExpiryDate = DateTimeOffset.UtcNow.AddDays(-1),
+            Stock = 3,
+            MaterialCode = "RS",
+            CollectionCode = "ONM",
+            FeatureCodes = "FL",
+            YearCode = 2024
+        });
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+
+        var result = await controller.GetProduct("RI-RS-FL-ONM-2024-1");
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var discountProp = ok.Value!.GetType().GetProperty("DiscountPrice");
+        Assert.NotNull(discountProp);
+        Assert.Equal(10d, discountProp!.GetValue(ok.Value));
+    }
+
+
+    [Fact]
+    public async Task GetProduct_ReturnsNullDiscountPrice_WhenDiscountNotProvided()
+    {
+        var mockProductService = new Mock<IProductService>();
+        var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockLogger = new Mock<ILogger<ProductController>>();
+
+        mockProductService.Setup(s => s.GetProductBySku("RI-RS-FL-ONM-2024-1")).ReturnsAsync(new ProductEntity
+        {
+            SKU = "RI-RS-FL-ONM-2024-1",
+            PartitionKey = "RI",
+            ProductName = "Test",
+            ProductDescription = "Desc",
+            Price = 10,
+            DiscountPrice = null,
+            DiscountExpiryDate = null,
+            Stock = 3,
+            MaterialCode = "RS",
+            CollectionCode = "ONM",
+            FeatureCodes = "FL",
+            YearCode = 2024
+        });
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+
+        var result = await controller.GetProduct("RI-RS-FL-ONM-2024-1");
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var discountProp = ok.Value!.GetType().GetProperty("DiscountPrice");
+        Assert.NotNull(discountProp);
+        Assert.Null(discountProp!.GetValue(ok.Value));
+    }
+
 }

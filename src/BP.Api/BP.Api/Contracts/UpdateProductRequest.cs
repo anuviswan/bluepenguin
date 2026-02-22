@@ -37,6 +37,16 @@ public record UpdateProductRequest
     public double? Price { get; init; }
 
     /// <summary>
+    /// Updated discount price.
+    /// </summary>
+    public double? DiscountPrice { get; init; }
+
+    /// <summary>
+    /// Updated discount expiry date.
+    /// </summary>
+    public DateTimeOffset? DiscountExpiryDate { get; init; }
+
+    /// <summary>
     /// Updated stock quantity.
     /// </summary>
     public int? Stock { get; init; }
