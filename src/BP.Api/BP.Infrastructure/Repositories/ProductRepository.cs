@@ -58,7 +58,8 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
 
     public async Task<IEnumerable<TopCategoryStats>> GetTopCategoriesAsync(int count)
     {
-        var categoryStats = new Dictionary<string, (int Count, DateTimeOffset LatestTimestamp, string LatestSku)>(StringComparer.OrdinalIgnoreCase);
+        var safeCount = count <= 0 ? 4 : count;
+        var categoryRows = new List<(string CategoryCode, string Sku, DateTimeOffset Timestamp)>();
 
         await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["PartitionKey", "SKU", "Timestamp"]))
         {
@@ -67,32 +68,33 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
                 continue;
             }
 
-            var sku = entity.TryGetValue("SKU", out var skuObj) ? skuObj?.ToString() : string.Empty;
+            var sku = entity.TryGetValue("SKU", out var skuObj) ? skuObj?.ToString() ?? string.Empty : string.Empty;
             var timestamp = entity.Timestamp ?? DateTimeOffset.MinValue;
 
-            if (categoryStats.TryGetValue(categoryCode, out var existing))
-            {
-                var latestTimestamp = existing.LatestTimestamp;
-                var latestSku = existing.LatestSku;
-
-                if (timestamp > latestTimestamp || (timestamp == latestTimestamp && string.CompareOrdinal(sku, latestSku) > 0))
-                {
-                    latestTimestamp = timestamp;
-                    latestSku = sku ?? latestSku;
-                }
-
-                categoryStats[categoryCode] = (existing.Count + 1, latestTimestamp, latestSku);
-                continue;
-            }
-
-            categoryStats[categoryCode] = (1, timestamp, sku ?? string.Empty);
+            categoryRows.Add((categoryCode, sku, timestamp));
         }
 
-        return categoryStats
-            .OrderByDescending(x => x.Value.Count)
-            .ThenByDescending(x => x.Value.LatestTimestamp)
-            .ThenBy(x => x.Key)
-            .Take(count)
-            .Select(x => new TopCategoryStats(x.Key, x.Value.Count, x.Value.LatestSku));
+        return categoryRows
+            .GroupBy(x => x.CategoryCode, StringComparer.OrdinalIgnoreCase)
+            .Select(group =>
+            {
+                var latest = group
+                    .OrderByDescending(x => x.Timestamp)
+                    .ThenByDescending(x => x.Sku)
+                    .First();
+
+                return new
+                {
+                    CategoryCode = group.Key,
+                    ProductCount = group.Count(),
+                    LatestTimestamp = latest.Timestamp,
+                    LatestSku = latest.Sku
+                };
+            })
+            .OrderByDescending(x => x.ProductCount)
+            .ThenByDescending(x => x.LatestTimestamp)
+            .ThenBy(x => x.CategoryCode)
+            .Take(safeCount)
+            .Select(x => new TopCategoryStats(x.CategoryCode, x.ProductCount, x.LatestSku));
     }
 }
