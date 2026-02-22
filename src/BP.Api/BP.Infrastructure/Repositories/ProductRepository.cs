@@ -55,4 +55,44 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
 
         return false;
     }
+
+    public async Task<IEnumerable<TopCategoryStats>> GetTopCategoriesAsync(int count)
+    {
+        var categoryStats = new Dictionary<string, (int Count, DateTimeOffset LatestTimestamp, string LatestSku)>(StringComparer.OrdinalIgnoreCase);
+
+        await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["PartitionKey", "SKU", "Timestamp"]))
+        {
+            if (!entity.TryGetValue("PartitionKey", out var categoryCodeObj) || categoryCodeObj is not string categoryCode || string.IsNullOrWhiteSpace(categoryCode))
+            {
+                continue;
+            }
+
+            var sku = entity.TryGetValue("SKU", out var skuObj) ? skuObj?.ToString() : string.Empty;
+            var timestamp = entity.Timestamp ?? DateTimeOffset.MinValue;
+
+            if (categoryStats.TryGetValue(categoryCode, out var existing))
+            {
+                var latestTimestamp = existing.LatestTimestamp;
+                var latestSku = existing.LatestSku;
+
+                if (timestamp > latestTimestamp || (timestamp == latestTimestamp && string.CompareOrdinal(sku, latestSku) > 0))
+                {
+                    latestTimestamp = timestamp;
+                    latestSku = sku ?? latestSku;
+                }
+
+                categoryStats[categoryCode] = (existing.Count + 1, latestTimestamp, latestSku);
+                continue;
+            }
+
+            categoryStats[categoryCode] = (1, timestamp, sku ?? string.Empty);
+        }
+
+        return categoryStats
+            .OrderByDescending(x => x.Value.Count)
+            .ThenByDescending(x => x.Value.LatestTimestamp)
+            .ThenBy(x => x.Key)
+            .Take(count)
+            .Select(x => new TopCategoryStats(x.Key, x.Value.Count, x.Value.LatestSku));
+    }
 }

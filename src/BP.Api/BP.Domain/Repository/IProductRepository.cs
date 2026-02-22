@@ -8,4 +8,6 @@ public interface IProductRepository : IGenericRepository<ProductEntity>
     public Task DeleteAllAsync();
 
     public Task<bool> CheckIfSkuExistsAsync(string sku);
+
+    public Task<IEnumerable<TopCategoryStats>> GetTopCategoriesAsync(int count);
 }
