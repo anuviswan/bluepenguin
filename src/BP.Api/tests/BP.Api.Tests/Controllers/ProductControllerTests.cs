@@ -8,6 +8,8 @@ using BP.Api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using BP.Domain.Entities;
 using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace BP.Api.Tests.Controllers;
 
@@ -61,5 +63,35 @@ public class ProductControllerTests
 
         var result = await controller.GetAllProducts();
         Assert.IsType<OkObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task GetAllProducts_PreservesServiceOrdering()
+    {
+        var mockProductService = new Mock<IProductService>();
+        var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockLogger = new Mock<ILogger<ProductController>>();
+
+        mockProductService.Setup(s => s.GetAllProducts()).ReturnsAsync(new List<ProductEntity>
+        {
+            new() { SKU = "SKU-OLDER", PartitionKey = "RI", MaterialCode = "RS", CollectionCode = "ONM", FeatureCodes = "FL", Timestamp = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero) },
+            new() { SKU = "SKU-NEWER", PartitionKey = "RI", MaterialCode = "RS", CollectionCode = "ONM", FeatureCodes = "FL", Timestamp = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero) }
+        });
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+
+        var result = await controller.GetAllProducts();
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var value = ok.Value!;
+        var itemsProperty = value.GetType().GetProperty("items");
+        Assert.NotNull(itemsProperty);
+
+        var items = itemsProperty!.GetValue(value) as IEnumerable<object>;
+        Assert.NotNull(items);
+
+        var first = items!.First();
+        var sku = first.GetType().GetProperty("SKU")!.GetValue(first) as string;
+        Assert.Equal("SKU-OLDER", sku);
     }
 }

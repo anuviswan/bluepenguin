@@ -2,6 +2,7 @@
 using BP.Domain.Entities;
 using BP.Domain.Repository;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace BP.Infrastructure.Repositories;
 
@@ -11,6 +12,14 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
     {
 
     }
+    public new async Task<IEnumerable<ProductEntity>> GetAll()
+    {
+        var products = await base.GetAll();
+        return products
+            .OrderByDescending(p => p.Timestamp ?? DateTimeOffset.MinValue)
+            .ThenByDescending(p => p.SKU);
+    }
+
     public async Task<IEnumerable<ProductEntity>> GetProductsByCategory(string categoryCode, int yearCode)
     {
         var queryResults = TableClient.QueryAsync<ProductEntity>(p => p.PartitionKey == categoryCode && p.YearCode == yearCode);
