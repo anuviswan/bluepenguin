@@ -24,6 +24,7 @@ public static class IServiceCollectionExtension
         services.AddTransient<ISkuGeneratorService, SkuGeneratorService>();
         services.AddTransient<IFileUploadService, FileUploadService>();
         services.AddTransient<IProductImageService, ProductImageService>();
+        services.AddTransient<IShowcaseService, ShowcaseService>();
         return services;
     }
 

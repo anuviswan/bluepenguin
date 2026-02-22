@@ -1,0 +1,36 @@
+using BP.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace BP.Api.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ShowcaseController : BaseController
+{
+    private readonly IShowcaseService _showcaseService;
+
+    public ShowcaseController(IShowcaseService showcaseService, ILogger<ShowcaseController> logger) : base(logger)
+    {
+        _showcaseService = showcaseService;
+    }
+
+    [HttpGet]
+    [Route("GetTopCategories")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetTopCategories(int count = 4)
+    {
+        Logger.LogInformation("Get top categories with count {Count}", count);
+
+        try
+        {
+            var categories = await _showcaseService.GetTopCategories(count);
+            return Ok(categories);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to get top categories");
+            return BadRequest(e);
+        }
+    }
+}
