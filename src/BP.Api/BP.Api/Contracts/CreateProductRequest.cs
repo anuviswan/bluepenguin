@@ -8,6 +8,8 @@ public record CreateProductRequest
 
     public IEnumerable<string> ProductCareInstructions { get; init; } = [];
     public double Price { get; init; }
+    public double? DiscountPrice { get; init; }
+    public DateTimeOffset? DiscountExpiryDate { get; init; }
 
     public string CategoryCode { get; init; } = null!;
 

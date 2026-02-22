@@ -29,6 +29,8 @@ public record ProductEntity : ITableEntity
 
     public string SKU { get; set; } = null!;
     public double Price { get; set; }
+    public double? DiscountPrice { get; set; }
+    public DateTimeOffset? DiscountExpiryDate { get; set; }
     public int Stock { get; set; }
     public string PartitionKey { get; set; } = null!;
     public string RowKey { get; set; } = null!;
