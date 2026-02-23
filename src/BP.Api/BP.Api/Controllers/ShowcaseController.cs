@@ -33,4 +33,24 @@ public class ShowcaseController : BaseController
             return BadRequest(e);
         }
     }
+
+    [HttpGet]
+    [Route("GetTopDiscounts")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetTopDiscounts(int count = 4)
+    {
+        Logger.LogInformation("Get top discounts with count {Count}", count);
+
+        try
+        {
+            var discounts = await _showcaseService.GetTopDiscounts(count);
+            return Ok(discounts);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to get top discounts");
+            return BadRequest(e);
+        }
+    }
+
 }
