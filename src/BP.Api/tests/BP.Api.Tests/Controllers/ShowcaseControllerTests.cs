@@ -50,4 +50,26 @@ public class ShowcaseControllerTests
         Assert.Equal("RI-RS-FL-ONM-2024-9", discounts.First().SkuId);
     }
 
+
+    [Fact]
+    public async Task GetTopCollections_ReturnsOkWithPayload()
+    {
+        var mockShowcaseService = new Mock<IShowcaseService>();
+        var mockLogger = new Mock<ILogger<ShowcaseController>>();
+
+        mockShowcaseService.Setup(s => s.GetTopCollections(4))
+            .ReturnsAsync([
+                new ShowcaseCollectionResult("LOVE", 10, "RI-RS-FL-ONM-2024-9")
+            ]);
+
+        var controller = new ShowcaseController(mockShowcaseService.Object, mockLogger.Object);
+
+        var result = await controller.GetTopCollections();
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var collections = Assert.IsAssignableFrom<IEnumerable<ShowcaseCollectionResult>>(ok.Value);
+        Assert.Single(collections);
+        Assert.Equal("LOVE", collections.First().CollectionCode);
+    }
+
 }

@@ -12,4 +12,6 @@ public interface IProductRepository : IGenericRepository<ProductEntity>
     public Task<IEnumerable<TopCategoryStats>> GetTopCategoriesAsync(int count);
 
     public Task<IEnumerable<TopDiscountStats>> GetTopDiscountsAsync(int count);
+
+    public Task<IEnumerable<TopCollectionStats>> GetTopCollectionsAsync(int count);
 }

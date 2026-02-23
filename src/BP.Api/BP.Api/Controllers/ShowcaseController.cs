@@ -53,4 +53,24 @@ public class ShowcaseController : BaseController
         }
     }
 
+
+    [HttpGet]
+    [Route("GetTopCollections")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetTopCollections(int count = 4)
+    {
+        Logger.LogInformation("Get top collections with count {Count}", count);
+
+        try
+        {
+            var collections = await _showcaseService.GetTopCollections(count);
+            return Ok(collections);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to get top collections");
+            return BadRequest(e);
+        }
+    }
+
 }
