@@ -56,6 +56,43 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
         return false;
     }
 
+
+    public async Task<IEnumerable<TopDiscountStats>> GetTopDiscountsAsync(int count)
+    {
+        var safeCount = count <= 0 ? 4 : count;
+        var discounts = new List<TopDiscountStats>();
+
+        await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["SKU", "Price", "DiscountPrice"]))
+        {
+            if (!entity.TryGetValue("SKU", out var skuObj) || string.IsNullOrWhiteSpace(skuObj?.ToString()))
+            {
+                continue;
+            }
+
+            if (!entity.TryGetValue("Price", out var priceObj) || priceObj is not double price || price <= 0)
+            {
+                continue;
+            }
+
+            if (!entity.TryGetValue("DiscountPrice", out var discountPriceObj) || discountPriceObj is not double discountPrice)
+            {
+                continue;
+            }
+
+            if (discountPrice >= price || discountPrice < 0)
+            {
+                continue;
+            }
+
+            var discountPercentage = Math.Round(((price - discountPrice) / price) * 100, 2);
+            discounts.Add(new TopDiscountStats(skuObj.ToString()!, discountPercentage));
+        }
+
+        return discounts
+            .OrderByDescending(x => x.DiscountPercentage)
+            .ThenBy(x => x.SkuId)
+            .Take(safeCount);
+    }
     public async Task<IEnumerable<TopCategoryStats>> GetTopCategoriesAsync(int count)
     {
         var safeCount = count <= 0 ? 4 : count;
