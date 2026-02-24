@@ -26,6 +26,7 @@ public static class IServiceCollectionExtension
         services.AddTransient<IProductImageService, ProductImageService>();
         services.AddTransient<IShowcaseService, ShowcaseService>();
         services.AddTransient<IArtisanFavService, ArtisanFavService>();
+        services.AddTransient<IFeaturedCategoryService, FeaturedCategoryService>();
         return services;
     }
 
