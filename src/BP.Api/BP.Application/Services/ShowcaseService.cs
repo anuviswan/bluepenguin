@@ -25,6 +25,23 @@ public class ShowcaseService : IShowcaseService
             x.LatestSkuId));
     }
 
+
+    public async Task<IEnumerable<ShowcaseDiscountResult>> GetTopDiscounts(int count = 4)
+    {
+        var safeCount = count <= 0 ? 4 : count;
+        var topDiscounts = await _productRepository.GetTopDiscountsAsync(safeCount);
+
+        return topDiscounts.Select(x => new ShowcaseDiscountResult(x.SkuId, x.DiscountPercentage));
+    }
+
+    public async Task<IEnumerable<ShowcaseCollectionResult>> GetTopCollections(int count = 4)
+    {
+        var safeCount = count <= 0 ? 4 : count;
+        var topCollections = await _productRepository.GetTopCollectionsAsync(safeCount);
+
+        return topCollections.Select(x => new ShowcaseCollectionResult(x.CollectionCode, x.ProductCount, x.LatestSkuId));
+    }
+
     private static string GetCategoryName(string categoryCode)
     {
         if (Enum.TryParse<Category>(categoryCode, ignoreCase: true, out var category))

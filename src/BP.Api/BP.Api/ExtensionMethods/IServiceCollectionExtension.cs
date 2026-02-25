@@ -25,6 +25,8 @@ public static class IServiceCollectionExtension
         services.AddTransient<IFileUploadService, FileUploadService>();
         services.AddTransient<IProductImageService, ProductImageService>();
         services.AddTransient<IShowcaseService, ShowcaseService>();
+        services.AddTransient<IArtisanFavService, ArtisanFavService>();
+        services.AddTransient<IFeaturedCategoryService, FeaturedCategoryService>();
         return services;
     }
 
@@ -35,6 +37,7 @@ public static class IServiceCollectionExtension
         services.AddTransient<BP.Domain.Repository.IFileUploadRepository, BP.Infrastructure.Repositories.AzureBlobFileRepository>();
         services.AddTransient<BP.Domain.Repository.IProductImageRepository, BP.Infrastructure.Repositories.ProductImageRepository>();
         services.AddTransient<BP.Domain.Repository.IMetaDataRepository, BP.Infrastructure.Repositories.MetaDataRepository>();
+        services.AddTransient<BP.Domain.Repository.ISectionProductRepository, BP.Infrastructure.Repositories.SectionProductRepository>();
         return services;
     }
 
@@ -82,6 +85,18 @@ public static class IServiceCollectionExtension
             var config = sp.GetRequiredService<IConfiguration>();
             var connectionString = config.GetConnectionString("tables");
             var tableName = config["TableNames:MetaData"] ?? "MetaData";
+
+            var serviceClient = new TableServiceClient(connectionString);
+            var client = serviceClient.GetTableClient(tableName);
+            client.CreateIfNotExists();
+            return client;
+        });
+
+        services.AddKeyedSingleton<TableClient>("SectionProducts", (sp, key) =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var connectionString = config.GetConnectionString("tables");
+            var tableName = config["TableNames:SectionProducts"] ?? "SectionProducts";
 
             var serviceClient = new TableServiceClient(connectionString);
             var client = serviceClient.GetTableClient(tableName);
