@@ -33,4 +33,13 @@ public class FeaturedCategoryService(ISectionProductRepository sectionProductRep
     {
         await sectionProductRepository.Delete(FEATURED_CATEGORIES_PARTITION_KEY, code).ConfigureAwait(false);
     }
+
+    public async Task<IEnumerable<string>> GetAll()
+    {
+        var featuredCategories = await sectionProductRepository
+            .GetByPartition(FEATURED_CATEGORIES_PARTITION_KEY)
+            .ConfigureAwait(false);
+
+        return featuredCategories.Select(x => x.RowKey);
+    }
 }
