@@ -10,6 +10,23 @@ namespace BP.Api.Tests.Controllers;
 public class FeaturedCategoryControllerTests
 {
     [Fact]
+    public async Task GetAll_ReturnsOk_WithFeaturedCategories()
+    {
+        var service = new Mock<IFeaturedCategoryService>();
+        service.Setup(x => x.GetAll()).ReturnsAsync(["category-1", "category-2"]);
+
+        var logger = new Mock<ILogger<FeaturedCategoryController>>();
+
+        var controller = new FeaturedCategoryController(service.Object, logger.Object);
+
+        var result = await controller.GetAll();
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var categories = Assert.IsAssignableFrom<IEnumerable<string>>(okResult.Value);
+        Assert.Equal(["category-1", "category-2"], categories);
+    }
+
+    [Fact]
     public async Task Create_ReturnsBadRequest_WhenRequestIsInvalid()
     {
         var service = new Mock<IFeaturedCategoryService>();

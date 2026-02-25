@@ -8,6 +8,24 @@ namespace BP.Api.Tests.Services;
 public class FeaturedCategoryServiceTests
 {
     [Fact]
+    public async Task GetAll_ReturnsFeaturedCategoryCodes()
+    {
+        var repository = new Mock<ISectionProductRepository>();
+        repository
+            .Setup(x => x.GetByPartition(FeaturedCategoryService.FEATURED_CATEGORIES_PARTITION_KEY))
+            .ReturnsAsync([
+                new SectionProductEntity { PartitionKey = FeaturedCategoryService.FEATURED_CATEGORIES_PARTITION_KEY, RowKey = "cat-1" },
+                new SectionProductEntity { PartitionKey = FeaturedCategoryService.FEATURED_CATEGORIES_PARTITION_KEY, RowKey = "cat-2" }
+            ]);
+
+        var service = new FeaturedCategoryService(repository.Object);
+
+        var result = await service.GetAll();
+
+        Assert.Equal(["cat-1", "cat-2"], result);
+    }
+
+    [Fact]
     public async Task Add_Throws_WhenMaxFeaturedCategoriesReached()
     {
         var repository = new Mock<ISectionProductRepository>();

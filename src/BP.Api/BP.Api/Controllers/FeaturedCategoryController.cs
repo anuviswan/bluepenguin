@@ -9,6 +9,22 @@ namespace BP.Api.Controllers;
 [Route("api/[controller]")]
 public class FeaturedCategoryController(IFeaturedCategoryService featuredCategoryService, ILogger<FeaturedCategoryController> logger) : BaseController(logger)
 {
+    [HttpGet("getall")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAll()
+    {
+        try
+        {
+            var featuredCategories = await featuredCategoryService.GetAll().ConfigureAwait(false);
+            return Ok(featuredCategories);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to retrieve featured categories");
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpPost("create")]
     [Authorize]
     public async Task<IActionResult> Create([FromBody] FeaturedCategoryRequest request)
@@ -20,7 +36,7 @@ public class FeaturedCategoryController(IFeaturedCategoryService featuredCategor
                 return BadRequest("Invalid request");
             }
 
-            await featuredCategoryService.Add(request.Code);
+            await featuredCategoryService.Add(request.Code).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception e)
@@ -41,7 +57,7 @@ public class FeaturedCategoryController(IFeaturedCategoryService featuredCategor
                 return BadRequest("Invalid code");
             }
 
-            await featuredCategoryService.Delete(code);
+            await featuredCategoryService.Delete(code).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception e)
