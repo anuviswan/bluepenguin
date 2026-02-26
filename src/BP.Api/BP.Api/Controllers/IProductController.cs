@@ -9,5 +9,6 @@ namespace BP.Api.Controllers
         Task<IActionResult> GetAllProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 5);
         Task<IActionResult> GetProduct([FromQuery] string sku);
         Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50);
+        Task<IActionResult> DeleteProduct(string sku);
     }
 }

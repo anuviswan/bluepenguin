@@ -211,6 +211,31 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
         }
     }
 
+    [HttpDelete]
+    [Route("delete/{sku}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteProduct(string sku)
+    {
+        Logger.LogInformation("Deleting Product");
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(sku))
+            {
+                Logger.LogError("Invalid SKU");
+                return BadRequest("Invalid SKU");
+            }
+
+            await ProductService.DeleteProduct(sku);
+            return Ok(new { message = "Product deleted successfully", sku });
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error deleting product");
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpPut]
     [Route("update")]
     [Authorize]
