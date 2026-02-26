@@ -28,7 +28,7 @@ public class FeatureController : BaseController
         try
         {
             var features = await _featureService.GetAllFeatures();
-            var response = features.Select(x => new { Id = x.RowKey, Name = x.Title});
+            var response = features.Select(x => new { Id = x.RowKey, Name = x.Title, SymbolicText = x.Notes});
             return Ok(response);
         }
         catch (Exception e)
