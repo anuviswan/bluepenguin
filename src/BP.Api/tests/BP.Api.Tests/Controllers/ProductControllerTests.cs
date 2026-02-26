@@ -194,4 +194,26 @@ public class ProductControllerTests
         Assert.Null(discountProp!.GetValue(ok.Value));
     }
 
+
+    [Fact]
+    public async Task DeleteProduct_ReturnsOk_OnSuccess()
+    {
+        var mockProductService = new Mock<IProductService>();
+        var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockLogger = new Mock<ILogger<ProductController>>();
+
+        mockProductService.Setup(s => s.DeleteProduct("RI-RS-FL-ONM-2024-1")).Returns(Task.CompletedTask);
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+
+        var result = await controller.DeleteProduct("RI-RS-FL-ONM-2024-1");
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var skuProp = ok.Value!.GetType().GetProperty("sku");
+        Assert.NotNull(skuProp);
+        Assert.Equal("RI-RS-FL-ONM-2024-1", skuProp!.GetValue(ok.Value));
+
+        mockProductService.Verify(s => s.DeleteProduct("RI-RS-FL-ONM-2024-1"), Times.Once);
+    }
+
 }

@@ -4,7 +4,7 @@ using BP.Domain.Repository;
 
 namespace BP.Application.Services;
 
-public class ProductService(IProductRepository productRepository) : IProductService
+public class ProductService(IProductRepository productRepository, ISectionProductRepository sectionProductRepository, IProductImageRepository productImageRepository, IFileUploadService fileUploadService) : IProductService
 {
     public async Task<ProductEntity> AddProduct(BP.Domain.Entities.ProductEntity product)
     {
@@ -14,6 +14,15 @@ public class ProductService(IProductRepository productRepository) : IProductServ
     public async Task DeleteProduct(string sku)
     {
         var product = await GetProductBySku(sku) ?? throw new Exception($"Product with SKU {sku} not found.");
+
+        var images = await productImageRepository.GetProductImagesBySku(sku);
+        foreach (var image in images)
+        {
+            await fileUploadService.DeleteByBlobNameAsync(image.BlobName);
+            await productImageRepository.DeleteProductImage(sku, image.RowKey);
+        }
+
+        await sectionProductRepository.DeleteByRowKey(sku);
         await productRepository.Delete(product);
     }
 

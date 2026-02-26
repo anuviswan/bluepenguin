@@ -40,4 +40,11 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
 
         return null;
     }
+
+    public async Task<bool> DeleteAsync(string blobName)
+    {
+        var blobClient = blobContainer.GetBlobClient(blobName);
+        var response = await blobClient.DeleteIfExistsAsync();
+        return response.Value;
+    }
 }
