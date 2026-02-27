@@ -14,7 +14,7 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
     }
     public new async Task<IEnumerable<ProductEntity>> GetAll()
     {
-        var products = await base.GetAll();
+        var products = await base.GetAll().ConfigureAwait(false);
         return products
             .OrderByDescending(p => p.Timestamp ?? DateTimeOffset.MinValue)
             .ThenByDescending(p => p.SKU);
@@ -25,7 +25,7 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
         var queryResults = TableClient.QueryAsync<ProductEntity>(p => p.PartitionKey == categoryCode && p.YearCode == yearCode);
 
         var results = new List<ProductEntity>();
-        await foreach (var entity in queryResults)
+        await foreach (var entity in queryResults.ConfigureAwait(false))
         {
             results.Add(entity);
 
@@ -38,9 +38,9 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
     public async Task DeleteAllAsync()
     {
         // Delete all entities in the table by querying and deleting
-        await foreach (var entity in TableClient.QueryAsync<ProductEntity>())
+        await foreach (var entity in TableClient.QueryAsync<ProductEntity>().ConfigureAwait(false))
         {
-            await TableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey);
+            await TableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
         }
     }
 
@@ -48,7 +48,7 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
     {
         var filter = TableClient.CreateQueryFilter<ProductEntity>(e => e.SKU == sku);
 
-        await foreach (var _ in TableClient.QueryAsync<ProductEntity>(filter))
+        await foreach (var _ in TableClient.QueryAsync<ProductEntity>(filter).ConfigureAwait(false))
         {
             return true;
         }
@@ -62,7 +62,7 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
         var safeCount = count <= 0 ? 4 : count;
         var discounts = new List<TopDiscountStats>();
 
-        await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["SKU", "Price", "DiscountPrice"]))
+        await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["SKU", "Price", "DiscountPrice"]).ConfigureAwait(false))
         {
             if (!entity.TryGetValue("SKU", out var skuObj) || string.IsNullOrWhiteSpace(skuObj?.ToString()))
             {
@@ -99,7 +99,7 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
         var safeCount = count <= 0 ? 4 : count;
         var collectionStats = new Dictionary<string, (int ProductCount, DateTimeOffset LatestTimestamp, string LatestSku)>(StringComparer.OrdinalIgnoreCase);
 
-        await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["CollectionCode", "SKU", "Timestamp"]))
+        await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["CollectionCode", "SKU", "Timestamp"]).ConfigureAwait(false))
         {
             if (!entity.TryGetValue("CollectionCode", out var collectionCodeObj) || collectionCodeObj is not string collectionCode || string.IsNullOrWhiteSpace(collectionCode))
             {
@@ -140,7 +140,7 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
         var safeCount = count <= 0 ? 4 : count;
         var categoryStats = new Dictionary<string, (int ProductCount, DateTimeOffset LatestTimestamp, string LatestSku)>(StringComparer.OrdinalIgnoreCase);
 
-        await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["PartitionKey", "SKU", "Timestamp"]))
+        await foreach (var entity in TableClient.QueryAsync<TableEntity>(select: ["PartitionKey", "SKU", "Timestamp"]).ConfigureAwait(false))
         {
             if (!entity.TryGetValue("PartitionKey", out var categoryCodeObj) || categoryCodeObj is not string categoryCode || string.IsNullOrWhiteSpace(categoryCode))
             {

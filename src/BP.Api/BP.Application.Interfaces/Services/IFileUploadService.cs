@@ -6,4 +6,5 @@ public interface IFileUploadService
 {
     Task<string> UploadAsync(FileUpload file);
     Task<FileDownload?> DownloadByBlobNameAsync(string blobName);
+    Task<bool> DeleteByBlobNameAsync(string blobName);
 }

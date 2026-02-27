@@ -32,7 +32,7 @@ public class AuthenticationController : BaseController
 
         try
         {
-            var response = await _authenticationService.Authenticate(request.Username, request.Password);
+            var response = await _authenticationService.Authenticate(request.Username, request.Password).ConfigureAwait(false);
 
 
             if (response == true)

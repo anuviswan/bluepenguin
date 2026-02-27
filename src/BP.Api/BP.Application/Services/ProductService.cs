@@ -4,34 +4,43 @@ using BP.Domain.Repository;
 
 namespace BP.Application.Services;
 
-public class ProductService(IProductRepository productRepository) : IProductService
+public class ProductService(IProductRepository productRepository, ISectionProductRepository sectionProductRepository, IProductImageRepository productImageRepository, IFileUploadService fileUploadService) : IProductService
 {
     public async Task<ProductEntity> AddProduct(BP.Domain.Entities.ProductEntity product)
     {
-        return await productRepository.Add(product);
+        return await productRepository.Add(product).ConfigureAwait(false);
     }
 
     public async Task DeleteProduct(string sku)
     {
-        var product = await GetProductBySku(sku) ?? throw new Exception($"Product with SKU {sku} not found.");
-        await productRepository.Delete(product);
+        var product = await GetProductBySku(sku).ConfigureAwait(false) ?? throw new Exception($"Product with SKU {sku} not found.");
+
+        var images = await productImageRepository.GetProductImagesBySku(sku).ConfigureAwait(false);
+        foreach (var image in images)
+        {
+            await fileUploadService.DeleteByBlobNameAsync(image.BlobName).ConfigureAwait(false);
+            await productImageRepository.DeleteProductImage(sku, image.RowKey).ConfigureAwait(false);
+        }
+
+        await sectionProductRepository.DeleteByRowKey(sku).ConfigureAwait(false);
+        await productRepository.Delete(product).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<BP.Domain.Entities.ProductEntity>> GetAllProducts()
     {
-        return await productRepository.GetAll();
+        return await productRepository.GetAll().ConfigureAwait(false);
     }
 
     public async Task<int> GetItemCountForCollection(string collectionCode, int yearCode)
     {
-        var result = await productRepository.GetProductsByCategory(collectionCode, yearCode);
+        var result = await productRepository.GetProductsByCategory(collectionCode, yearCode).ConfigureAwait(false);
         return result.Count();
     }
 
     public async Task<BP.Domain.Entities.ProductEntity?> GetProductBySku(string sku)
     {
         var categoryCode = GetCategoryCodeFromSku(sku);
-        var product = await productRepository.GetById(categoryCode, sku);
+        var product = await productRepository.GetById(categoryCode, sku).ConfigureAwait(false);
         return product;
     }
 
@@ -46,12 +55,12 @@ public class ProductService(IProductRepository productRepository) : IProductServ
             throw new ArgumentException("SKU is required for update");
 
         // Get the existing product to check if it exists
-        var existingProduct = await GetProductBySku(product.SKU);
+        var existingProduct = await GetProductBySku(product.SKU).ConfigureAwait(false);
         if (existingProduct == null)
             throw new InvalidOperationException($"Product with SKU {product.SKU} not found.");
 
         // Update the product in repository
-        return await productRepository.Update(product);
+        return await productRepository.Update(product).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -76,7 +85,7 @@ public class ProductService(IProductRepository productRepository) : IProductServ
             return Array.Empty<ProductEntity>();
         }
 
-        var allProducts = await productRepository.GetAll();
+        var allProducts = await productRepository.GetAll().ConfigureAwait(false);
         IEnumerable<ProductEntity> results = allProducts ?? Array.Empty<ProductEntity>();
 
         List<string>? Normalize(IEnumerable<string>? seq)
@@ -149,6 +158,6 @@ public class ProductService(IProductRepository productRepository) : IProductServ
 
     public async Task<bool> CheckIfSkuExistsAsync(string sku)
     {
-        return await productRepository.CheckIfSkuExistsAsync(sku);
+        return await productRepository.CheckIfSkuExistsAsync(sku).ConfigureAwait(false);
     }
 }

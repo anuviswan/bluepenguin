@@ -28,4 +28,12 @@ public class SectionProductRepository([FromKeyedServices("SectionProducts")] Tab
     {
         await tableClient.DeleteEntityAsync(partitionKey, rowKey).ConfigureAwait(false);
     }
+
+    public async Task DeleteByRowKey(string rowKey)
+    {
+        await foreach (var entity in tableClient.QueryAsync<SectionProductEntity>(x => x.RowKey == rowKey).ConfigureAwait(false))
+        {
+            await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
+        }
+    }
 }

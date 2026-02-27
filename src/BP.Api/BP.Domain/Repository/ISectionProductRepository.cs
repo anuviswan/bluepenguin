@@ -7,4 +7,5 @@ public interface ISectionProductRepository
     Task<SectionProductEntity> Add(SectionProductEntity entity);
     Task<IEnumerable<SectionProductEntity>> GetByPartition(string partitionKey);
     Task Delete(string partitionKey, string rowKey);
+    Task DeleteByRowKey(string rowKey);
 }

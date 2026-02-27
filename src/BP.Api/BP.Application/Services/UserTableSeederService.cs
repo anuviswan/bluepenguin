@@ -13,7 +13,7 @@ public class UserTableSeederService([FromKeyedServices("User")] TableClient user
     {
         var seedingOptions = seedingInfo.Value;
         // Make sure the table exists
-        await userTable.CreateIfNotExistsAsync();
+        await userTable.CreateIfNotExistsAsync().ConfigureAwait(false);
 
         // Check if already seeded
         var existing = userTable.Query<UserEntity>(u => u.PartitionKey == "Admin").Any();
@@ -28,7 +28,7 @@ public class UserTableSeederService([FromKeyedServices("User")] TableClient user
                 RowKey = user.userName,
                 Password = authenticationService.HashPassword(user.password)
             };
-            await userTable.AddEntityAsync(userEntity);
+            await userTable.AddEntityAsync(userEntity).ConfigureAwait(false);
         }
     }
 }
