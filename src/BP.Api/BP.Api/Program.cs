@@ -95,7 +95,7 @@ public class Program
 
             using var scope = app.Services.CreateScope();
             var seeder = scope.ServiceProvider.GetRequiredKeyedService<ISeederService>("User");
-            await seeder.SeedAsync();
+            await seeder.SeedAsync().ConfigureAwait(false);
 
 
             app.MapOpenApi();

@@ -18,19 +18,19 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class, ITabl
     public TableClient TableClient => _tableClient;
     public async Task<T> Add(T entity)
     {
-        var response = await TableClient.AddEntityAsync(entity);
+        var response = await TableClient.AddEntityAsync(entity).ConfigureAwait(false);
         return entity;
     }
 
     public async Task Delete(T entity)
     {
-        await TableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey);
+        await TableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<T>> GetAll()
     {
         var result = new List<T>();
-        await foreach (var entity in TableClient.QueryAsync<T>())
+        await foreach (var entity in TableClient.QueryAsync<T>().ConfigureAwait(false))
         {
             result.Add(entity);
         }
@@ -40,12 +40,12 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class, ITabl
 
     public async Task<T?> GetById(string paritionId, string searchKey)
     {
-        return await TableClient.GetEntityAsync<T>(partitionKey: paritionId, rowKey: searchKey);
+        return await TableClient.GetEntityAsync<T>(partitionKey: paritionId, rowKey: searchKey).ConfigureAwait(false);
     }
 
     public async Task<T> Update(T entity)
     {
-        await TableClient.UpdateEntityAsync(entity, entity.ETag, TableUpdateMode.Replace);
+        await TableClient.UpdateEntityAsync(entity, entity.ETag, TableUpdateMode.Replace).ConfigureAwait(false);
         return entity;
     }
 }

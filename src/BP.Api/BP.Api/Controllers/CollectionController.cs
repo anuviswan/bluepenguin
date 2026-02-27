@@ -26,7 +26,7 @@ public class CollectionController : BaseController
         Logger.LogInformation("Get All Collections");
         try
         {
-            var cols = await _collectionService.GetAllCollections();
+            var cols = await _collectionService.GetAllCollections().ConfigureAwait(false);
             var collections = cols.Select(x => new { Id = x.RowKey, Name = x.Title });
             return Ok(collections);
         }
@@ -45,7 +45,7 @@ public class CollectionController : BaseController
             if (req == null || string.IsNullOrWhiteSpace(req.CollectionId) || string.IsNullOrWhiteSpace(req.CollectionName))
                 return BadRequest("Invalid request");
 
-            await _collectionService.Add(req.CollectionId, req.CollectionName);
+            await _collectionService.Add(req.CollectionId, req.CollectionName).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception e)
@@ -63,7 +63,7 @@ public class CollectionController : BaseController
             if (req == null || string.IsNullOrWhiteSpace(req.CollectionId))
                 return BadRequest("Invalid request");
 
-            await _collectionService.Update(req.CollectionId,req.CollectionName);
+            await _collectionService.Update(req.CollectionId,req.CollectionName).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception e)

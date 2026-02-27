@@ -18,7 +18,7 @@ public class AuthenticationService : IAuthenticationService
     }
     public async Task<bool> Authenticate(string username, string password)
     {
-        var user = await _userRepository.GetUser(username);
+        var user = await _userRepository.GetUser(username).ConfigureAwait(false);
         if (user == null)
             return false;
 

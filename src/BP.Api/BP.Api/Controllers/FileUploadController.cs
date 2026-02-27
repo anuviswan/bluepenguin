@@ -39,7 +39,7 @@ public class FileUploadController(
             Extension = extension
         };
 
-        var url = await productImageService.UploadAsync(fileUpload,isPrimaryImage);
+        var url = await productImageService.UploadAsync(fileUpload,isPrimaryImage).ConfigureAwait(false);
         return Ok(new { url });
     }
 
@@ -61,7 +61,7 @@ public class FileUploadController(
         if (string.IsNullOrEmpty(skuId) || string.IsNullOrEmpty(imageId))
             return BadRequest("Blob name is required.");
 
-        var fileDownload = await productImageService.DownloadByImageIdAsync(skuId,imageId);
+        var fileDownload = await productImageService.DownloadByImageIdAsync(skuId,imageId).ConfigureAwait(false);
         if (fileDownload == null)
             return NotFound("File not found.");
         return File(fileDownload.Content, fileDownload.ContentType, Path.GetFileName(skuId));
@@ -79,7 +79,7 @@ public class FileUploadController(
     {
         if (string.IsNullOrEmpty(skuId))
             return BadRequest("SkuId is required.");
-        var files = await productImageService.GetImageIdsForSkuId(skuId);
+        var files = await productImageService.GetImageIdsForSkuId(skuId).ConfigureAwait(false);
         if (files == null || !files.Any())
             return NotFound("No files found.");
 
@@ -111,7 +111,7 @@ public class FileUploadController(
                 return BadRequest("SkuId is required");
             }
 
-            var imageIds = await productImageService.GetImageIdsForSkuId(skuId);
+            var imageIds = await productImageService.GetImageIdsForSkuId(skuId).ConfigureAwait(false);
             if (imageIds == null || !imageIds.Any())
             {
                 Logger.LogInformation("GetProductImagesDetails: No images found for SKU {SkuId}", skuId);
@@ -126,7 +126,7 @@ public class FileUploadController(
                 {
                     ImageId = imageId,
                     BlobName = imageId,  // You may want to fetch actual blob name from repository
-                    IsPrimary = imageId == await productImageService.GetPrimaryImageIdForSkuId(skuId),
+                    IsPrimary = imageId == await productImageService.GetPrimaryImageIdForSkuId(skuId).ConfigureAwait(false),
                     ContentType = "image/jpeg", // Default; consider fetching from repository
                     DownloadUrl = Url.Action(nameof(DownloadFileByImageId), "FileUpload", new { skuId, imageId }, Request.Scheme)
                 });
@@ -153,7 +153,7 @@ public class FileUploadController(
     {
         if (string.IsNullOrEmpty(skuId))
             return BadRequest("SkuId is required.");
-        var imageId = await productImageService.GetPrimaryImageIdForSkuId(skuId);
+        var imageId = await productImageService.GetPrimaryImageIdForSkuId(skuId).ConfigureAwait(false);
         if (imageId == null)
             return NotFound("No primary image found.");
         return Ok(imageId);
@@ -195,7 +195,7 @@ public class FileUploadController(
             }
 
             // Verify product exists
-            var product = await productService.GetProductBySku(request.SkuId);
+            var product = await productService.GetProductBySku(request.SkuId).ConfigureAwait(false);
             if (product == null)
             {
                 Logger.LogWarning("AddProductImage: Product with SKU {SkuId} not found", request.SkuId);
@@ -230,7 +230,7 @@ public class FileUploadController(
             };
 
             // Upload image
-            var blobName = await productImageService.UploadAsync(fileUpload, isPrimaryImage);
+            var blobName = await productImageService.UploadAsync(fileUpload, isPrimaryImage).ConfigureAwait(false);
 
             Logger.LogInformation("Image added successfully for SKU {SkuId}. ImageId: {ImageId}", request.SkuId, fileUpload.ImageId);
 
@@ -269,7 +269,7 @@ public class FileUploadController(
         if (string.IsNullOrWhiteSpace(imageId))
             return BadRequest("ImageId is required.");
 
-        var updated = await productImageService.SetPrimaryImageAsync(skuId, imageId);
+        var updated = await productImageService.SetPrimaryImageAsync(skuId, imageId).ConfigureAwait(false);
         if (!updated)
             return NotFound($"Image {imageId} not found for product {skuId}");
 
@@ -311,7 +311,7 @@ public class FileUploadController(
             }
 
             // Delete the image
-            var deleted = await productImageService.DeleteProductImageAsync(skuId, imageId);
+            var deleted = await productImageService.DeleteProductImageAsync(skuId, imageId).ConfigureAwait(false);
 
             if (!deleted)
             {

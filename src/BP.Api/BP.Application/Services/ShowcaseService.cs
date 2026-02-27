@@ -17,7 +17,7 @@ public class ShowcaseService : IShowcaseService
     public async Task<IEnumerable<ShowcaseCategoryResult>> GetTopCategories(int count = 4)
     {
         var safeCount = count <= 0 ? 4 : count;
-        var topCategories = await _productRepository.GetTopCategoriesAsync(safeCount);
+        var topCategories = await _productRepository.GetTopCategoriesAsync(safeCount).ConfigureAwait(false);
 
         return topCategories.Select(x => new ShowcaseCategoryResult(
             x.CategoryCode,
@@ -29,7 +29,7 @@ public class ShowcaseService : IShowcaseService
     public async Task<IEnumerable<ShowcaseDiscountResult>> GetTopDiscounts(int count = 4)
     {
         var safeCount = count <= 0 ? 4 : count;
-        var topDiscounts = await _productRepository.GetTopDiscountsAsync(safeCount);
+        var topDiscounts = await _productRepository.GetTopDiscountsAsync(safeCount).ConfigureAwait(false);
 
         return topDiscounts.Select(x => new ShowcaseDiscountResult(x.SkuId, x.DiscountPercentage));
     }
@@ -37,7 +37,7 @@ public class ShowcaseService : IShowcaseService
     public async Task<IEnumerable<ShowcaseCollectionResult>> GetTopCollections(int count = 4)
     {
         var safeCount = count <= 0 ? 4 : count;
-        var topCollections = await _productRepository.GetTopCollectionsAsync(safeCount);
+        var topCollections = await _productRepository.GetTopCollectionsAsync(safeCount).ConfigureAwait(false);
 
         return topCollections.Select(x => new ShowcaseCollectionResult(x.CollectionCode, x.ProductCount, x.LatestSkuId));
     }

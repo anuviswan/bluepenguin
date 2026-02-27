@@ -15,22 +15,22 @@ public class CollectionService(IMetaDataService metaDataService) : ICollectionSe
             PartitionKey = COLLECTION_KEY,
             RowKey = code,
             Title = title
-        });
+        }).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<MetaDataEntity>> GetAllCollections()
     {
-        return await MetaDataService.GetByPartition(COLLECTION_KEY);
+        return await MetaDataService.GetByPartition(COLLECTION_KEY).ConfigureAwait(false);
     }
 
     public async Task<MetaDataEntity> Update(string code, string title)
     {
-        var collection = await MetaDataService.GetByPartitionAndRowKey(COLLECTION_KEY, code);
+        var collection = await MetaDataService.GetByPartitionAndRowKey(COLLECTION_KEY, code).ConfigureAwait(false);
 
         if (collection is not null)
         {
             collection.Title = title;
-            return await MetaDataService.Update(collection);
+            return await MetaDataService.Update(collection).ConfigureAwait(false);
         }
 
         throw new InvalidOperationException($"Collection with id {code} does not exist.");

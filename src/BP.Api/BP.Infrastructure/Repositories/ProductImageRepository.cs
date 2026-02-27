@@ -10,14 +10,14 @@ public class ProductImageRepository([FromKeyedServices("ProductImages")]TableCli
 {
     public async Task<ProductImageEntity?> AddProductImage(ProductImageEntity image)
     {
-        await tableClient.AddEntityAsync(image);
+        await tableClient.AddEntityAsync(image).ConfigureAwait(false);
         return image;
     }
 
 
     public async Task<ProductImageEntity?> UpdateProductImage(ProductImageEntity image)
     {
-        await tableClient.UpsertEntityAsync(image, TableUpdateMode.Replace);
+        await tableClient.UpsertEntityAsync(image, TableUpdateMode.Replace).ConfigureAwait(false);
         return image;
     }
 
@@ -25,7 +25,7 @@ public class ProductImageRepository([FromKeyedServices("ProductImages")]TableCli
     {
         try
         {
-            await tableClient.DeleteEntityAsync(sku, imageId);
+            await tableClient.DeleteEntityAsync(sku, imageId).ConfigureAwait(false);
             return true;
         }
         catch (RequestFailedException)
@@ -38,7 +38,7 @@ public class ProductImageRepository([FromKeyedServices("ProductImages")]TableCli
     {
         try
         {
-            var response = await tableClient.GetEntityAsync<ProductImageEntity>(sku, imageId);
+            var response = await tableClient.GetEntityAsync<ProductImageEntity>(sku, imageId).ConfigureAwait(false);
             return response.Value;
         }
         catch (RequestFailedException)
@@ -50,7 +50,7 @@ public class ProductImageRepository([FromKeyedServices("ProductImages")]TableCli
     public async Task<IEnumerable<ProductImageEntity>> GetProductImagesBySku(string sku)
     {
         var results = new List<ProductImageEntity>();
-        await foreach (var entity in tableClient.QueryAsync<ProductImageEntity>(x => x.PartitionKey == sku))
+        await foreach (var entity in tableClient.QueryAsync<ProductImageEntity>(x => x.PartitionKey == sku).ConfigureAwait(false))
         {
             results.Add(entity);
         }
@@ -59,11 +59,11 @@ public class ProductImageRepository([FromKeyedServices("ProductImages")]TableCli
 
     public async Task DeleteAllAsync()
     {
-        await foreach (var entity in tableClient.QueryAsync<ProductImageEntity>())
+        await foreach (var entity in tableClient.QueryAsync<ProductImageEntity>().ConfigureAwait(false))
         {
             try
             {
-                await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey);
+                await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
             }
             catch
             {

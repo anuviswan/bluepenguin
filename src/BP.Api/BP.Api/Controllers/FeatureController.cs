@@ -27,7 +27,7 @@ public class FeatureController : BaseController
         Logger.LogInformation("Get All Features");
         try
         {
-            var features = await _featureService.GetAllFeatures();
+            var features = await _featureService.GetAllFeatures().ConfigureAwait(false);
             var response = features.Select(x => new { Id = x.RowKey, Name = x.Title, SymbolicText = x.Notes});
             return Ok(response);
         }
@@ -46,7 +46,7 @@ public class FeatureController : BaseController
             if (feature == null || string.IsNullOrWhiteSpace(feature.FeatureId) || string.IsNullOrWhiteSpace(feature.FeatureName))
                 return BadRequest("Invalid feature");
 
-            await _featureService.Add(feature.FeatureId, feature.FeatureName, feature.symbolic);
+            await _featureService.Add(feature.FeatureId, feature.FeatureName, feature.symbolic).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception e)
@@ -72,7 +72,7 @@ public class FeatureController : BaseController
                 Notes = feature.symbolic
             };
 
-            await _featureService.Update(feature.FeatureId, feature.FeatureName!, feature.symbolic);
+            await _featureService.Update(feature.FeatureId, feature.FeatureName!, feature.symbolic).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception e)
