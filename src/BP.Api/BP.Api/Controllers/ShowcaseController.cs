@@ -1,4 +1,5 @@
 using BP.Application.Interfaces.Services;
+using BP.Api.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,23 +10,48 @@ namespace BP.Api.Controllers;
 public class ShowcaseController : BaseController
 {
     private readonly IShowcaseService _showcaseService;
+    private readonly IProductImageService _productImageService;
 
-    public ShowcaseController(IShowcaseService showcaseService, ILogger<ShowcaseController> logger) : base(logger)
+    public ShowcaseController(IShowcaseService showcaseService, IProductImageService productImageService, ILogger<ShowcaseController> logger) : base(logger)
     {
         _showcaseService = showcaseService;
+        _productImageService = productImageService;
     }
 
+    /// <summary>
+    /// Gets the top categories for the showcase. Returns category code, name and the primary image URL for the latest SKU in the category.
+    /// </summary>
+    /// <param name="count">Number of categories to return (default is 4).</param>
+    /// <returns>Collection of top categories with primary image URL.</returns>
     [HttpGet]
     [Route("GetTopCategories")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetTopCategories(int count = 4)
+    public async Task<ActionResult<IEnumerable<ShowcaseTopCategoryResponse>>> GetTopCategories(int count = 4)
     {
         Logger.LogInformation("Get top categories with count {Count}", count);
 
         try
         {
-            var categories = await _showcaseService.GetTopCategories(count).ConfigureAwait(false);
-            return Ok(categories);
+            var categories = (await _showcaseService.GetTopCategories(count).ConfigureAwait(false)).ToList();
+
+            var results = new List<ShowcaseTopCategoryResponse>();
+            foreach (var c in categories)
+            {
+                string? blobUrl = null;
+                if (!string.IsNullOrWhiteSpace(c.LatestSkuId))
+                {
+                    blobUrl = await _productImageService.GetPrimaryImageUrlForSkuId(c.LatestSkuId).ConfigureAwait(false);
+                }
+
+                results.Add(new ShowcaseTopCategoryResponse
+                {
+                    CategoryCode = c.CategoryCode,
+                    CategoryName = c.CategoryName,
+                    BlobUrl = blobUrl
+                });
+            }
+
+            return Ok(results);
         }
         catch (Exception e)
         {

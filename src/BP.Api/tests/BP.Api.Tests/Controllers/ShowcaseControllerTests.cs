@@ -1,5 +1,6 @@
 using BP.Api.Controllers;
 using BP.Application.Interfaces.Services;
+using BP.Api.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -17,21 +18,23 @@ public class ShowcaseControllerTests
     public async Task GetTopCategories_ReturnsOkWithPayload()
     {
         var mockShowcaseService = new Mock<IShowcaseService>();
+        var mockImageService = new Mock<IProductImageService>();
         var mockLogger = new Mock<ILogger<ShowcaseController>>();
 
         mockShowcaseService.Setup(s => s.GetTopCategories(4))
-            .ReturnsAsync([
-                new ShowcaseCategoryResult("RI", "Rings", "RI-RS-FL-ONM-2024-9")
-            ]);
+            .ReturnsAsync(new[] { new ShowcaseCategoryResult("RI", "Rings", "RI-RS-FL-ONM-2024-9") });
 
-        var controller = new ShowcaseController(mockShowcaseService.Object, mockLogger.Object);
+        mockImageService.Setup(x => x.GetPrimaryImageUrlForSkuId("RI-RS-FL-ONM-2024-9")).ReturnsAsync("https://blob/sku1.jpg");
+
+        var controller = new ShowcaseController(mockShowcaseService.Object, mockImageService.Object, mockLogger.Object);
 
         var result = await controller.GetTopCategories();
 
-        var ok = Assert.IsType<OkObjectResult>(result);
-        var categories = Assert.IsAssignableFrom<IEnumerable<ShowcaseCategoryResult>>(ok.Value);
+        var ok = Assert.IsType<OkObjectResult>(result.Result);
+        var categories = Assert.IsAssignableFrom<IEnumerable<ShowcaseTopCategoryResponse>>(ok.Value);
         Assert.Single(categories);
         Assert.Equal("RI", categories.First().CategoryCode);
+        Assert.Equal("https://blob/sku1.jpg", categories.First().BlobUrl);
     }
 
     [Fact]
@@ -41,11 +44,9 @@ public class ShowcaseControllerTests
         var mockLogger = new Mock<ILogger<ShowcaseController>>();
 
         mockShowcaseService.Setup(s => s.GetTopDiscounts(4))
-            .ReturnsAsync([
-                new ShowcaseDiscountResult("RI-RS-FL-ONM-2024-9", 42.50)
-            ]);
+            .ReturnsAsync(new[] { new ShowcaseDiscountResult("RI-RS-FL-ONM-2024-9", 42.50) });
 
-        var controller = new ShowcaseController(mockShowcaseService.Object, mockLogger.Object);
+        var controller = new ShowcaseController(mockShowcaseService.Object, Mock.Of<IProductImageService>(), mockLogger.Object);
 
         var result = await controller.GetTopDiscounts();
 
@@ -63,11 +64,9 @@ public class ShowcaseControllerTests
         var mockLogger = new Mock<ILogger<ShowcaseController>>();
 
         mockShowcaseService.Setup(s => s.GetTopCollections(4))
-            .ReturnsAsync([
-                new ShowcaseCollectionResult("LOVE", 10, "RI-RS-FL-ONM-2024-9")
-            ]);
+            .ReturnsAsync(new[] { new ShowcaseCollectionResult("LOVE", 10, "RI-RS-FL-ONM-2024-9") });
 
-        var controller = new ShowcaseController(mockShowcaseService.Object, mockLogger.Object);
+        var controller = new ShowcaseController(mockShowcaseService.Object, Mock.Of<IProductImageService>(), mockLogger.Object);
 
         var result = await controller.GetTopCollections();
 
