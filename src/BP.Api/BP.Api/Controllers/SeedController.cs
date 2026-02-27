@@ -35,9 +35,9 @@ public class SeedController(IProductController productController,
     [Authorize]
     public async Task<IActionResult> ExecuteSeed()
     {
-        await SeedCollections();
-        await SeedFeatures();
-        await SeedProducts();
+        await SeedCollections().ConfigureAwait(false);
+        await SeedFeatures().ConfigureAwait(false);
+        await SeedProducts().ConfigureAwait(false);
         return Ok();
     }
 
@@ -54,18 +54,18 @@ public class SeedController(IProductController productController,
             // delete all image metadata rows, then attempt to delete all blobs in the container,
             // then delete all product rows. This avoids relying on GetAll for complete state.
 
-            await metaDataRepository.DeleteAllAsync();
+            await metaDataRepository.DeleteAllAsync().ConfigureAwait(false);
 
             // Delete all product image metadata rows
-            await ProductImageRepository.DeleteAllAsync();
+            await ProductImageRepository.DeleteAllAsync().ConfigureAwait(false);
 
             // Delete all blobs under the container (best-effort)
-            await foreach (var blobItem in BlobContainer.GetBlobsAsync())
+            await foreach (var blobItem in BlobContainer.GetBlobsAsync().ConfigureAwait(false))
             {
                 try
                 {
                     var blob = BlobContainer.GetBlobClient(blobItem.Name);
-                    await blob.DeleteIfExistsAsync();
+                    await blob.DeleteIfExistsAsync().ConfigureAwait(false);
                     deletedImages++;
                 }
                 catch
@@ -75,7 +75,7 @@ public class SeedController(IProductController productController,
             }
 
             // Delete all product rows
-            await ProductRepository.DeleteAllAsync();
+            await ProductRepository.DeleteAllAsync().ConfigureAwait(false);
 
             // We don't have exact counts for products; return best-effort image count
             return Ok(new { deletedProducts = -1, deletedImages });
@@ -145,7 +145,7 @@ public class SeedController(IProductController productController,
         {
             try
             {
-                await CollectionService.Add(collection.Code, collection.Title);
+                await CollectionService.Add(collection.Code, collection.Title).ConfigureAwait(false);
             }
             catch
             {
@@ -159,7 +159,7 @@ public class SeedController(IProductController productController,
         {
             try
             {
-                await FeatureService.Add(feature.Code,feature.Name, feature.symbolicText);
+                await FeatureService.Add(feature.Code,feature.Name, feature.symbolicText).ConfigureAwait(false);
             }
             catch
             {
@@ -315,7 +315,7 @@ public class SeedController(IProductController productController,
         {
             try
             {
-                var res = await ProductController.CreateProduct(seed);
+                var res = await ProductController.CreateProduct(seed).ConfigureAwait(false);
                 string? sku = null;
                 if (res is ObjectResult or)
                 {
@@ -335,11 +335,11 @@ public class SeedController(IProductController productController,
                     {
                         if (System.IO.File.Exists(base64Path))
                         {
-                            var b64 = await System.IO.File.ReadAllTextAsync(base64Path);
+                            var b64 = await System.IO.File.ReadAllTextAsync(base64Path).ConfigureAwait(false);
                             try
                             {
                                 var bytes = Convert.FromBase64String(b64);
-                                await System.IO.File.WriteAllBytesAsync(imagePath, bytes);
+                                await System.IO.File.WriteAllBytesAsync(imagePath, bytes).ConfigureAwait(false);
                             }
                             catch
                             {
@@ -351,13 +351,13 @@ public class SeedController(IProductController productController,
                             // fallback: write a minimal 1x1 PNG from embedded base64
                             var minimal = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=";
                             var bytes = Convert.FromBase64String(minimal);
-                            await System.IO.File.WriteAllBytesAsync(imagePath, bytes);
+                            await System.IO.File.WriteAllBytesAsync(imagePath, bytes).ConfigureAwait(false);
                         }
                     }
 
                     if (System.IO.File.Exists(imagePath))
                     {
-                        var imgBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
+                        var imgBytes = await System.IO.File.ReadAllBytesAsync(imagePath).ConfigureAwait(false);
                         var fileUpload = new FileUpload
                         {
                             SkuId = sku,
@@ -369,7 +369,7 @@ public class SeedController(IProductController productController,
 
                         try
                         {
-                            var url = await ProductImageService.UploadAsync(fileUpload, true);
+                            var url = await ProductImageService.UploadAsync(fileUpload, true).ConfigureAwait(false);
                         }
                         catch
                         {

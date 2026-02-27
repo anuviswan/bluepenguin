@@ -16,23 +16,23 @@ public class FeatureService(IMetaDataService metaDataService) : IFeatureService
             RowKey = featureId,
             Title = featureName,
             Notes = symbolic
-        });
+        }).ConfigureAwait(false);
     }
 
     public async Task<IEnumerable<MetaDataEntity>> GetAllFeatures()
     {
-        return await MetaDataService.GetByPartition(FEATURE_KEY);
+        return await MetaDataService.GetByPartition(FEATURE_KEY).ConfigureAwait(false);
     }
 
     public async Task<MetaDataEntity> Update(string featureId, string featureName, string? symbolic = null)
     {
-        var feature = await MetaDataService.GetByPartitionAndRowKey(FEATURE_KEY, featureId);
+        var feature = await MetaDataService.GetByPartitionAndRowKey(FEATURE_KEY, featureId).ConfigureAwait(false);
 
         if (feature is not null)
         {
             feature.Title = featureName;
             feature.Notes = symbolic;
-            return await MetaDataService.Update(feature);
+            return await MetaDataService.Update(feature).ConfigureAwait(false);
         }
 
         throw new InvalidOperationException($"Feature with id {featureId} does not exist.");

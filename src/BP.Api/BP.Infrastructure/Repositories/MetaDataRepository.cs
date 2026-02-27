@@ -9,13 +9,13 @@ public class MetaDataRepository([FromKeyedServices("MetaData")] TableClient tabl
 {
     public async Task<MetaDataEntity> Add(MetaDataEntity entity)
     {
-        await tableClient.AddEntityAsync(entity);
+        await tableClient.AddEntityAsync(entity).ConfigureAwait(false);
         return entity;
     }
 
     public async Task<MetaDataEntity> Update(MetaDataEntity entity)
     {
-        await tableClient.UpsertEntityAsync(entity, TableUpdateMode.Replace);
+        await tableClient.UpsertEntityAsync(entity, TableUpdateMode.Replace).ConfigureAwait(false);
         return entity;
     }
 
@@ -23,7 +23,7 @@ public class MetaDataRepository([FromKeyedServices("MetaData")] TableClient tabl
     {
         try
         {
-            await tableClient.DeleteEntityAsync(partitionKey, rowKey);
+            await tableClient.DeleteEntityAsync(partitionKey, rowKey).ConfigureAwait(false);
         }
         catch
         {
@@ -33,11 +33,11 @@ public class MetaDataRepository([FromKeyedServices("MetaData")] TableClient tabl
 
     public async Task DeleteAllAsync()
     {
-        await foreach (var entity in tableClient.QueryAsync<MetaDataEntity>())
+        await foreach (var entity in tableClient.QueryAsync<MetaDataEntity>().ConfigureAwait(false))
         {
             try
             {
-                await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey);
+                await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
             }
             catch
             {
@@ -49,7 +49,7 @@ public class MetaDataRepository([FromKeyedServices("MetaData")] TableClient tabl
     public async Task<IEnumerable<MetaDataEntity>> GetByPartition(string partitionKey)
     {
         var results = new List<MetaDataEntity>();
-        await foreach (var e in tableClient.QueryAsync<MetaDataEntity>(x => x.PartitionKey == partitionKey))
+        await foreach (var e in tableClient.QueryAsync<MetaDataEntity>(x => x.PartitionKey == partitionKey).ConfigureAwait(false))
         {
             results.Add(e);
         }
@@ -58,7 +58,7 @@ public class MetaDataRepository([FromKeyedServices("MetaData")] TableClient tabl
 
     public async Task<MetaDataEntity> GetByPartitionAndRowKey(string partitionKey,string rowKey)
     {
-        var data = await tableClient.GetEntityIfExistsAsync<MetaDataEntity>(partitionKey,rowKey);
+        var data = await tableClient.GetEntityIfExistsAsync<MetaDataEntity>(partitionKey,rowKey).ConfigureAwait(false);
         if(data.HasValue)
         {
             return data.Value!;

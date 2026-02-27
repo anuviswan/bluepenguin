@@ -9,7 +9,7 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
 {
     public async Task<string> UploadAsync(FileUpload file)
     {
-        await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+        await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).ConfigureAwait(false);
 
         var blobName = $"products/{file.SkuId}/{file.ImageId}{file.Extension}";
         var blobClient = blobContainer.GetBlobClient(blobName);
@@ -18,7 +18,7 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
         {
             ContentType = file.ContentType,
            
-        });
+        }).ConfigureAwait(false);
 
         return blobName;
     }
@@ -27,9 +27,9 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
     {
         var blobClient = blobContainer.GetBlobClient(blobName);
 
-        if (await blobClient.ExistsAsync())
+        if (await blobClient.ExistsAsync().ConfigureAwait(false))
         {
-            var response = await blobClient.DownloadContentAsync();
+            var response = await blobClient.DownloadContentAsync().ConfigureAwait(false);
             var contentType = response.Value.Details.ContentType ?? "application/octet-stream";
             return new FileDownload
             {
@@ -44,7 +44,7 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
     public async Task<bool> DeleteAsync(string blobName)
     {
         var blobClient = blobContainer.GetBlobClient(blobName);
-        var response = await blobClient.DeleteIfExistsAsync();
+        var response = await blobClient.DeleteIfExistsAsync().ConfigureAwait(false);
         return response.Value;
     }
 }

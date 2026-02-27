@@ -22,14 +22,14 @@ public class MetaDataController : Controller
     //    if (feature == null || string.IsNullOrWhiteSpace(feature.PartitionKey) || string.IsNullOrWhiteSpace(feature.RowKey))
     //        return BadRequest("Invalid feature");
 
-    //    var res = await _metaService.Add(feature);
+    //    var res = await _metaService.Add(feature).ConfigureAwait(false);
     //    return Ok(res);
     //}
 
     //[HttpGet("feature/getall")]
     //public async Task<IActionResult> GetAllFeatures()
     //{
-    //    var res = await _metaService.GetByPartition("Feature");
+    //    var res = await _metaService.GetByPartition("Feature").ConfigureAwait(false);
     //    return Ok(res);
     //}
 }

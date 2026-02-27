@@ -15,7 +15,7 @@ public class ArtisanFavController(IArtisanFavService artisanFavService, ILogger<
     {
         try
         {
-            var artisanFavs = await artisanFavService.GetAll();
+            var artisanFavs = await artisanFavService.GetAll().ConfigureAwait(false);
             return Ok(artisanFavs);
         }
         catch (Exception e)
@@ -36,7 +36,7 @@ public class ArtisanFavController(IArtisanFavService artisanFavService, ILogger<
                 return BadRequest("Invalid request");
             }
 
-            await artisanFavService.Add(request.Sku);
+            await artisanFavService.Add(request.Sku).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception e)
@@ -57,7 +57,7 @@ public class ArtisanFavController(IArtisanFavService artisanFavService, ILogger<
                 return BadRequest("Invalid sku");
             }
 
-            await artisanFavService.Delete(sku);
+            await artisanFavService.Delete(sku).ConfigureAwait(false);
             return Ok();
         }
         catch (Exception e)

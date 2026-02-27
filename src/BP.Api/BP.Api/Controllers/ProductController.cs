@@ -38,7 +38,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
 
             var skuCode = skuId ?? await SkuGeneratorService.GetSkuCode(product.CategoryCode, product.Material, product.FeatureCodes.ToArray(), product.CollectionCode, product.YearCode).ConfigureAwait(false);
 
-            if (await skuGeneratorService.CheckIfSkuExists(skuCode))
+            if (await skuGeneratorService.CheckIfSkuExists(skuCode).ConfigureAwait(false))
             {
                 return BadRequest($"SKU {skuCode} already exists");
             }
@@ -62,7 +62,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 YearCode = product.YearCode,
             };
 
-            var response = await ProductService.AddProduct(newProduct);
+            var response = await ProductService.AddProduct(newProduct).ConfigureAwait(false);
             return Ok(response?.SKU);
         }
         catch (Exception e)
@@ -88,7 +88,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 return BadRequest("Invalid SKU");
             }
 
-            var product = await ProductService.GetProductBySku(sku);
+            var product = await ProductService.GetProductBySku(sku).ConfigureAwait(false);
             if (product == null)
             {
                 Logger.LogWarning($"Product with SKU {sku} not found");
@@ -131,7 +131,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
         Logger.LogInformation("Getting all Products");
         try
         {
-            var products = (await ProductService.GetAllProducts()).ToList();
+            var products = (await ProductService.GetAllProducts()).ToList().ConfigureAwait(false);
 
             var totalCount = products.Count;
             if (page <= 0) page = 1;
@@ -190,7 +190,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 filters.SelectedMaterials,
                 filters.SelectedCollections,
                 filters.SelectedFeatures,
-                filters.SelectedYears)).ToList();
+                filters.SelectedYears).ConfigureAwait(false)).ToList();
 
             var totalCount = results.Count;
             if (page <= 0) page = 1;
@@ -226,7 +226,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 return BadRequest("Invalid SKU");
             }
 
-            await ProductService.DeleteProduct(sku);
+            await ProductService.DeleteProduct(sku).ConfigureAwait(false);
             return Ok(new { message = "Product deleted successfully", sku });
         }
         catch (Exception e)
@@ -251,7 +251,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 return BadRequest("Invalid update request: SKU is required");
             }
 
-            var existingProduct = await ProductService.GetProductBySku(request.SKU);
+            var existingProduct = await ProductService.GetProductBySku(request.SKU).ConfigureAwait(false);
             if (existingProduct == null)
             {
                 Logger.LogWarning($"Product with SKU {request.SKU} not found");
@@ -282,7 +282,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             if (request.ProductCareInstructions != null && request.ProductCareInstructions.Any())
                 existingProduct.ProductCareInstructions = request.ProductCareInstructions;
 
-            var updatedProduct = await ProductService.UpdateProduct(existingProduct);
+            var updatedProduct = await ProductService.UpdateProduct(existingProduct).ConfigureAwait(false);
 
             return Ok(new { message = "Product updated successfully", sku = updatedProduct.SKU });
         }

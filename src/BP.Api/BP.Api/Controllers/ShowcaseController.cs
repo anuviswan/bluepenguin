@@ -24,7 +24,7 @@ public class ShowcaseController : BaseController
 
         try
         {
-            var categories = await _showcaseService.GetTopCategories(count);
+            var categories = await _showcaseService.GetTopCategories(count).ConfigureAwait(false);
             return Ok(categories);
         }
         catch (Exception e)
@@ -43,7 +43,7 @@ public class ShowcaseController : BaseController
 
         try
         {
-            var discounts = await _showcaseService.GetTopDiscounts(count);
+            var discounts = await _showcaseService.GetTopDiscounts(count).ConfigureAwait(false);
             return Ok(discounts);
         }
         catch (Exception e)
@@ -63,7 +63,7 @@ public class ShowcaseController : BaseController
 
         try
         {
-            var collections = await _showcaseService.GetTopCollections(count);
+            var collections = await _showcaseService.GetTopCollections(count).ConfigureAwait(false);
             return Ok(collections);
         }
         catch (Exception e)
