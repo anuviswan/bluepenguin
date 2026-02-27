@@ -47,4 +47,16 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
         var response = await blobClient.DeleteIfExistsAsync().ConfigureAwait(false);
         return response.Value;
     }
+
+    public async Task<string?> GetBlobUrlAsync(string blobName)
+    {
+        var blobClient = blobContainer.GetBlobClient(blobName);
+
+        if (await blobClient.ExistsAsync().ConfigureAwait(false))
+        {
+            return blobClient.Uri.AbsoluteUri;
+        }
+
+        return null;
+    }
 }

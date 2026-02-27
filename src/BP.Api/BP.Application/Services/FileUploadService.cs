@@ -21,4 +21,8 @@ public class FileUploadService(IFileUploadRepository fileUploadRepository) : IFi
         return await fileUploadRepository.DeleteAsync(blobName).ConfigureAwait(false);
     }
 
+    public async Task<string?> GetBlobUrlAsync(string blobName)
+    {
+        return await fileUploadRepository.GetBlobUrlAsync(blobName).ConfigureAwait(false);
+    }
 }

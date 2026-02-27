@@ -19,6 +19,9 @@ public interface IProductImageService
     // Retrieves the primary image Id for a given SKU ID.
     Task<string?> GetPrimaryImageIdForSkuId(string skuId);
 
+    // Retrieves the primary image blob URL for a given SKU ID.
+    Task<string?> GetPrimaryImageUrlForSkuId(string skuId);
+
     // Marks a specific image as primary for a SKU.
     Task<bool> SetPrimaryImageAsync(string skuId, string imageId);
 

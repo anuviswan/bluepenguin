@@ -2,6 +2,7 @@
 using BP.Domain.Entities;
 using BP.Domain.Repository;
 using BP.Shared.Types;
+using System.Linq;
 
 namespace BP.Application.Services;
 
@@ -53,6 +54,16 @@ public class ProductImageService(IFileUploadService fileUploadService, IProductI
     {
         var metaInfos = await productImageRepository.GetProductImagesBySku(skuId).ConfigureAwait(false);
         return metaInfos.FirstOrDefault(mi => mi.IsPrimary)?.RowKey;
+    }
+
+    public async Task<string?> GetPrimaryImageUrlForSkuId(string skuId)
+    {
+        var metaInfos = await productImageRepository.GetProductImagesBySku(skuId).ConfigureAwait(false);
+        var primary = metaInfos.FirstOrDefault(mi => mi.IsPrimary);
+        if (primary == null)
+            return null;
+
+        return await fileUploadService.GetBlobUrlAsync(primary.BlobName).ConfigureAwait(false);
     }
 
     public async Task<string> UploadAsync(FileUpload file, bool isPrimary = false)
