@@ -131,7 +131,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
         Logger.LogInformation("Getting all Products");
         try
         {
-            var products = (await ProductService.GetAllProducts()).ToList().ConfigureAwait(false);
+            var products = (await ProductService.GetAllProducts()).ToList();
 
             var totalCount = products.Count;
             if (page <= 0) page = 1;
