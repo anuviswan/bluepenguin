@@ -12,11 +12,13 @@ public class FeatureController : BaseController
 {
     private readonly IFeatureService _featureService;
     private readonly IMetaDataService _metaDataService;
+    private readonly IProductService _productService;
 
-    public FeatureController(IFeatureService featureService, IMetaDataService metaDataService, ILogger<FeatureController> logger) : base(logger)
+    public FeatureController(IFeatureService featureService, IMetaDataService metaDataService, IProductService productService, ILogger<FeatureController> logger) : base(logger)
     {
         _featureService = featureService;
         _metaDataService = metaDataService;
+        _productService = productService;
     }
 
     [HttpGet]
@@ -27,8 +29,21 @@ public class FeatureController : BaseController
         Logger.LogInformation("Get All Features");
         try
         {
-            var features = await _featureService.GetAllFeatures().ConfigureAwait(false);
-            var response = features.Select(x => new { Id = x.RowKey, Name = x.Title, SymbolicText = x.Notes});
+            var features = (await _featureService.GetAllFeatures().ConfigureAwait(false)).ToList();
+            var products = (await _productService.GetAllProducts().ConfigureAwait(false)).ToList();
+
+            var response = features.Select(x =>
+            {
+                var featureId = x.RowKey;
+                var count = products.Count(p =>
+                    !string.IsNullOrWhiteSpace(p.FeatureCodes) &&
+                    p.FeatureCodes.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(f => f.Trim())
+                        .Any(f => f.Equals(featureId, StringComparison.OrdinalIgnoreCase)));
+
+                return new { Id = x.RowKey, Name = x.Title, SymbolicText = x.Notes, ItemCount = count };
+            });
+
             return Ok(response);
         }
         catch (Exception e)

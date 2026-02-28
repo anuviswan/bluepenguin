@@ -12,10 +12,12 @@ namespace BP.Api.Controllers;
 public class CollectionController : BaseController
 {
     private readonly ICollectionService _collectionService;
+    private readonly IProductService _productService;
 
-    public CollectionController(ICollectionService collectionService, ILogger<CollectionController> logger) : base(logger)
+    public CollectionController(ICollectionService collectionService, IProductService productService, ILogger<CollectionController> logger) : base(logger)
     {
         _collectionService = collectionService;
+        _productService = productService;
     }
 
     [HttpGet]
@@ -26,8 +28,19 @@ public class CollectionController : BaseController
         Logger.LogInformation("Get All Collections");
         try
         {
-            var cols = await _collectionService.GetAllCollections().ConfigureAwait(false);
-            var collections = cols.Select(x => new { Id = x.RowKey, Name = x.Title });
+            var cols = (await _collectionService.GetAllCollections().ConfigureAwait(false)).ToList();
+            var products = (await _productService.GetAllProducts().ConfigureAwait(false)).ToList();
+
+            var collections = cols.Select(x =>
+            {
+                var collectionId = x.RowKey;
+                var count = products.Count(p =>
+                    !string.IsNullOrWhiteSpace(p.CollectionCode) &&
+                    p.CollectionCode.Equals(collectionId, StringComparison.OrdinalIgnoreCase));
+
+                return new { Id = x.RowKey, Name = x.Title, ItemCount = count };
+            });
+
             return Ok(collections);
         }
         catch (Exception e)
