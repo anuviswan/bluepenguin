@@ -8,4 +8,5 @@ public interface IFileUploadRepository
     Task<FileDownload?> DownloadAsync(string blobName);
     Task<bool> DeleteAsync(string blobName);
     Task<string?> GetBlobUrlAsync(string blobName);
+    Task<string?> GetBlobSasUrlAsync(string blobName, int expirationMinutes = 60);
 }

@@ -23,6 +23,6 @@ public class FileUploadService(IFileUploadRepository fileUploadRepository) : IFi
 
     public async Task<string?> GetBlobUrlAsync(string blobName)
     {
-        return await fileUploadRepository.GetBlobUrlAsync(blobName).ConfigureAwait(false);
+        return await fileUploadRepository.GetBlobSasUrlAsync(blobName).ConfigureAwait(false);
     }
 }
