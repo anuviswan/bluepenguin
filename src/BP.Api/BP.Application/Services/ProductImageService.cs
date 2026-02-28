@@ -66,6 +66,15 @@ public class ProductImageService(IFileUploadService fileUploadService, IProductI
         return await fileUploadService.GetBlobUrlAsync(primary.BlobName).ConfigureAwait(false);
     }
 
+    public async Task<string?> GetImageUrlForImageIdAsync(string skuId, string imageId)
+    {
+        var metaInfo = await productImageRepository.GetProductImageById(skuId, imageId).ConfigureAwait(false);
+        if (metaInfo == null)
+            return null;
+
+        return await fileUploadService.GetBlobUrlAsync(metaInfo.BlobName).ConfigureAwait(false);
+    }
+
     public async Task<string> UploadAsync(FileUpload file, bool isPrimary = false)
     {
         var blobName = await fileUploadService.UploadAsync(file).ConfigureAwait(false);

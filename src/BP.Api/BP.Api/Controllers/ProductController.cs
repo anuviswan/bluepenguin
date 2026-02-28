@@ -103,7 +103,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             var images = new List<ProductImageDetailsResponse>();
             foreach (var imageId in imageIds)
             {
-                var imageUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(sku).ConfigureAwait(false);
+                var imageUrl = await ProductImageService.GetImageUrlForImageIdAsync(sku, imageId).ConfigureAwait(false);
                 images.Add(new ProductImageDetailsResponse
                 {
                     ImageId = imageId,

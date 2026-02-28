@@ -192,8 +192,11 @@ public class ProductControllerTests
         mockImageService.Setup(s => s.GetImageIdsForSkuId(sku))
             .ReturnsAsync(new[] { "image-1", "image-2" });
 
-        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku))
-            .ReturnsAsync("https://blob.sas.url/image.jpg");
+        mockImageService.Setup(s => s.GetImageUrlForImageIdAsync(sku, "image-1"))
+            .ReturnsAsync("https://blob.sas.url/image-1.jpg");
+
+        mockImageService.Setup(s => s.GetImageUrlForImageIdAsync(sku, "image-2"))
+            .ReturnsAsync("https://blob.sas.url/image-2.jpg");
 
         mockArtisanFavService.Setup(s => s.GetAll())
             .ReturnsAsync(new[] { sku });
@@ -212,11 +215,11 @@ public class ProductControllerTests
         var images = response.Images.ToList();
         Assert.Equal("image-1", images[0].ImageId);
         Assert.True(images[0].IsPrimary);
-        Assert.Equal("https://blob.sas.url/image.jpg", images[0].ImageUrl);
+        Assert.Equal("https://blob.sas.url/image-1.jpg", images[0].ImageUrl);
         
         Assert.Equal("image-2", images[1].ImageId);
         Assert.False(images[1].IsPrimary);
-        Assert.Equal("https://blob.sas.url/image.jpg", images[1].ImageUrl);
+        Assert.Equal("https://blob.sas.url/image-2.jpg", images[1].ImageUrl);
         
         Assert.True(response.IsArtisanFav);
     }
@@ -247,7 +250,8 @@ public class ProductControllerTests
             YearCode = 2024
         });
 
-        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku)).ReturnsAsync((string?)null);
+        mockImageService.Setup(s => s.GetPrimaryImageIdForSkuId(sku)).ReturnsAsync((string?)null);
+        mockImageService.Setup(s => s.GetImageIdsForSkuId(sku)).ReturnsAsync(new List<string>());
         mockArtisanFavService.Setup(s => s.GetAll()).ReturnsAsync(new List<string>());
 
         var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
@@ -285,7 +289,8 @@ public class ProductControllerTests
             YearCode = 2024
         });
 
-        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku)).ReturnsAsync((string?)null);
+        mockImageService.Setup(s => s.GetPrimaryImageIdForSkuId(sku)).ReturnsAsync((string?)null);
+        mockImageService.Setup(s => s.GetImageIdsForSkuId(sku)).ReturnsAsync(new List<string>());
         mockArtisanFavService.Setup(s => s.GetAll()).ReturnsAsync(new List<string>());
 
         var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
@@ -324,7 +329,8 @@ public class ProductControllerTests
             YearCode = 2024
         });
 
-        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku)).ReturnsAsync((string?)null);
+        mockImageService.Setup(s => s.GetPrimaryImageIdForSkuId(sku)).ReturnsAsync((string?)null);
+        mockImageService.Setup(s => s.GetImageIdsForSkuId(sku)).ReturnsAsync(new List<string>());
         mockArtisanFavService.Setup(s => s.GetAll()).ReturnsAsync(new List<string>());
 
         var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
