@@ -1,11 +1,13 @@
 using BP.Api.Contracts;
 using BP.Api.Controllers;
 using BP.Application.Interfaces.Services;
+using BP.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,11 +19,13 @@ public class FeaturedCategoryControllerTests
     public async Task GetAll_ReturnsOk_WithFeaturedCategories()
     {
         var service = new Mock<IFeaturedCategoryService>();
-        service.Setup(x => x.GetAll()).ReturnsAsync(["category-1", "category-2"]);
-
+        var productService = new Mock<IProductService>();
+        var imageService = new Mock<IProductImageService>();
         var logger = new Mock<ILogger<FeaturedCategoryController>>();
 
-        var controller = new FeaturedCategoryController(service.Object, logger.Object);
+        service.Setup(x => x.GetAll()).ReturnsAsync(["category-1", "category-2"]);
+
+        var controller = new FeaturedCategoryController(service.Object, productService.Object, imageService.Object, logger.Object);
 
         var result = await controller.GetAll();
 
@@ -31,12 +35,39 @@ public class FeaturedCategoryControllerTests
     }
 
     [Fact]
+    public async Task GetAllForShowcase_ReturnsOk_WithFeaturedCategoryShowcaseResponses()
+    {
+        var service = new Mock<IFeaturedCategoryService>();
+        var productService = new Mock<IProductService>();
+        var imageService = new Mock<IProductImageService>();
+        var logger = new Mock<ILogger<FeaturedCategoryController>>();
+
+        service.Setup(x => x.GetAll()).ReturnsAsync(["RI"]);
+        productService.Setup(x => x.GetProductsByCategory("RI"))
+            .ReturnsAsync(new[] { new ProductEntity { SKU = "RI-RS-FL-ONM-2024-9", ProductName = "Ring Product" } });
+        imageService.Setup(x => x.GetPrimaryImageUrlForSkuId("RI-RS-FL-ONM-2024-9")).ReturnsAsync("https://blob/ring.jpg");
+
+        var controller = new FeaturedCategoryController(service.Object, productService.Object, imageService.Object, logger.Object);
+
+        var result = await controller.GetAllForShowcase();
+
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var responses = Assert.IsAssignableFrom<IEnumerable<FeaturedCategoryShowcaseResponse>>(okResult.Value);
+        Assert.Single(responses);
+        var first = responses.First();
+        Assert.Equal("RI", first.CategoryCode);
+        Assert.Equal("https://blob/ring.jpg", first.BlobUrl);
+    }
+
+    [Fact]
     public async Task Create_ReturnsBadRequest_WhenRequestIsInvalid()
     {
         var service = new Mock<IFeaturedCategoryService>();
+        var productService = new Mock<IProductService>();
+        var imageService = new Mock<IProductImageService>();
         var logger = new Mock<ILogger<FeaturedCategoryController>>();
 
-        var controller = new FeaturedCategoryController(service.Object, logger.Object);
+        var controller = new FeaturedCategoryController(service.Object, productService.Object, imageService.Object, logger.Object);
 
         var result = await controller.Create(new FeaturedCategoryRequest(string.Empty));
 
@@ -48,9 +79,11 @@ public class FeaturedCategoryControllerTests
     public async Task Delete_ReturnsOk_WhenCodeIsValid()
     {
         var service = new Mock<IFeaturedCategoryService>();
+        var productService = new Mock<IProductService>();
+        var imageService = new Mock<IProductImageService>();
         var logger = new Mock<ILogger<FeaturedCategoryController>>();
 
-        var controller = new FeaturedCategoryController(service.Object, logger.Object);
+        var controller = new FeaturedCategoryController(service.Object, productService.Object, imageService.Object, logger.Object);
 
         var result = await controller.Delete("category-1");
 
