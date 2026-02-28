@@ -12,10 +12,12 @@ namespace BP.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class ProductController(IProductService productService, ISkuGeneratorService skuGeneratorService, ILogger<ProductController> logger) : BaseController(logger), IProductController
+public class ProductController(IProductService productService, ISkuGeneratorService skuGeneratorService, IProductImageService productImageService, IArtisanFavService artisanFavService, ILogger<ProductController> logger) : BaseController(logger), IProductController
 {
     private IProductService ProductService => productService;
     private ISkuGeneratorService SkuGeneratorService => skuGeneratorService;
+    private IProductImageService ProductImageService => productImageService;
+    private IArtisanFavService ArtisanFavService => artisanFavService;
 
     /// <summary>
     /// Create a new product.
@@ -72,7 +74,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     }
 
     /// <summary>
-    /// Get a product by SKU.
+    /// Get a product by SKU. Returns product details including primary image URL and artisan fav status.
     /// </summary>
     [HttpGet]
     [Route("getbysku")]
@@ -95,22 +97,29 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 return NotFound($"Product with SKU {sku} not found");
             }
 
-            var response = new
+            var primaryImageUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(sku).ConfigureAwait(false);
+            
+            var artisanFavs = (await ArtisanFavService.GetAll().ConfigureAwait(false)).ToList();
+            var isArtisanFav = artisanFavs.Any(fav => fav.Equals(sku, StringComparison.OrdinalIgnoreCase));
+
+            var response = new ProductResponse
             {
-                product.SKU,
+                Sku = product.SKU,
                 CategoryCode = product.PartitionKey,
-                product.ProductName,
-                product.ProductDescription,
-                product.ProductCareInstructions,
-                product.Specifications,
-                product.Price,
+                ProductName = product.ProductName,
+                ProductDescription = product.ProductDescription,
+                ProductCareInstructions = product.ProductCareInstructions,
+                Specifications = product.Specifications,
+                Price = product.Price,
                 DiscountPrice = GetEffectiveDiscountPrice(product),
-                product.DiscountExpiryDate,
-                product.Stock,
-                product.MaterialCode,
-                product.CollectionCode,
+                DiscountExpiryDate = product.DiscountExpiryDate,
+                Stock = product.Stock,
+                MaterialCode = product.MaterialCode,
+                CollectionCode = product.CollectionCode,
                 FeatureCodes = product.FeatureCodes.Split(','),
-                product.YearCode
+                YearCode = product.YearCode,
+                PrimaryImageUrl = primaryImageUrl,
+                IsArtisanFav = isArtisanFav
             };
             return Ok(response);
         }

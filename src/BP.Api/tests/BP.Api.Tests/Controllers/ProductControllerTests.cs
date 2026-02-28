@@ -20,6 +20,8 @@ public class ProductControllerTests
     {
         var mockProductService = new Mock<IProductService>();
         var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
         var mockLogger = new Mock<ILogger<ProductController>>();
 
         mockSkuService.Setup(s => s.GetSkuCode(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>()))
@@ -28,7 +30,7 @@ public class ProductControllerTests
         mockProductService.Setup(s => s.AddProduct(It.IsAny<ProductEntity>()))
             .ReturnsAsync(new ProductEntity { SKU = "RI-RS-FL-ONM-2024-1" });
 
-        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
 
         var req = new CreateProductRequest
         {
@@ -57,11 +59,13 @@ public class ProductControllerTests
     {
         var mockProductService = new Mock<IProductService>();
         var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
         var mockLogger = new Mock<ILogger<ProductController>>();
 
         mockProductService.Setup(s => s.GetAllProducts()).ReturnsAsync(new List<ProductEntity>());
 
-        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
 
         var result = await controller.GetAllProducts();
         Assert.IsType<OkObjectResult>(result);
@@ -72,6 +76,8 @@ public class ProductControllerTests
     {
         var mockProductService = new Mock<IProductService>();
         var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
         var mockLogger = new Mock<ILogger<ProductController>>();
 
         mockProductService.Setup(s => s.GetAllProducts()).ReturnsAsync(new List<ProductEntity>
@@ -80,7 +86,7 @@ public class ProductControllerTests
             new() { SKU = "SKU-NEWER", PartitionKey = "RI", MaterialCode = "RS", CollectionCode = "ONM", FeatureCodes = "FL", Timestamp = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero) }
         });
 
-        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
 
         var result = await controller.GetAllProducts();
 
@@ -98,15 +104,18 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task GetProduct_ReturnsDiscountPrice_WhenPresent()
+    public async Task GetProduct_ReturnsProductResponseWithImageUrlAndArtisanFavFlag()
     {
         var mockProductService = new Mock<IProductService>();
         var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
         var mockLogger = new Mock<ILogger<ProductController>>();
 
-        mockProductService.Setup(s => s.GetProductBySku("RI-RS-FL-ONM-2024-1")).ReturnsAsync(new ProductEntity
+        var sku = "RI-RS-FL-ONM-2024-1";
+        mockProductService.Setup(s => s.GetProductBySku(sku)).ReturnsAsync(new ProductEntity
         {
-            SKU = "RI-RS-FL-ONM-2024-1",
+            SKU = sku,
             PartitionKey = "RI",
             ProductName = "Test",
             ProductDescription = "Desc",
@@ -120,13 +129,60 @@ public class ProductControllerTests
             YearCode = 2024
         });
 
-        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku))
+            .ReturnsAsync("https://blob.sas.url/image.jpg");
 
-        var result = await controller.GetProduct("RI-RS-FL-ONM-2024-1");
+        mockArtisanFavService.Setup(s => s.GetAll())
+            .ReturnsAsync(new[] { sku });
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
+
+        var result = await controller.GetProduct(sku);
+        
         var ok = Assert.IsType<OkObjectResult>(result);
-        var discountProp = ok.Value!.GetType().GetProperty("DiscountPrice");
-        Assert.NotNull(discountProp);
-        Assert.Equal(8d, discountProp!.GetValue(ok.Value));
+        var response = ok.Value as ProductResponse;
+        Assert.NotNull(response);
+        Assert.Equal(sku, response.Sku);
+        Assert.Equal("https://blob.sas.url/image.jpg", response.PrimaryImageUrl);
+        Assert.True(response.IsArtisanFav);
+    }
+
+    [Fact]
+    public async Task GetProduct_ReturnsDiscountPrice_WhenPresent()
+    {
+        var mockProductService = new Mock<IProductService>();
+        var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
+        var mockLogger = new Mock<ILogger<ProductController>>();
+
+        var sku = "RI-RS-FL-ONM-2024-1";
+        mockProductService.Setup(s => s.GetProductBySku(sku)).ReturnsAsync(new ProductEntity
+        {
+            SKU = sku,
+            PartitionKey = "RI",
+            ProductName = "Test",
+            ProductDescription = "Desc",
+            Price = 10,
+            DiscountPrice = 8,
+            DiscountExpiryDate = DateTimeOffset.UtcNow.AddDays(2),
+            Stock = 3,
+            MaterialCode = "RS",
+            CollectionCode = "ONM",
+            FeatureCodes = "FL",
+            YearCode = 2024
+        });
+
+        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku)).ReturnsAsync((string?)null);
+        mockArtisanFavService.Setup(s => s.GetAll()).ReturnsAsync(new List<string>());
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
+
+        var result = await controller.GetProduct(sku);
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var response = ok.Value as ProductResponse;
+        Assert.NotNull(response);
+        Assert.Equal(8d, response.DiscountPrice);
     }
 
     [Fact]
@@ -134,11 +190,14 @@ public class ProductControllerTests
     {
         var mockProductService = new Mock<IProductService>();
         var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
         var mockLogger = new Mock<ILogger<ProductController>>();
 
-        mockProductService.Setup(s => s.GetProductBySku("RI-RS-FL-ONM-2024-1")).ReturnsAsync(new ProductEntity
+        var sku = "RI-RS-FL-ONM-2024-1";
+        mockProductService.Setup(s => s.GetProductBySku(sku)).ReturnsAsync(new ProductEntity
         {
-            SKU = "RI-RS-FL-ONM-2024-1",
+            SKU = sku,
             PartitionKey = "RI",
             ProductName = "Test",
             ProductDescription = "Desc",
@@ -152,13 +211,16 @@ public class ProductControllerTests
             YearCode = 2024
         });
 
-        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku)).ReturnsAsync((string?)null);
+        mockArtisanFavService.Setup(s => s.GetAll()).ReturnsAsync(new List<string>());
 
-        var result = await controller.GetProduct("RI-RS-FL-ONM-2024-1");
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
+
+        var result = await controller.GetProduct(sku);
         var ok = Assert.IsType<OkObjectResult>(result);
-        var discountProp = ok.Value!.GetType().GetProperty("DiscountPrice");
-        Assert.NotNull(discountProp);
-        Assert.Equal(10d, discountProp!.GetValue(ok.Value));
+        var response = ok.Value as ProductResponse;
+        Assert.NotNull(response);
+        Assert.Equal(10d, response.DiscountPrice);
     }
 
 
@@ -167,11 +229,14 @@ public class ProductControllerTests
     {
         var mockProductService = new Mock<IProductService>();
         var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
         var mockLogger = new Mock<ILogger<ProductController>>();
 
-        mockProductService.Setup(s => s.GetProductBySku("RI-RS-FL-ONM-2024-1")).ReturnsAsync(new ProductEntity
+        var sku = "RI-RS-FL-ONM-2024-1";
+        mockProductService.Setup(s => s.GetProductBySku(sku)).ReturnsAsync(new ProductEntity
         {
-            SKU = "RI-RS-FL-ONM-2024-1",
+            SKU = sku,
             PartitionKey = "RI",
             ProductName = "Test",
             ProductDescription = "Desc",
@@ -185,13 +250,16 @@ public class ProductControllerTests
             YearCode = 2024
         });
 
-        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku)).ReturnsAsync((string?)null);
+        mockArtisanFavService.Setup(s => s.GetAll()).ReturnsAsync(new List<string>());
 
-        var result = await controller.GetProduct("RI-RS-FL-ONM-2024-1");
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
+
+        var result = await controller.GetProduct(sku);
         var ok = Assert.IsType<OkObjectResult>(result);
-        var discountProp = ok.Value!.GetType().GetProperty("DiscountPrice");
-        Assert.NotNull(discountProp);
-        Assert.Null(discountProp!.GetValue(ok.Value));
+        var response = ok.Value as ProductResponse;
+        Assert.NotNull(response);
+        Assert.Null(response.DiscountPrice);
     }
 
 
@@ -200,11 +268,13 @@ public class ProductControllerTests
     {
         var mockProductService = new Mock<IProductService>();
         var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
         var mockLogger = new Mock<ILogger<ProductController>>();
 
         mockProductService.Setup(s => s.DeleteProduct("RI-RS-FL-ONM-2024-1")).Returns(Task.CompletedTask);
 
-        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockLogger.Object);
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
 
         var result = await controller.DeleteProduct("RI-RS-FL-ONM-2024-1");
 
