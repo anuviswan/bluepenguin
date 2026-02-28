@@ -44,9 +44,9 @@ public class ProductService(IProductRepository productRepository, ISectionProduc
         return product;
     }
 
-    public Task<IEnumerable<BP.Domain.Entities.ProductEntity>> GetProductsByCategory(string categoryId)
+    public async Task<IEnumerable<BP.Domain.Entities.ProductEntity>> GetProductsByCategory(string categoryId)
     {
-        throw new NotImplementedException();
+        return await productRepository.GetProductsByCategoryAsync(categoryId).ConfigureAwait(false);
     }
 
     public async Task<ProductEntity> UpdateProduct(ProductEntity product)
