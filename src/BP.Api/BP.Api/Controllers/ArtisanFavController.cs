@@ -7,16 +7,43 @@ namespace BP.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ArtisanFavController(IArtisanFavService artisanFavService, ILogger<ArtisanFavController> logger) : BaseController(logger)
+public class ArtisanFavController(IArtisanFavService artisanFavService, IProductService productService, IProductImageService productImageService, ILogger<ArtisanFavController> logger) : BaseController(logger)
 {
+    private IProductService ProductService => productService;
+    private IProductImageService ProductImageService => productImageService;
+
     [HttpGet("getall")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAll()
+    public async Task<ActionResult<IEnumerable<ArtisanFavItemResponse>>> GetAll()
     {
         try
         {
-            var artisanFavs = await artisanFavService.GetAll().ConfigureAwait(false);
-            return Ok(artisanFavs);
+            var artisanFavs = (await artisanFavService.GetAll().ConfigureAwait(false)).ToList();
+
+            var items = new List<ArtisanFavItemResponse>();
+            foreach (var sku in artisanFavs)
+            {
+                var product = await ProductService.GetProductBySku(sku).ConfigureAwait(false);
+                if (product == null) continue;
+
+                var discountedPrice = product.DiscountPrice.HasValue &&
+                                      (!product.DiscountExpiryDate.HasValue || product.DiscountExpiryDate.Value > DateTimeOffset.UtcNow)
+                    ? product.DiscountPrice.Value
+                    : product.Price;
+
+                var blobUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(sku).ConfigureAwait(false);
+
+                items.Add(new ArtisanFavItemResponse
+                {
+                    Skuid = sku,
+                    ProductName = product.ProductName,
+                    OriginalPrice = product.Price,
+                    DiscountedPrice = discountedPrice,
+                    BlobUrl = blobUrl
+                });
+            }
+
+            return Ok(items);
         }
         catch (Exception e)
         {

@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Sas;
 using BP.Domain.Repository;
 using BP.Shared.Types;
 
@@ -46,5 +47,48 @@ public class AzureBlobFileRepository(BlobContainerClient blobContainer) : IFileU
         var blobClient = blobContainer.GetBlobClient(blobName);
         var response = await blobClient.DeleteIfExistsAsync().ConfigureAwait(false);
         return response.Value;
+    }
+
+    public async Task<string?> GetBlobUrlAsync(string blobName)
+    {
+        var blobClient = blobContainer.GetBlobClient(blobName);
+
+        if (await blobClient.ExistsAsync().ConfigureAwait(false))
+        {
+            return blobClient.Uri.AbsoluteUri;
+        }
+
+        return null;
+    }
+
+    public async Task<string?> GetBlobSasUrlAsync(string blobName, int expirationMinutes = 60)
+    {
+        var blobClient = blobContainer.GetBlobClient(blobName);
+
+        if (!await blobClient.ExistsAsync().ConfigureAwait(false))
+        {
+            return null;
+        }
+
+        // Check if the container has a shared key credential (required for SAS generation)
+        if (blobContainer.CanGenerateSasUri)
+        {
+            var sasBuilder = new BlobSasBuilder()
+            {
+                BlobContainerName = blobContainer.Name,
+                BlobName = blobName,
+                Resource = "b", // Blob resource
+                ExpiresOn = DateTimeOffset.UtcNow.AddMinutes(expirationMinutes)
+            };
+
+            // Grant read permissions
+            sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+            var sasUri = blobClient.GenerateSasUri(sasBuilder);
+            return sasUri.AbsoluteUri;
+        }
+
+        // Fallback to regular URL if SAS cannot be generated (e.g., managed identity scenario)
+        return blobClient.Uri.AbsoluteUri;
     }
 }

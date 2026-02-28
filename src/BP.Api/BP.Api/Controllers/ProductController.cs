@@ -12,10 +12,12 @@ namespace BP.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class ProductController(IProductService productService, ISkuGeneratorService skuGeneratorService, ILogger<ProductController> logger) : BaseController(logger), IProductController
+public class ProductController(IProductService productService, ISkuGeneratorService skuGeneratorService, IProductImageService productImageService, IArtisanFavService artisanFavService, ILogger<ProductController> logger) : BaseController(logger), IProductController
 {
     private IProductService ProductService => productService;
     private ISkuGeneratorService SkuGeneratorService => skuGeneratorService;
+    private IProductImageService ProductImageService => productImageService;
+    private IArtisanFavService ArtisanFavService => artisanFavService;
 
     /// <summary>
     /// Create a new product.
@@ -72,7 +74,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     }
 
     /// <summary>
-    /// Get a product by SKU.
+    /// Get a product by SKU. Returns product details including all images with SAS URLs and artisan fav status.
     /// </summary>
     [HttpGet]
     [Route("getbysku")]
@@ -95,22 +97,42 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 return NotFound($"Product with SKU {sku} not found");
             }
 
-            var response = new
+            var primaryImageId = await ProductImageService.GetPrimaryImageIdForSkuId(sku).ConfigureAwait(false);
+            var imageIds = (await ProductImageService.GetImageIdsForSkuId(sku).ConfigureAwait(false)).ToList();
+            
+            var images = new List<ProductImageDetailsResponse>();
+            foreach (var imageId in imageIds)
             {
-                product.SKU,
+                var imageUrl = await ProductImageService.GetImageUrlForImageIdAsync(sku, imageId).ConfigureAwait(false);
+                images.Add(new ProductImageDetailsResponse
+                {
+                    ImageId = imageId,
+                    ImageUrl = imageUrl,
+                    IsPrimary = imageId.Equals(primaryImageId, StringComparison.OrdinalIgnoreCase)
+                });
+            }
+
+            var artisanFavs = (await ArtisanFavService.GetAll().ConfigureAwait(false)).ToList();
+            var isArtisanFav = artisanFavs.Any(fav => fav.Equals(sku, StringComparison.OrdinalIgnoreCase));
+
+            var response = new ProductResponse
+            {
+                Sku = product.SKU,
                 CategoryCode = product.PartitionKey,
-                product.ProductName,
-                product.ProductDescription,
-                product.ProductCareInstructions,
-                product.Specifications,
-                product.Price,
+                ProductName = product.ProductName,
+                ProductDescription = product.ProductDescription,
+                ProductCareInstructions = product.ProductCareInstructions,
+                Specifications = product.Specifications,
+                Price = product.Price,
                 DiscountPrice = GetEffectiveDiscountPrice(product),
-                product.DiscountExpiryDate,
-                product.Stock,
-                product.MaterialCode,
-                product.CollectionCode,
+                DiscountExpiryDate = product.DiscountExpiryDate,
+                Stock = product.Stock,
+                MaterialCode = product.MaterialCode,
+                CollectionCode = product.CollectionCode,
                 FeatureCodes = product.FeatureCodes.Split(','),
-                product.YearCode
+                YearCode = product.YearCode,
+                Images = images,
+                IsArtisanFav = isArtisanFav
             };
             return Ok(response);
         }
@@ -137,28 +159,41 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 50;
 
-            var paged = products
+            var artisanFavs = (await ArtisanFavService.GetAll().ConfigureAwait(false)).ToList();
+
+            var pagedProducts = products
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(p => new
-                {
-                    p.SKU,
-                    CategoryCode = p.PartitionKey,
-                    p.ProductName,
-                    p.ProductDescription,
-                    p.ProductCareInstructions,
-                    p.Specifications,
-                    p.Price,
-                    DiscountPrice = GetEffectiveDiscountPrice(p),
-                    p.DiscountExpiryDate,
-                    p.Stock,
-                    p.MaterialCode,
-                    p.CollectionCode,
-                    p.FeatureCodes,
-                    p.YearCode
-                });
+                .ToList();
 
-            return Ok(new { totalCount, page, pageSize, items = paged });
+            var items = new List<ProductListItemResponse>();
+            foreach (var p in pagedProducts)
+            {
+                var primaryImageUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(p.SKU).ConfigureAwait(false);
+                var isArtisanFav = artisanFavs.Any(fav => fav.Equals(p.SKU, StringComparison.OrdinalIgnoreCase));
+
+                items.Add(new ProductListItemResponse
+                {
+                    Sku = p.SKU,
+                    CategoryCode = p.PartitionKey,
+                    ProductName = p.ProductName,
+                    ProductDescription = p.ProductDescription,
+                    ProductCareInstructions = p.ProductCareInstructions,
+                    Specifications = p.Specifications,
+                    Price = p.Price,
+                    DiscountPrice = GetEffectiveDiscountPrice(p),
+                    DiscountExpiryDate = p.DiscountExpiryDate,
+                    Stock = p.Stock,
+                    MaterialCode = p.MaterialCode,
+                    CollectionCode = p.CollectionCode,
+                    FeatureCodes = p.FeatureCodes.Split(','),
+                    YearCode = p.YearCode,
+                    PrimaryImageUrl = primaryImageUrl,
+                    IsArtisanFav = isArtisanFav
+                });
+            }
+
+            return Ok(new { totalCount, page, pageSize, items });
         }
         catch (Exception e)
         {
@@ -196,8 +231,41 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 50;
 
-            var paged = results.Skip((page - 1) * pageSize).Take(pageSize);
-            return Ok(new { totalCount, page, pageSize, items = paged });
+            var artisanFavs = (await ArtisanFavService.GetAll().ConfigureAwait(false)).ToList();
+
+            var pagedResults = results
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var items = new List<ProductListItemResponse>();
+            foreach (var p in pagedResults)
+            {
+                var primaryImageUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(p.SKU).ConfigureAwait(false);
+                var isArtisanFav = artisanFavs.Any(fav => fav.Equals(p.SKU, StringComparison.OrdinalIgnoreCase));
+
+                items.Add(new ProductListItemResponse
+                {
+                    Sku = p.SKU,
+                    CategoryCode = p.PartitionKey,
+                    ProductName = p.ProductName,
+                    ProductDescription = p.ProductDescription,
+                    ProductCareInstructions = p.ProductCareInstructions,
+                    Specifications = p.Specifications,
+                    Price = p.Price,
+                    DiscountPrice = GetEffectiveDiscountPrice(p),
+                    DiscountExpiryDate = p.DiscountExpiryDate,
+                    Stock = p.Stock,
+                    MaterialCode = p.MaterialCode,
+                    CollectionCode = p.CollectionCode,
+                    FeatureCodes = p.FeatureCodes.Split(','),
+                    YearCode = p.YearCode,
+                    PrimaryImageUrl = primaryImageUrl,
+                    IsArtisanFav = isArtisanFav
+                });
+            }
+
+            return Ok(new { totalCount, page, pageSize, items });
         }
         catch (OperationCanceledException)
         {

@@ -39,7 +39,7 @@ public class ShowcaseService : IShowcaseService
         var safeCount = count <= 0 ? 4 : count;
         var topCollections = await _productRepository.GetTopCollectionsAsync(safeCount).ConfigureAwait(false);
 
-        return topCollections.Select(x => new ShowcaseCollectionResult(x.CollectionCode, x.ProductCount, x.LatestSkuId));
+        return topCollections.Select(x => new ShowcaseCollectionResult(x.CollectionCode,x.ProductCount, x.LatestSkuId));
     }
 
     private static string GetCategoryName(string categoryCode)
