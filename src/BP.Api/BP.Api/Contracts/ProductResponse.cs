@@ -76,9 +76,9 @@ public record ProductResponse
     public int YearCode { get; init; }
 
     /// <summary>
-    /// Primary image SAS URL (with read access expiring in 60 minutes).
+    /// Collection of all product images with their SAS URLs and primary flags.
     /// </summary>
-    public string? PrimaryImageUrl { get; init; }
+    public IEnumerable<ProductImageDetailsResponse>? Images { get; init; }
 
     /// <summary>
     /// Flag indicating if this product is in the artisan favorites list.

@@ -104,7 +104,7 @@ public class ProductControllerTests
     }
 
     [Fact]
-    public async Task GetProduct_ReturnsProductResponseWithImageUrlAndArtisanFavFlag()
+    public async Task GetProduct_ReturnsProductResponseWithAllImagesAndArtisanFavFlag()
     {
         var mockProductService = new Mock<IProductService>();
         var mockSkuService = new Mock<ISkuGeneratorService>();
@@ -129,6 +129,12 @@ public class ProductControllerTests
             YearCode = 2024
         });
 
+        mockImageService.Setup(s => s.GetPrimaryImageIdForSkuId(sku))
+            .ReturnsAsync("image-1");
+
+        mockImageService.Setup(s => s.GetImageIdsForSkuId(sku))
+            .ReturnsAsync(new[] { "image-1", "image-2" });
+
         mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku))
             .ReturnsAsync("https://blob.sas.url/image.jpg");
 
@@ -143,7 +149,18 @@ public class ProductControllerTests
         var response = ok.Value as ProductResponse;
         Assert.NotNull(response);
         Assert.Equal(sku, response.Sku);
-        Assert.Equal("https://blob.sas.url/image.jpg", response.PrimaryImageUrl);
+        Assert.NotNull(response.Images);
+        Assert.Equal(2, response.Images.Count());
+        
+        var images = response.Images.ToList();
+        Assert.Equal("image-1", images[0].ImageId);
+        Assert.True(images[0].IsPrimary);
+        Assert.Equal("https://blob.sas.url/image.jpg", images[0].ImageUrl);
+        
+        Assert.Equal("image-2", images[1].ImageId);
+        Assert.False(images[1].IsPrimary);
+        Assert.Equal("https://blob.sas.url/image.jpg", images[1].ImageUrl);
+        
         Assert.True(response.IsArtisanFav);
     }
 

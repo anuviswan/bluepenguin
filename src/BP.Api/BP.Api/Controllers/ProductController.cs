@@ -74,7 +74,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     }
 
     /// <summary>
-    /// Get a product by SKU. Returns product details including primary image URL and artisan fav status.
+    /// Get a product by SKU. Returns product details including all images with SAS URLs and artisan fav status.
     /// </summary>
     [HttpGet]
     [Route("getbysku")]
@@ -97,8 +97,21 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 return NotFound($"Product with SKU {sku} not found");
             }
 
-            var primaryImageUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(sku).ConfigureAwait(false);
+            var primaryImageId = await ProductImageService.GetPrimaryImageIdForSkuId(sku).ConfigureAwait(false);
+            var imageIds = (await ProductImageService.GetImageIdsForSkuId(sku).ConfigureAwait(false)).ToList();
             
+            var images = new List<ProductImageDetailsResponse>();
+            foreach (var imageId in imageIds)
+            {
+                var imageUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(sku).ConfigureAwait(false);
+                images.Add(new ProductImageDetailsResponse
+                {
+                    ImageId = imageId,
+                    ImageUrl = imageUrl,
+                    IsPrimary = imageId.Equals(primaryImageId, StringComparison.OrdinalIgnoreCase)
+                });
+            }
+
             var artisanFavs = (await ArtisanFavService.GetAll().ConfigureAwait(false)).ToList();
             var isArtisanFav = artisanFavs.Any(fav => fav.Equals(sku, StringComparison.OrdinalIgnoreCase));
 
@@ -118,7 +131,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 CollectionCode = product.CollectionCode,
                 FeatureCodes = product.FeatureCodes.Split(','),
                 YearCode = product.YearCode,
-                PrimaryImageUrl = primaryImageUrl,
+                Images = images,
                 IsArtisanFav = isArtisanFav
             };
             return Ok(response);
