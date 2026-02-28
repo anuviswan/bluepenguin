@@ -159,28 +159,41 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 50;
 
-            var paged = products
+            var artisanFavs = (await ArtisanFavService.GetAll().ConfigureAwait(false)).ToList();
+
+            var pagedProducts = products
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .Select(p => new
-                {
-                    p.SKU,
-                    CategoryCode = p.PartitionKey,
-                    p.ProductName,
-                    p.ProductDescription,
-                    p.ProductCareInstructions,
-                    p.Specifications,
-                    p.Price,
-                    DiscountPrice = GetEffectiveDiscountPrice(p),
-                    p.DiscountExpiryDate,
-                    p.Stock,
-                    p.MaterialCode,
-                    p.CollectionCode,
-                    p.FeatureCodes,
-                    p.YearCode
-                });
+                .ToList();
 
-            return Ok(new { totalCount, page, pageSize, items = paged });
+            var items = new List<ProductListItemResponse>();
+            foreach (var p in pagedProducts)
+            {
+                var primaryImageUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(p.SKU).ConfigureAwait(false);
+                var isArtisanFav = artisanFavs.Any(fav => fav.Equals(p.SKU, StringComparison.OrdinalIgnoreCase));
+
+                items.Add(new ProductListItemResponse
+                {
+                    Sku = p.SKU,
+                    CategoryCode = p.PartitionKey,
+                    ProductName = p.ProductName,
+                    ProductDescription = p.ProductDescription,
+                    ProductCareInstructions = p.ProductCareInstructions,
+                    Specifications = p.Specifications,
+                    Price = p.Price,
+                    DiscountPrice = GetEffectiveDiscountPrice(p),
+                    DiscountExpiryDate = p.DiscountExpiryDate,
+                    Stock = p.Stock,
+                    MaterialCode = p.MaterialCode,
+                    CollectionCode = p.CollectionCode,
+                    FeatureCodes = p.FeatureCodes.Split(','),
+                    YearCode = p.YearCode,
+                    PrimaryImageUrl = primaryImageUrl,
+                    IsArtisanFav = isArtisanFav
+                });
+            }
+
+            return Ok(new { totalCount, page, pageSize, items });
         }
         catch (Exception e)
         {
@@ -218,8 +231,41 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
             if (page <= 0) page = 1;
             if (pageSize <= 0) pageSize = 50;
 
-            var paged = results.Skip((page - 1) * pageSize).Take(pageSize);
-            return Ok(new { totalCount, page, pageSize, items = paged });
+            var artisanFavs = (await ArtisanFavService.GetAll().ConfigureAwait(false)).ToList();
+
+            var pagedResults = results
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var items = new List<ProductListItemResponse>();
+            foreach (var p in pagedResults)
+            {
+                var primaryImageUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(p.SKU).ConfigureAwait(false);
+                var isArtisanFav = artisanFavs.Any(fav => fav.Equals(p.SKU, StringComparison.OrdinalIgnoreCase));
+
+                items.Add(new ProductListItemResponse
+                {
+                    Sku = p.SKU,
+                    CategoryCode = p.PartitionKey,
+                    ProductName = p.ProductName,
+                    ProductDescription = p.ProductDescription,
+                    ProductCareInstructions = p.ProductCareInstructions,
+                    Specifications = p.Specifications,
+                    Price = p.Price,
+                    DiscountPrice = GetEffectiveDiscountPrice(p),
+                    DiscountExpiryDate = p.DiscountExpiryDate,
+                    Stock = p.Stock,
+                    MaterialCode = p.MaterialCode,
+                    CollectionCode = p.CollectionCode,
+                    FeatureCodes = p.FeatureCodes.Split(','),
+                    YearCode = p.YearCode,
+                    PrimaryImageUrl = primaryImageUrl,
+                    IsArtisanFav = isArtisanFav
+                });
+            }
+
+            return Ok(new { totalCount, page, pageSize, items });
         }
         catch (OperationCanceledException)
         {

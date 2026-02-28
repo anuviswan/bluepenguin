@@ -64,6 +64,7 @@ public class ProductControllerTests
         var mockLogger = new Mock<ILogger<ProductController>>();
 
         mockProductService.Setup(s => s.GetAllProducts()).ReturnsAsync(new List<ProductEntity>());
+        mockArtisanFavService.Setup(s => s.GetAll()).ReturnsAsync(new List<string>());
 
         var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
 
@@ -86,6 +87,11 @@ public class ProductControllerTests
             new() { SKU = "SKU-NEWER", PartitionKey = "RI", MaterialCode = "RS", CollectionCode = "ONM", FeatureCodes = "FL", Timestamp = new DateTimeOffset(2025, 1, 1, 0, 0, 0, TimeSpan.Zero) }
         });
 
+        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(It.IsAny<string>()))
+            .ReturnsAsync("https://blob.sas.url/image.jpg");
+
+        mockArtisanFavService.Setup(s => s.GetAll()).ReturnsAsync(new List<string>());
+
         var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
 
         var result = await controller.GetAllProducts();
@@ -99,8 +105,59 @@ public class ProductControllerTests
         Assert.NotNull(items);
 
         var first = items!.First();
-        var sku = first.GetType().GetProperty("SKU")!.GetValue(first) as string;
+        var sku = first.GetType().GetProperty("Sku")!.GetValue(first) as string;
         Assert.Equal("SKU-OLDER", sku);
+    }
+
+    [Fact]
+    public async Task GetAllProducts_IncludesPrimaryImageUrlAndArtisanFavStatus()
+    {
+        var mockProductService = new Mock<IProductService>();
+        var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
+        var mockLogger = new Mock<ILogger<ProductController>>();
+
+        var sku = "RI-RS-FL-ONM-2024-1";
+        mockProductService.Setup(s => s.GetAllProducts()).ReturnsAsync(new List<ProductEntity>
+        {
+            new()
+            {
+                SKU = sku,
+                PartitionKey = "RI",
+                ProductName = "Test Product",
+                Price = 100,
+                Stock = 5,
+                MaterialCode = "RS",
+                CollectionCode = "ONM",
+                FeatureCodes = "FL",
+                YearCode = 2024
+            }
+        });
+
+        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku))
+            .ReturnsAsync("https://blob.sas.url/image.jpg");
+
+        mockArtisanFavService.Setup(s => s.GetAll())
+            .ReturnsAsync(new[] { sku });
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
+
+        var result = await controller.GetAllProducts();
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var value = ok.Value!;
+        var itemsProperty = value.GetType().GetProperty("items");
+        Assert.NotNull(itemsProperty);
+
+        var items = (itemsProperty!.GetValue(value) as IEnumerable<ProductListItemResponse>)?.ToList();
+        Assert.NotNull(items);
+        Assert.Single(items);
+
+        var item = items!.First();
+        Assert.Equal(sku, item.Sku);
+        Assert.Equal("https://blob.sas.url/image.jpg", item.PrimaryImageUrl);
+        Assert.True(item.IsArtisanFav);
     }
 
     [Fact]
@@ -303,4 +360,78 @@ public class ProductControllerTests
         mockProductService.Verify(s => s.DeleteProduct("RI-RS-FL-ONM-2024-1"), Times.Once);
     }
 
+    [Fact]
+    public async Task SearchProducts_IncludesPrimaryImageUrlAndArtisanFavStatus()
+    {
+        var mockProductService = new Mock<IProductService>();
+        var mockSkuService = new Mock<ISkuGeneratorService>();
+        var mockImageService = new Mock<IProductImageService>();
+        var mockArtisanFavService = new Mock<IArtisanFavService>();
+        var mockLogger = new Mock<ILogger<ProductController>>();
+
+        var sku1 = "RI-RS-FL-ONM-2024-1";
+        var sku2 = "RI-RS-FL-ONM-2024-2";
+
+        mockProductService.Setup(s => s.SearchProductsAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
+            .ReturnsAsync(new List<ProductEntity>
+            {
+                new()
+                {
+                    SKU = sku1,
+                    PartitionKey = "RI",
+                    ProductName = "Product 1",
+                    Price = 100,
+                    Stock = 5,
+                    MaterialCode = "RS",
+                    CollectionCode = "ONM",
+                    FeatureCodes = "FL",
+                    YearCode = 2024
+                },
+                new()
+                {
+                    SKU = sku2,
+                    PartitionKey = "RI",
+                    ProductName = "Product 2",
+                    Price = 150,
+                    Stock = 3,
+                    MaterialCode = "RS",
+                    CollectionCode = "ONM",
+                    FeatureCodes = "FL",
+                    YearCode = 2024
+                }
+            });
+
+        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku1))
+            .ReturnsAsync("https://blob.sas.url/image1.jpg");
+
+        mockImageService.Setup(s => s.GetPrimaryImageUrlForSkuId(sku2))
+            .ReturnsAsync("https://blob.sas.url/image2.jpg");
+
+        mockArtisanFavService.Setup(s => s.GetAll())
+            .ReturnsAsync(new[] { sku1 });
+
+        var controller = new ProductController(mockProductService.Object, mockSkuService.Object, mockImageService.Object, mockArtisanFavService.Object, mockLogger.Object);
+
+        var filters = new SearchProductsRequest { SelectedCategories = new[] { "RI" } };
+        var result = await controller.SearchProducts(filters);
+
+        var ok = Assert.IsType<OkObjectResult>(result);
+        var value = ok.Value!;
+        var itemsProperty = value.GetType().GetProperty("items");
+        Assert.NotNull(itemsProperty);
+
+        var items = (itemsProperty!.GetValue(value) as IEnumerable<ProductListItemResponse>)?.ToList();
+        Assert.NotNull(items);
+        Assert.Equal(2, items!.Count);
+
+        var item1 = items![0];
+        Assert.Equal(sku1, item1.Sku);
+        Assert.Equal("https://blob.sas.url/image1.jpg", item1.PrimaryImageUrl);
+        Assert.True(item1.IsArtisanFav);
+
+        var item2 = items![1];
+        Assert.Equal(sku2, item2.Sku);
+        Assert.Equal("https://blob.sas.url/image2.jpg", item2.PrimaryImageUrl);
+        Assert.False(item2.IsArtisanFav);
+    }
 }
