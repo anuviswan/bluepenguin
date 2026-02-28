@@ -12,12 +12,14 @@ public class ShowcaseController : BaseController
     private readonly IShowcaseService _showcaseService;
     private readonly IProductImageService _productImageService;
     private readonly IProductService _productService;
+    private readonly ICollectionService _collectionService;
 
-    public ShowcaseController(IShowcaseService showcaseService, IProductImageService productImageService, IProductService productService, ILogger<ShowcaseController> logger) : base(logger)
+    public ShowcaseController(IShowcaseService showcaseService, IProductImageService productImageService, IProductService productService, ICollectionService collectionService, ILogger<ShowcaseController> logger) : base(logger)
     {
         _showcaseService = showcaseService;
         _productImageService = productImageService;
         _productService = productService;
+        _collectionService = collectionService;
     }
 
     /// <summary>
@@ -113,10 +115,10 @@ public class ShowcaseController : BaseController
     }
 
     /// <summary>
-    /// Gets the top collections for the showcase. Returns collection code, product count and the primary image URL of the latest product in the collection.
+    /// Gets the top collections for the showcase. Returns collection code, name, product count and the primary image URL of the latest product in the collection.
     /// </summary>
     /// <param name="count">Number of collections to return (default is 4).</param>
-    /// <returns>Collection of top collections with product count and latest product image URL.</returns>
+    /// <returns>Collection of top collections with names, product count and latest product image URL.</returns>
     [HttpGet]
     [Route("GetTopCollections")]
     [AllowAnonymous]
@@ -127,6 +129,7 @@ public class ShowcaseController : BaseController
         try
         {
             var collections = (await _showcaseService.GetTopCollections(count).ConfigureAwait(false)).ToList();
+            var allCollections = (await _collectionService.GetAllCollections().ConfigureAwait(false)).ToDictionary(c => c.RowKey, c => c.Title, StringComparer.OrdinalIgnoreCase);
 
             var results = new List<ShowcaseTopCollectionResponse>();
             foreach (var col in collections)
@@ -137,9 +140,12 @@ public class ShowcaseController : BaseController
                     blobUrl = await _productImageService.GetPrimaryImageUrlForSkuId(col.LatestSkuId).ConfigureAwait(false);
                 }
 
+                var collectionName = allCollections.TryGetValue(col.CollectionCode, out var title) ? title : col.CollectionCode;
+
                 results.Add(new ShowcaseTopCollectionResponse
                 {
                     CollectionCode = col.CollectionCode,
+                    CollectionName = collectionName,
                     ProductCount = col.ProductCount,
                     BlobUrl = blobUrl
                 });

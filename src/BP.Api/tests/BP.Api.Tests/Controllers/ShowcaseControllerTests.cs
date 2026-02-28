@@ -21,6 +21,7 @@ public class ShowcaseControllerTests
         var mockShowcaseService = new Mock<IShowcaseService>();
         var mockImageService = new Mock<IProductImageService>();
         var mockProductService = new Mock<IProductService>();
+        var mockCollectionService = new Mock<ICollectionService>();
         var mockLogger = new Mock<ILogger<ShowcaseController>>();
 
         mockShowcaseService.Setup(s => s.GetTopCategories(4))
@@ -28,7 +29,7 @@ public class ShowcaseControllerTests
 
         mockImageService.Setup(x => x.GetPrimaryImageUrlForSkuId("RI-RS-FL-ONM-2024-9")).ReturnsAsync("https://blob/sku1.jpg");
 
-        var controller = new ShowcaseController(mockShowcaseService.Object, mockImageService.Object, mockProductService.Object, mockLogger.Object);
+        var controller = new ShowcaseController(mockShowcaseService.Object, mockImageService.Object, mockProductService.Object, mockCollectionService.Object, mockLogger.Object);
 
         var result = await controller.GetTopCategories();
 
@@ -45,6 +46,7 @@ public class ShowcaseControllerTests
         var mockShowcaseService = new Mock<IShowcaseService>();
         var mockProductService = new Mock<IProductService>();
         var mockImageService = new Mock<IProductImageService>();
+        var mockCollectionService = new Mock<ICollectionService>();
         var mockLogger = new Mock<ILogger<ShowcaseController>>();
 
         mockShowcaseService.Setup(s => s.GetTopDiscounts(4))
@@ -53,7 +55,7 @@ public class ShowcaseControllerTests
         mockProductService.Setup(x => x.GetProductBySku("RI-RS-FL-ONM-2024-9")).ReturnsAsync(new ProductEntity { SKU = "RI-RS-FL-ONM-2024-9", ProductName = "P1", Price = 100, DiscountPrice = 80, DiscountExpiryDate = DateTimeOffset.UtcNow.AddDays(1) });
         mockImageService.Setup(x => x.GetPrimaryImageUrlForSkuId("RI-RS-FL-ONM-2024-9")).ReturnsAsync("https://blob/sku1.jpg");
 
-        var controller = new ShowcaseController(mockShowcaseService.Object, mockImageService.Object, mockProductService.Object, mockLogger.Object);
+        var controller = new ShowcaseController(mockShowcaseService.Object, mockImageService.Object, mockProductService.Object, mockCollectionService.Object, mockLogger.Object);
 
         var result = await controller.GetTopDiscounts();
 
@@ -74,14 +76,21 @@ public class ShowcaseControllerTests
         var mockShowcaseService = new Mock<IShowcaseService>();
         var mockImageService = new Mock<IProductImageService>();
         var mockProductService = new Mock<IProductService>();
+        var mockCollectionService = new Mock<ICollectionService>();
         var mockLogger = new Mock<ILogger<ShowcaseController>>();
 
         mockShowcaseService.Setup(s => s.GetTopCollections(4))
-            .ReturnsAsync(new[] { new ShowcaseCollectionResult("LOVE", 10, "RI-RS-FL-ONM-2024-9") });
+            .ReturnsAsync(new[] { new ShowcaseCollectionResult("ONM", 10, "RI-RS-FL-ONM-2024-9") });
+
+        mockCollectionService.Setup(x => x.GetAllCollections())
+            .ReturnsAsync(new[] 
+            { 
+                new MetaDataEntity { PartitionKey = "Collection", RowKey = "ONM", Title = "Onam" }
+            });
 
         mockImageService.Setup(x => x.GetPrimaryImageUrlForSkuId("RI-RS-FL-ONM-2024-9")).ReturnsAsync("https://blob/sku1.jpg");
 
-        var controller = new ShowcaseController(mockShowcaseService.Object, mockImageService.Object, mockProductService.Object, mockLogger.Object);
+        var controller = new ShowcaseController(mockShowcaseService.Object, mockImageService.Object, mockProductService.Object, mockCollectionService.Object, mockLogger.Object);
 
         var result = await controller.GetTopCollections();
 
@@ -89,7 +98,8 @@ public class ShowcaseControllerTests
         var collections = Assert.IsAssignableFrom<IEnumerable<ShowcaseTopCollectionResponse>>(ok.Value);
         Assert.Single(collections);
         var first = collections.First();
-        Assert.Equal("LOVE", first.CollectionCode);
+        Assert.Equal("ONM", first.CollectionCode);
+        Assert.Equal("Onam", first.CollectionName);
         Assert.Equal(10, first.ProductCount);
         Assert.Equal("https://blob/sku1.jpg", first.BlobUrl);
     }
