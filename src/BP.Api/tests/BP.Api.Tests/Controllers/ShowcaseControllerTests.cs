@@ -72,21 +72,26 @@ public class ShowcaseControllerTests
     public async Task GetTopCollections_ReturnsOkWithPayload()
     {
         var mockShowcaseService = new Mock<IShowcaseService>();
-        var mockProductService = new Mock<IProductService>();
         var mockImageService = new Mock<IProductImageService>();
+        var mockProductService = new Mock<IProductService>();
         var mockLogger = new Mock<ILogger<ShowcaseController>>();
 
         mockShowcaseService.Setup(s => s.GetTopCollections(4))
             .ReturnsAsync(new[] { new ShowcaseCollectionResult("LOVE", 10, "RI-RS-FL-ONM-2024-9") });
 
+        mockImageService.Setup(x => x.GetPrimaryImageUrlForSkuId("RI-RS-FL-ONM-2024-9")).ReturnsAsync("https://blob/sku1.jpg");
+
         var controller = new ShowcaseController(mockShowcaseService.Object, mockImageService.Object, mockProductService.Object, mockLogger.Object);
 
         var result = await controller.GetTopCollections();
 
-        var ok = Assert.IsType<OkObjectResult>(result);
-        var collections = Assert.IsAssignableFrom<IEnumerable<ShowcaseCollectionResult>>(ok.Value);
+        var ok = Assert.IsType<OkObjectResult>(result.Result);
+        var collections = Assert.IsAssignableFrom<IEnumerable<ShowcaseTopCollectionResponse>>(ok.Value);
         Assert.Single(collections);
-        Assert.Equal("LOVE", collections.First().CollectionCode);
+        var first = collections.First();
+        Assert.Equal("LOVE", first.CollectionCode);
+        Assert.Equal(10, first.ProductCount);
+        Assert.Equal("https://blob/sku1.jpg", first.BlobUrl);
     }
 
 }

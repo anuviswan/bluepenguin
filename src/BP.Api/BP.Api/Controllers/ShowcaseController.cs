@@ -112,18 +112,40 @@ public class ShowcaseController : BaseController
         }
     }
 
-
+    /// <summary>
+    /// Gets the top collections for the showcase. Returns collection code, product count and the primary image URL of the latest product in the collection.
+    /// </summary>
+    /// <param name="count">Number of collections to return (default is 4).</param>
+    /// <returns>Collection of top collections with product count and latest product image URL.</returns>
     [HttpGet]
     [Route("GetTopCollections")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetTopCollections(int count = 4)
+    public async Task<ActionResult<IEnumerable<ShowcaseTopCollectionResponse>>> GetTopCollections(int count = 4)
     {
         Logger.LogInformation("Get top collections with count {Count}", count);
 
         try
         {
-            var collections = await _showcaseService.GetTopCollections(count).ConfigureAwait(false);
-            return Ok(collections);
+            var collections = (await _showcaseService.GetTopCollections(count).ConfigureAwait(false)).ToList();
+
+            var results = new List<ShowcaseTopCollectionResponse>();
+            foreach (var col in collections)
+            {
+                string? blobUrl = null;
+                if (!string.IsNullOrWhiteSpace(col.LatestSkuId))
+                {
+                    blobUrl = await _productImageService.GetPrimaryImageUrlForSkuId(col.LatestSkuId).ConfigureAwait(false);
+                }
+
+                results.Add(new ShowcaseTopCollectionResponse
+                {
+                    CollectionCode = col.CollectionCode,
+                    ProductCount = col.ProductCount,
+                    BlobUrl = blobUrl
+                });
+            }
+
+            return Ok(results);
         }
         catch (Exception e)
         {
