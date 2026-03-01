@@ -38,7 +38,7 @@ public class ArtisanFavController(IArtisanFavService artisanFavService, IProduct
                     Skuid = sku,
                     ProductName = product.ProductName,
                     OriginalPrice = product.Price,
-                    DiscountedPrice = discountedPrice,
+                    DiscountedPrice = discountedPrice == product.Price ? 0 : discountedPrice,
                     BlobUrl = blobUrl
                 });
             }
