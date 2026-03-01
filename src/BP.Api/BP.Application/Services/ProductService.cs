@@ -33,7 +33,7 @@ public class ProductService(IProductRepository productRepository, ISectionProduc
 
     public async Task<int> GetItemCountForCollection(string collectionCode, int yearCode)
     {
-        var result = await productRepository.GetProductsByCategory(collectionCode, yearCode).ConfigureAwait(false);
+        var result = await productRepository.GetProductsByCollection(collectionCode, yearCode).ConfigureAwait(false);
         return result.Count();
     }
 

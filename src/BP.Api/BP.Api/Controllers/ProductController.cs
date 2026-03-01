@@ -57,7 +57,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 DiscountPrice = product.DiscountPrice,
                 DiscountExpiryDate = product.DiscountExpiryDate,
                 SKU = skuCode,
-                Stock = 0,
+                Stock = product.Stock,
                 MaterialCode = product.Material,
                 CollectionCode = product.CollectionCode,
                 FeatureCodes = string.Join(',', product.FeatureCodes),
