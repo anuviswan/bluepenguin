@@ -35,6 +35,21 @@ public class ProductRepository : GenericRepository<ProductEntity>, IProductRepos
 
     }
 
+    public async Task<IEnumerable<ProductEntity>> GetProductsByCollection(string collectionCode, int yearCode)
+    {
+        var queryResults = TableClient.QueryAsync<ProductEntity>(p => p.CollectionCode == collectionCode && p.YearCode == yearCode);
+
+        var results = new List<ProductEntity>();
+        await foreach (var entity in queryResults.ConfigureAwait(false))
+        {
+            results.Add(entity);
+
+        }
+
+        return results;
+
+    }
+
     public async Task<IEnumerable<ProductEntity>> GetProductsByCategoryAsync(string categoryCode)
     {
         var queryResults = TableClient.QueryAsync<ProductEntity>(p => p.PartitionKey == categoryCode);

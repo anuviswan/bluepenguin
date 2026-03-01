@@ -95,6 +95,12 @@ public class ShowcaseController : BaseController
 
                 var blobUrl = await _productImageService.GetPrimaryImageUrlForSkuId(d.SkuId).ConfigureAwait(false);
 
+                if(effectiveDiscountedPrice == product.Price)
+                {
+                    // If there's no active discount, skip this product from the top discounts list
+                    continue;
+                }
+
                 results.Add(new ShowcaseTopDiscountResponse
                 {
                     Skuid = d.SkuId,

@@ -22,6 +22,8 @@ public record CreateProductRequest
 
     public int SequenceCode { get; init; }
 
+    public int Stock { get; init; } = 0;
+
 }
 
 public record CreateProductResponse
