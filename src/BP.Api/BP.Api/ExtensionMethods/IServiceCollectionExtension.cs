@@ -23,7 +23,7 @@ public static class IServiceCollectionExtension
         services.AddKeyedTransient<ISeederService, UserTableSeederService>("User");
         services.AddTransient<ISkuGeneratorService, SkuGeneratorService>();
         services.AddTransient<IFileUploadService, FileUploadService>();
-        services.AddTransient<IProductImageService, ProductImageService>();
+        services.AddHttpClient<IProductImageService, ProductImageService>();
         services.AddTransient<IShowcaseService, ShowcaseService>();
         services.AddTransient<IArtisanFavService, ArtisanFavService>();
         services.AddTransient<IFeaturedCategoryService, FeaturedCategoryService>();
