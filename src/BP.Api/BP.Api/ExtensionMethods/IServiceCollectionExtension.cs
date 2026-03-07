@@ -28,15 +28,15 @@ public static class IServiceCollectionExtension
         services.AddTransient<IShowcaseService, ShowcaseService>();
         services.AddTransient<IArtisanFavService, ArtisanFavService>();
         services.AddTransient<IFeaturedCategoryService, FeaturedCategoryService>();
-
-
-        services.AddHttpClient<IProductImageService, ProductImageService>((sp,client) =>
+        services.AddTransient<IProductImageService, ProductImageService>();
+        
+        services.AddHttpClient<IComputerVisionService, ComputerVisionService>((sp, client) =>
         {
             var options = sp.GetRequiredService<IOptions<ComputerVisionOptions>>().Value;
             client.BaseAddress = new Uri(options.Url);
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", options.ApiKey);
-        })
-        ;
+        });
+        
         return services;
     }
 

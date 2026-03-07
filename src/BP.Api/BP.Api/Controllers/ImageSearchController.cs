@@ -9,22 +9,21 @@ namespace BP.Api.Controllers
     [Route("api/[controller]")]
     public class ImageSearchController : ControllerBase
     {
-        private readonly IProductImageService _productImageService;
+        private readonly IComputerVisionService _computerVisionService;
         private readonly ILogger<ImageSearchController> _logger;
 
-        public ImageSearchController(IProductImageService productImageService, ILogger<ImageSearchController> logger)
+        public ImageSearchController(IComputerVisionService computerVisionService, ILogger<ImageSearchController> logger)
         {
-            _productImageService = productImageService;
+            _computerVisionService = computerVisionService;
             _logger = logger;
         }
 
         [HttpPost("generate-embeddings")]
-        [Authorize]
         public async Task<IActionResult> GenerateProductEmbeddings([FromQuery] bool force = false)
         {
             try
             {
-                var result = await _productImageService.GenerateEmbeddingsForAllImagesAsync(force).ConfigureAwait(false);
+                var result = await _computerVisionService.GenerateEmbeddingsForAllImagesAsync(force);
                 return Ok(result);
             }
             catch (Exception ex)
