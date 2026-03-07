@@ -6,30 +6,21 @@ using BP.Shared.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 
 namespace BP.Application.Services;
 
-public class ProductImageService : IProductImageService
-{
-    private readonly HttpClient httpClient;
-    private readonly IFileUploadService fileUploadService;
-    private readonly IProductImageRepository productImageRepository;
-    private readonly ComputerVisionOptions visionOptions;
-
-    public ProductImageService(
+public class ProductImageService(
         HttpClient httpClient,
         IFileUploadService fileUploadService,
         IProductImageRepository productImageRepository,
-        IOptions<ComputerVisionOptions> visionOptions)
-    {
-        this.httpClient = httpClient;
-        this.fileUploadService = fileUploadService;
-        this.productImageRepository = productImageRepository;
-        this.visionOptions = visionOptions.Value;
-    }
+        ILogger<IProductImageService> logger,
+        IOptions<ComputerVisionOptions> visionOptions) : IProductImageService
+{
+    private ComputerVisionOptions VisionOptions => visionOptions.Value;
 
     public async Task<FileDownload?> DownloadByImageIdAsync(string skuId,string imageId)
     {
@@ -143,7 +134,7 @@ public class ProductImageService : IProductImageService
         return await productImageRepository.DeleteProductImage(skuId, imageId).ConfigureAwait(false);
     }
 
-    public async Task<EmbeddingGenerationResult> GenerateEmbeddingsForAllImagesAsync(bool force, ILogger logger, int maxConcurrency = 5)
+    public async Task<EmbeddingGenerationResult> GenerateEmbeddingsForAllImagesAsync(bool force, int maxConcurrency = 5)
     {
         var allImages = (await productImageRepository.GetAllProductImagesAsync().ConfigureAwait(false)).ToList();
 
@@ -165,13 +156,19 @@ public class ProductImageService : IProductImageService
                 try
                 {
                     var url = await fileUploadService.GetBlobUrlAsync(image.BlobName).ConfigureAwait(false);
+
+                    var fileDownload = await fileUploadService.DownloadByBlobNameAsync(image.BlobName).ConfigureAwait(false);
+
+                    if (fileDownload is null) return;
+
+
                     if (string.IsNullOrEmpty(url))
                     {
                         logger.LogWarning($"No blob URL for image {image.BlobName}");
                         Interlocked.Increment(ref failed);
                         return;
                     }
-                    var embedding = await GenerateEmbeddingFromAzureAsync(url, logger).ConfigureAwait(false);
+                    var embedding = await GenerateEmbeddingFromAzureAsync(fileDownload.Content, logger).ConfigureAwait(false);
                     if (embedding != null)
                     {
                         image.Embedding = JsonSerializer.Serialize(embedding);
@@ -200,13 +197,23 @@ public class ProductImageService : IProductImageService
         return new EmbeddingGenerationResult(total, generated, skipped, failed);
     }
 
-    private async Task<float[]?> GenerateEmbeddingFromAzureAsync(string imageUrl, ILogger logger)
+    private async Task<float[]?> GenerateEmbeddingFromAzureAsync(Stream imageStream, ILogger logger)
     {
-        var endpoint = $"{visionOptions.Url.TrimEnd('/')}/retrieval:vectorizeImage?api-version=2023-04-01-preview";
-        var request = new { url = imageUrl };
+        var endpoint = $"{VisionOptions.Url.TrimEnd('/')}/computervision/retrieval:vectorizeImage?model-version={VisionOptions.ModelVersion}&api-version={VisionOptions.ApiVersion}";
+
         try
         {
-            using var response = await httpClient.PostAsJsonAsync(endpoint, request).ConfigureAwait(false);
+            if (imageStream.CanSeek)
+                imageStream.Position = 0;
+
+            var bytes = await ReadAllBytesAsync(imageStream);
+
+            using var content = new ByteArrayContent(bytes);
+            content.Headers.ContentType =
+                new MediaTypeHeaderValue("application/octet-stream");
+
+            using var response =
+                await httpClient.PostAsync(endpoint, content).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogWarning($"Vision API failed: {response.StatusCode}");
@@ -214,7 +221,7 @@ public class ProductImageService : IProductImageService
             }
             using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
             using var doc = await JsonDocument.ParseAsync(stream).ConfigureAwait(false);
-            if (doc.RootElement.TryGetProperty("embedding", out var embeddingElement) && embeddingElement.ValueKind == JsonValueKind.Array)
+            if (doc.RootElement.TryGetProperty("vector", out var embeddingElement) && embeddingElement.ValueKind == JsonValueKind.Array)
             {
                 var floats = new List<float>();
                 foreach (var v in embeddingElement.EnumerateArray())
@@ -232,6 +239,13 @@ public class ProductImageService : IProductImageService
             logger.LogError(ex, "Vision API call failed");
             return null;
         }
+    }
+
+    public static async Task<byte[]> ReadAllBytesAsync(Stream stream)
+    {
+        using var memory = new MemoryStream();
+        await stream.CopyToAsync(memory).ConfigureAwait(false);
+        return memory.ToArray();
     }
 }
 

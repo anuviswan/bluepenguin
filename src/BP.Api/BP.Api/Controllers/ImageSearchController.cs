@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using BP.Application.Interfaces.Services;
+﻿using BP.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace BP.Api.Controllers
@@ -18,17 +19,17 @@ namespace BP.Api.Controllers
         }
 
         [HttpPost("generate-embeddings")]
+        [Authorize]
         public async Task<IActionResult> GenerateProductEmbeddings([FromQuery] bool force = false)
         {
             try
             {
-                var result = await _productImageService.GenerateEmbeddingsForAllImagesAsync(force, _logger);
+                var result = await _productImageService.GenerateEmbeddingsForAllImagesAsync(force).ConfigureAwait(false);
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return BadRequest(ex);
             }
 
         }
