@@ -168,7 +168,7 @@ public class ProductImageService(
                         Interlocked.Increment(ref failed);
                         return;
                     }
-                    var embedding = await GenerateEmbeddingFromAzureAsync(fileDownload.Content, logger).ConfigureAwait(false);
+                    var embedding = await GenerateEmbeddingFromAzureAsync(fileDownload.Content).ConfigureAwait(false);
                     if (embedding != null)
                     {
                         image.Embedding = JsonSerializer.Serialize(embedding);
@@ -197,7 +197,7 @@ public class ProductImageService(
         return new EmbeddingGenerationResult(total, generated, skipped, failed);
     }
 
-    private async Task<float[]?> GenerateEmbeddingFromAzureAsync(Stream imageStream, ILogger logger)
+    private async Task<float[]?> GenerateEmbeddingFromAzureAsync(Stream imageStream)
     {
         var endpoint = $"{VisionOptions.Url.TrimEnd('/')}/computervision/retrieval:vectorizeImage?model-version={VisionOptions.ModelVersion}&api-version={VisionOptions.ApiVersion}";
 
@@ -241,7 +241,7 @@ public class ProductImageService(
         }
     }
 
-    public static async Task<byte[]> ReadAllBytesAsync(Stream stream)
+    private static async Task<byte[]> ReadAllBytesAsync(Stream stream)
     {
         using var memory = new MemoryStream();
         await stream.CopyToAsync(memory).ConfigureAwait(false);
