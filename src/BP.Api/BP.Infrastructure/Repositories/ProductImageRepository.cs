@@ -57,6 +57,16 @@ public class ProductImageRepository([FromKeyedServices("ProductImages")]TableCli
         return results;
     }
 
+    public async Task<IEnumerable<ProductImageEntity>> GetAllProductImagesAsync()
+    {
+        var results = new List<ProductImageEntity>();
+        await foreach (var entity in tableClient.QueryAsync<ProductImageEntity>().ConfigureAwait(false))
+        {
+            results.Add(entity);
+        }
+        return results;
+    }
+
     public async Task DeleteAllAsync()
     {
         await foreach (var entity in tableClient.QueryAsync<ProductImageEntity>().ConfigureAwait(false))
