@@ -3,8 +3,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
-using Microsoft.Extensions.Options;
-using BP.PriceTracker.Services.Options;
 using BP.PriceTracker.Services.Types;
 
 namespace BP.PriceTracker.Services.Services;
@@ -13,20 +11,12 @@ public class ApiService : IApiService
 {
     private readonly HttpClient _httpClient;
 
-    public ApiService(IOptions<ApiSettings> apiOptions)
+    // Use DI to inject HttpClient
+    public ApiService(HttpClient httpClient)
     {
-        var apiSettings = apiOptions.Value;
-
-        var handler = new SocketsHttpHandler
-        {
-            AllowAutoRedirect = false
-        };
-
-        _httpClient = new HttpClient(handler)
-        {
-            BaseAddress = new Uri(apiSettings.BaseUrl),
-        };
+        _httpClient = httpClient;
     }
+
     public async Task DeleteAsync(string endpoint, string? authToken = null)
     {
         var request = new HttpRequestMessage(HttpMethod.Delete, endpoint);
@@ -36,7 +26,7 @@ public class ApiService : IApiService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
-        using var response = await _httpClient.SendAsync(request);
+        using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
     }
 
@@ -49,11 +39,11 @@ public class ApiService : IApiService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
-        using var response = await _httpClient.SendAsync(request);
+        using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)
         {
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var result = JsonSerializer.Deserialize<T>(responseContent, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -72,7 +62,7 @@ public class ApiService : IApiService
             IsSuccess = false,
             Data = default,
             StatusCode = response.StatusCode,
-            ErrorMessage = await response.Content.ReadAsStringAsync()
+            ErrorMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(false)
         };
     }
 
@@ -85,11 +75,11 @@ public class ApiService : IApiService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
-        using var response = await _httpClient.SendAsync(request);
+        using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)
         {
-            var bytes = await response.Content.ReadAsByteArrayAsync();
+            var bytes = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
             return new ApiResult<byte[]>
             {
                 IsSuccess = true,
@@ -103,7 +93,7 @@ public class ApiService : IApiService
             IsSuccess = false,
             Data = default,
             StatusCode = response.StatusCode,
-            ErrorMessage = await response.Content.ReadAsStringAsync()
+            ErrorMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(false)
         };
     }
 
@@ -119,13 +109,11 @@ public class ApiService : IApiService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
-        
-        using var response = await _httpClient.SendAsync(request);
-
+        using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)
         {
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var result = JsonSerializer.Deserialize<TResponse>(responseContent, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -144,7 +132,7 @@ public class ApiService : IApiService
             IsSuccess = false,
             Data = default,
             StatusCode = response.StatusCode,
-            ErrorMessage = await response.Content.ReadAsStringAsync()
+            ErrorMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(false)
         };
     }
 
@@ -160,12 +148,11 @@ public class ApiService : IApiService
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
         }
 
-        using var response = await _httpClient.SendAsync(request);
-
+        using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)
         {
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var result = JsonSerializer.Deserialize<TResponse>(responseContent, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -184,7 +171,7 @@ public class ApiService : IApiService
             IsSuccess = false,
             Data = default,
             StatusCode = response.StatusCode,
-            ErrorMessage = await response.Content.ReadAsStringAsync()
+            ErrorMessage = await response.Content.ReadAsStringAsync().ConfigureAwait(false)
         };
     }
 }

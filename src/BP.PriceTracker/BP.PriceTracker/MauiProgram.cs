@@ -4,6 +4,8 @@ using BP.PriceTracker.Services.Services;
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Net.Http;
+
 namespace BP.PriceTracker
 {
     public static class MauiProgram
@@ -20,7 +22,7 @@ namespace BP.PriceTracker
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            
+
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
@@ -34,7 +36,6 @@ namespace BP.PriceTracker
             using var stream = FileSystem.OpenAppPackageFileAsync("appsettings.Production.json").GetAwaiter().GetResult();
             builder.Configuration.AddJsonStream(stream);
 #endif
-            //var configuration = configBuilder.Build();
             configBuilder.AddEnvironmentVariables();
 
             builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection(nameof(ApiSettings)));
@@ -50,8 +51,18 @@ namespace BP.PriceTracker
 
             builder.Services.AddScoped<INavigationCacheService, NavigationCacheService>();
             builder.Services.AddScoped<IUserService,UserService>();
-            builder.Services.AddScoped<IApiService,ApiService>();
             builder.Services.AddScoped<IProductService,ProductService>();
+
+            // Register ApiService with typed HttpClient
+            builder.Services.AddHttpClient<IApiService, ApiService>((sp, client) =>
+            {
+                var apiSettings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ApiSettings>>().Value;
+                client.BaseAddress = new Uri(apiSettings.BaseUrl);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+            {
+                AllowAutoRedirect = false
+            });
 
             return builder.Build();
         }
