@@ -31,13 +31,5 @@ public interface IProductImageService
 
     // Deletes an image from a product by SKU ID and image ID.
     Task<bool> DeleteProductImageAsync(string skuId, string imageId);
-
-    Task<EmbeddingGenerationResult> GenerateEmbeddingsForAllImagesAsync(bool force, int maxConcurrency = 5);
 }
 
-public record EmbeddingGenerationResult(
-    int TotalScanned,
-    int EmbeddingsGenerated,
-    int Skipped,
-    int Failures
-);
