@@ -33,6 +33,8 @@ public interface IProductImageService
     Task<bool> DeleteProductImageAsync(string skuId, string imageId);
 
     Task<EmbeddingGenerationResult> GenerateEmbeddingsForAllImagesAsync(bool force, int maxConcurrency = 5);
+
+    Task<IEnumerable<ImageSimilarityMatch>> FindClosestProductImagesAsync(Stream imageStream, int limit = 5);
 }
 
 public record EmbeddingGenerationResult(
@@ -40,4 +42,11 @@ public record EmbeddingGenerationResult(
     int EmbeddingsGenerated,
     int Skipped,
     int Failures
+);
+
+public record ImageSimilarityMatch(
+    string SkuId,
+    string ImageId,
+    string BlobName,
+    double Similarity
 );
