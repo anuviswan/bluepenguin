@@ -58,11 +58,15 @@ namespace BP.PriceTracker
             {
                 var apiSettings = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ApiSettings>>().Value;
                 client.BaseAddress = new Uri(apiSettings.BaseUrl);
-            })
-            .ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler
+            }).ConfigurePrimaryHttpMessageHandler(() =>
             {
-                AllowAutoRedirect = false
+                return new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                        (message, cert, chain, errors) => true
+                };
             });
+
 
             return builder.Build();
         }

@@ -77,6 +77,53 @@ public class ComputerVisionService(
         return new EmbeddingGenerationResult(total, generated, skipped, failed);
     }
 
+    public async Task<IEnumerable<ImageSimilarityMatch>> FindClosestProductImagesAsync(Stream imageStream, int limit = 5)
+    {
+        if (imageStream == null)
+            throw new ArgumentNullException(nameof(imageStream));
+
+        if (limit <= 0)
+            limit = 5;
+
+        var queryEmbedding = await GenerateEmbeddingFromAzureAsync(imageStream).ConfigureAwait(false);
+        if (queryEmbedding == null || queryEmbedding.Length == 0)
+            return Enumerable.Empty<ImageSimilarityMatch>();
+
+        var allImages = await productImageRepository.GetAllProductImagesAsync().ConfigureAwait(false);
+
+        var matches = new List<ImageSimilarityMatch>();
+        foreach (var image in allImages)
+        {
+            if (string.IsNullOrWhiteSpace(image.Embedding))
+                continue;
+
+            float[]? candidateEmbedding;
+            try
+            {
+                candidateEmbedding = JsonSerializer.Deserialize<float[]>(image.Embedding);
+            }
+            catch (JsonException)
+            {
+                continue;
+            }
+
+            if (candidateEmbedding == null || candidateEmbedding.Length == 0 || candidateEmbedding.Length != queryEmbedding.Length)
+                continue;
+
+            var similarity = CalculateCosineSimilarity(queryEmbedding, candidateEmbedding);
+            matches.Add(new ImageSimilarityMatch(
+                image.PartitionKey,
+                image.RowKey,
+                image.BlobName,
+                similarity
+            ));
+        }
+
+        return matches
+            .OrderByDescending(m => m.Similarity)
+            .Take(limit);
+    }
+
     private async Task<float[]?> GenerateEmbeddingFromAzureAsync(Stream imageStream)
     {
         var endpoint = $"{VisionOptions.Url.TrimEnd('/')}/computervision/retrieval:vectorizeImage?model-version={VisionOptions.ModelVersion}&api-version={VisionOptions.ApiVersion}";
@@ -120,5 +167,24 @@ public class ComputerVisionService(
         using var memory = new MemoryStream();
         await stream.CopyToAsync(memory).ConfigureAwait(false);
         return memory.ToArray();
+    }
+
+    private static double CalculateCosineSimilarity(float[] source, float[] target)
+    {
+        double dotProduct = 0;
+        double sourceMagnitude = 0;
+        double targetMagnitude = 0;
+
+        for (var i = 0; i < source.Length; i++)
+        {
+            dotProduct += source[i] * target[i];
+            sourceMagnitude += source[i] * source[i];
+            targetMagnitude += target[i] * target[i];
+        }
+
+        if (sourceMagnitude <= 0 || targetMagnitude <= 0)
+            return 0;
+
+        return dotProduct / (Math.Sqrt(sourceMagnitude) * Math.Sqrt(targetMagnitude));
     }
 }
