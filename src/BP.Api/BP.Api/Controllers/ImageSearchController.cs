@@ -40,16 +40,16 @@ namespace BP.Api.Controllers
         [HttpPost("find-closest")]
         [AllowAnonymous]
         [RequestSizeLimit(10_000_000)]
-        public async Task<IActionResult> FindClosestProducts([FromForm] IFormFile image, [FromQuery] int limit = 5)
+        public async Task<IActionResult> FindClosestProducts([FromForm] ImageSearchRequest imageRequest, [FromQuery] int limit = 5)
         {
             try
             {
-                if (image == null || image.Length == 0)
+                if (imageRequest == null || imageRequest.Image.Length == 0)
                 {
                     return BadRequest("Image file is required.");
                 }
 
-                await using var stream = image.OpenReadStream();
+                await using var stream = imageRequest.Image.OpenReadStream();
                 var matches = await ComputerVisionService.FindClosestProductImagesAsync(stream, limit).ConfigureAwait(false);
 
                 var response = new List<ImageSearchResultResponse>();
