@@ -32,7 +32,7 @@ public class Program
 
         System.Diagnostics.Debug.WriteLine("JwtOptions configured with Key length: " + builder.Configuration.GetSection(nameof(JwtOptions)).GetValue<string>("Key")?.Length);
         builder.Services.Configure<UserTableSeedingOptions>(builder.Configuration.GetSection(nameof(UserTableSeedingOptions)));
-        builder.Services.Configure<ComputerVisionOptions>(builder.Configuration.GetSection("ComputerVision"));
+        builder.Services.Configure<ComputerVisionOptions>(builder.Configuration.GetSection(nameof(ComputerVisionOptions)));
 
         // Add services to the container.
 
