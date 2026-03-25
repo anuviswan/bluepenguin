@@ -69,3 +69,5 @@ Thumbs.db
 /src/BP.Api/BP.Api/appsettings.Development.json
 /src/BP.Api/BP.Api/appsettings.Production.json
 /src/BP.Api/BP.Api/appsettings.Production.json
+/src/BP.Api/BP.Api/appsettings.json
+/src/BP.Api/BP.Api/appsettings.Production.json
