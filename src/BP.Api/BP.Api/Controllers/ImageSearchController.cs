@@ -1,9 +1,7 @@
 ﻿using BP.Api.Contracts;
 using BP.Application.Interfaces.Services;
-using BP.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace BP.Api.Controllers
 {
@@ -26,7 +24,7 @@ namespace BP.Api.Controllers
         {
             try
             {
-                var result = await ComputerVisionService.GenerateEmbeddingsForAllImagesAsync(force);
+                var result = await ComputerVisionService.GenerateEmbeddingsForAllImagesAsync(force).ConfigureAwait(false);
                 return Ok(result);
             }
             catch (Exception ex)
