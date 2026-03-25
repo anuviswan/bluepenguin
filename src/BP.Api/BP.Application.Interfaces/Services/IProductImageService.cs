@@ -1,4 +1,5 @@
 ﻿using BP.Shared.Types;
+using Microsoft.Extensions.Logging;
 
 namespace BP.Application.Interfaces.Services;
 
@@ -31,3 +32,4 @@ public interface IProductImageService
     // Deletes an image from a product by SKU ID and image ID.
     Task<bool> DeleteProductImageAsync(string skuId, string imageId);
 }
+

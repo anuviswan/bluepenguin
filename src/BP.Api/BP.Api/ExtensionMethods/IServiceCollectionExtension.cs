@@ -1,8 +1,10 @@
 ﻿using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using BP.Api.Controllers;
+using BP.Application.Interfaces.Options;
 using BP.Application.Interfaces.Services;
 using BP.Application.Services;
+using Microsoft.Extensions.Options;
 
 namespace BP.Api.ExtensionMethods;
 
@@ -23,10 +25,18 @@ public static class IServiceCollectionExtension
         services.AddKeyedTransient<ISeederService, UserTableSeederService>("User");
         services.AddTransient<ISkuGeneratorService, SkuGeneratorService>();
         services.AddTransient<IFileUploadService, FileUploadService>();
-        services.AddTransient<IProductImageService, ProductImageService>();
         services.AddTransient<IShowcaseService, ShowcaseService>();
         services.AddTransient<IArtisanFavService, ArtisanFavService>();
         services.AddTransient<IFeaturedCategoryService, FeaturedCategoryService>();
+        services.AddTransient<IProductImageService, ProductImageService>();
+        
+        services.AddHttpClient<IComputerVisionService, ComputerVisionService>((sp, client) =>
+        {
+            var options = sp.GetRequiredService<IOptions<ComputerVisionOptions>>().Value;
+            client.BaseAddress = new Uri(options.Url);
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", options.ApiKey);
+        });
+        
         return services;
     }
 

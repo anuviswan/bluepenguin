@@ -1,13 +1,25 @@
-﻿using BP.Application.Interfaces.Services;
+﻿using BP.Application.Interfaces.Options;
+using BP.Application.Interfaces.Services;
 using BP.Domain.Entities;
 using BP.Domain.Repository;
 using BP.Shared.Types;
-using System.Linq;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Threading;
 
 namespace BP.Application.Services;
 
-public class ProductImageService(IFileUploadService fileUploadService, IProductImageRepository productImageRepository) : IProductImageService
+public class ProductImageService(
+        IFileUploadService fileUploadService,
+        IProductImageRepository productImageRepository,
+        IOptions<ComputerVisionOptions> visionOptions) : IProductImageService
 {
+    private ComputerVisionOptions VisionOptions => visionOptions.Value;
+
     public async Task<FileDownload?> DownloadByImageIdAsync(string skuId,string imageId)
     {
         var metaInfo = await productImageRepository.GetProductImageById(skuId,imageId).ConfigureAwait(false);
@@ -119,4 +131,8 @@ public class ProductImageService(IFileUploadService fileUploadService, IProductI
     {
         return await productImageRepository.DeleteProductImage(skuId, imageId).ConfigureAwait(false);
     }
+
+    
 }
+
+
