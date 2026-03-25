@@ -81,7 +81,7 @@ namespace BP.Api.Tests.Controllers
                 .Setup(s => s.GetBlobUrlAsync("blob-2"))
                 .ReturnsAsync("https://cdn/blob-2");
 
-            var result = await _sut.FindClosestProducts(formFile, 5);
+            var result = await _sut.FindClosestProducts(new Contracts.ImageSearchRequest(formFile), 5);
 
             var ok = Assert.IsType<OkObjectResult>(result);
             var payload = Assert.IsAssignableFrom<IEnumerable<object>>(ok.Value);
