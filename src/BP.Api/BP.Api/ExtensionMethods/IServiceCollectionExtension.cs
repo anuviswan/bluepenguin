@@ -69,7 +69,7 @@ public static class IServiceCollectionExtension
         {
             var config = sp.GetRequiredService<IConfiguration>();
             var connectionString = config.GetConnectionString("tables");
-            var tableName = config["TableNames:ProductImages"] ?? "ProductsImages";
+            var tableName = config["TableNames:ProductImages"] ?? "ProductImages";
 
             var serviceClient = new TableServiceClient(connectionString);
             var client = serviceClient.GetTableClient(tableName);

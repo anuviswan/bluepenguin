@@ -35,5 +35,11 @@ public enum Category
     KC,
 
     [Description("Preservation")]
-    PR
+    PR,
+
+    [Description("Hairbands")]
+    HB,
+
+    [Description("Hair Clips")]
+    HR
 }
