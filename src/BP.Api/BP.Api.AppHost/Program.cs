@@ -11,6 +11,7 @@ var blobs = storage.AddBlobs("blobs"); // Add blob storage resource
 
 builder.AddProject<Projects.BP_Api>("bp-api")
     .WithEndpoint("http", e => e.Port = 5000)
+    .WithUrl("http://localhost:5000/swagger","swagger") // Add Swagger UI endpoint
     .WaitFor(tables)
     .WithReference(tables)
     .WithReference(blobs) // Reference blob storage in API
