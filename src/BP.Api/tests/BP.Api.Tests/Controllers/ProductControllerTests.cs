@@ -378,7 +378,13 @@ public class ProductControllerTests
         var sku1 = "RI-RS-FL-ONM-2024-1";
         var sku2 = "RI-RS-FL-ONM-2024-2";
 
-        mockProductService.Setup(s => s.SearchProductsAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
+        mockProductService.Setup(s => s.SearchProductsAsync(
+            It.IsAny<IEnumerable<string>>(),
+            It.IsAny<IEnumerable<string>>(),
+            It.IsAny<IEnumerable<string>>(),
+            It.IsAny<IEnumerable<string>>(),
+            It.IsAny<IEnumerable<string>>(),
+            It.IsAny<string>()))
             .ReturnsAsync(new List<ProductEntity>
             {
                 new()

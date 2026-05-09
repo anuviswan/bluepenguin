@@ -204,7 +204,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     [HttpPost]
     [Route("search")]
     [AllowAnonymous]
-    public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50)
+    public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, [FromQuery] string? partialProductName = null)
     {
         Logger.LogInformation("Searching products with filters");
 
@@ -221,11 +221,14 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 return BadRequest("No filters provided");
             }
 
-            var results = (await ProductService.SearchProductsAsync(filters.SelectedCategories,
+            var effectivePartialName = partialProductName ?? filters.PartialProductName;
+            var results = (await ProductService.SearchProductsAsync(
+                filters.SelectedCategories,
                 filters.SelectedMaterials,
                 filters.SelectedCollections,
                 filters.SelectedFeatures,
-                filters.SelectedYears).ConfigureAwait(false)).ToList();
+                filters.SelectedYears,
+                effectivePartialName).ConfigureAwait(false)).ToList();
 
             var totalCount = results.Count;
             if (page <= 0) page = 1;
