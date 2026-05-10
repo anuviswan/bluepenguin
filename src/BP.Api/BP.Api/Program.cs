@@ -29,6 +29,7 @@ public class Program
             .Validate(o => !string.IsNullOrWhiteSpace(o.Issuer), "JwtOptions:Issuer is required.")
             .Validate(o => o.Audience is { Count: > 0 }, "JwtOptions:Audience must include at least one value.")
             .ValidateOnStart();
+        builder.Services.Configure<ArtisanFavOptions>(builder.Configuration.GetSection(nameof(ArtisanFavOptions)));
 
         System.Diagnostics.Debug.WriteLine("JwtOptions configured with Key length: " + builder.Configuration.GetSection(nameof(JwtOptions)).GetValue<string>("Key")?.Length);
         builder.Services.Configure<UserTableSeedingOptions>(builder.Configuration.GetSection(nameof(UserTableSeedingOptions)));

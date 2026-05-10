@@ -52,6 +52,44 @@ public class ArtisanFavController(IArtisanFavService artisanFavService, IProduct
         }
     }
 
+    [HttpGet("latest")]
+    [AllowAnonymous]
+    public async Task<ActionResult<IEnumerable<ArtisanFavItemResponse>>> GetLatest()
+    {
+        try
+        {
+            var latestSkus = (await artisanFavService.GetLatest(4).ConfigureAwait(false)).ToList();
+            var items = new List<ArtisanFavItemResponse>();
+            foreach (var sku in latestSkus)
+            {
+                var product = await ProductService.GetProductBySku(sku).ConfigureAwait(false);
+                if (product == null) continue;
+
+                var discountedPrice = product.DiscountPrice.HasValue &&
+                                      (!product.DiscountExpiryDate.HasValue || product.DiscountExpiryDate.Value > DateTimeOffset.UtcNow)
+                    ? product.DiscountPrice.Value
+                    : product.Price;
+
+                var blobUrl = await ProductImageService.GetPrimaryImageUrlForSkuId(sku).ConfigureAwait(false);
+
+                items.Add(new ArtisanFavItemResponse
+                {
+                    Skuid = sku,
+                    ProductName = product.ProductName,
+                    OriginalPrice = product.Price,
+                    DiscountedPrice = discountedPrice == product.Price ? 0 : discountedPrice,
+                    BlobUrl = blobUrl
+                });
+            }
+            return Ok(items);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to fetch latest artisan favs.");
+            return BadRequest(e.Message);
+        }
+    }
+
     [HttpPost("create")]
     [Authorize]
     public async Task<IActionResult> Create([FromBody] ArtisanFavRequest request)
