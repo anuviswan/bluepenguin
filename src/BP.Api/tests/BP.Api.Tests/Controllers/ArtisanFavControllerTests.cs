@@ -31,7 +31,8 @@ public class ArtisanFavControllerTests
         imageService.Setup(x => x.GetPrimaryImageUrlForSkuId("sku-1")).ReturnsAsync("https://blob/sku1.jpg");
         imageService.Setup(x => x.GetPrimaryImageUrlForSkuId("sku-2")).ReturnsAsync((string?)null);
 
-        var controller = new ArtisanFavController(service.Object, productService.Object, imageService.Object, logger.Object);
+        var options = Microsoft.Extensions.Options.Options.Create(new BP.Application.Interfaces.Options.ArtisanFavOptions { Limit = 4 });
+        var controller = new ArtisanFavController(service.Object, productService.Object, imageService.Object, logger.Object, options);
 
         var result = await controller.GetAll();
 
@@ -54,7 +55,8 @@ public class ArtisanFavControllerTests
         var imageService = new Mock<IProductImageService>();
         var logger = new Mock<ILogger<ArtisanFavController>>();
 
-        var controller = new ArtisanFavController(service.Object, productService.Object, imageService.Object, logger.Object);
+        var options = Microsoft.Extensions.Options.Options.Create(new BP.Application.Interfaces.Options.ArtisanFavOptions { Limit = 4 });
+        var controller = new ArtisanFavController(service.Object, productService.Object, imageService.Object, logger.Object, options);
 
         var result = await controller.Create(new ArtisanFavRequest(string.Empty));
 
@@ -70,7 +72,8 @@ public class ArtisanFavControllerTests
         var imageService = new Mock<IProductImageService>();
         var logger = new Mock<ILogger<ArtisanFavController>>();
 
-        var controller = new ArtisanFavController(service.Object, productService.Object, imageService.Object, logger.Object);
+        var options = Microsoft.Extensions.Options.Options.Create(new BP.Application.Interfaces.Options.ArtisanFavOptions { Limit = 4 });
+        var controller = new ArtisanFavController(service.Object, productService.Object, imageService.Object, logger.Object, options);
 
         var result = await controller.Delete("sku-1");
 
