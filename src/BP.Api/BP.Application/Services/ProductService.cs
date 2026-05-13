@@ -73,14 +73,16 @@ public class ProductService(IProductRepository productRepository, ISectionProduc
         IEnumerable<string>? selectedMaterials,
         IEnumerable<string>? selectedCollections,
         IEnumerable<string>? selectedFeatures,
-        IEnumerable<string>? selectedYears)
+        IEnumerable<string>? selectedYears,
+        string? partialProductName)
     {
         // Maintain previous behavior: if caller provided no filters at all, return empty set
         if (selectedCategories == null &&
             selectedMaterials == null &&
             selectedCollections == null &&
             selectedFeatures == null &&
-            selectedYears == null)
+            selectedYears == null &&
+            string.IsNullOrWhiteSpace(partialProductName))
         {
             return Array.Empty<ProductEntity>();
         }
@@ -138,6 +140,13 @@ public class ProductService(IProductRepository productRepository, ISectionProduc
                 var yearStr = p.YearCode.ToString();
                 return !string.IsNullOrWhiteSpace(yearStr) && years.Contains(yearStr, StringComparer.OrdinalIgnoreCase);
             });
+        }
+
+        if (!string.IsNullOrWhiteSpace(partialProductName))
+        {
+            results = results.Where(p =>
+                !string.IsNullOrWhiteSpace(p.ProductName) &&
+                p.ProductName.Contains(partialProductName, StringComparison.OrdinalIgnoreCase));
         }
 
         return results;
