@@ -8,7 +8,7 @@ namespace BP.Api.Controllers
         Task<IActionResult> CreateProduct([FromBody] CreateProductRequest product, [FromQuery] string? skuId = null);
         Task<IActionResult> GetAllProducts([FromQuery] int page = 1, [FromQuery] int pageSize = 5);
         Task<IActionResult> GetProduct([FromQuery] string sku);
-        Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, [FromQuery] string? partialProductName = null);
+        Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, [FromQuery] string? partialProductName = null, [FromQuery] BP.Domain.Entities.ProductSortOrder? sortOrder = null);
         Task<IActionResult> DeleteProduct(string sku);
     }
 }

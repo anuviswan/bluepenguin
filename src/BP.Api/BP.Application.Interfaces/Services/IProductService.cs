@@ -17,6 +17,7 @@ public interface IProductService
         IEnumerable<string>? selectedCollections,
         IEnumerable<string>? selectedFeatures,
         IEnumerable<string>? selectedYears,
-        string? partialProductName);
+        string? partialProductName,
+        BP.Domain.Entities.ProductSortOrder sortOrder = BP.Domain.Entities.ProductSortOrder.Newest);
     Task<bool> CheckIfSkuExistsAsync(string sku);
 }
