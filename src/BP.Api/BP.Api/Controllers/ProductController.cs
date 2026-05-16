@@ -204,7 +204,7 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
     [HttpPost]
     [Route("search")]
     [AllowAnonymous]
-    public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, [FromQuery] string? partialProductName = null)
+    public async Task<IActionResult> SearchProducts([FromBody] SearchProductsRequest filters, [FromQuery] int page = 1, [FromQuery] int pageSize = 50, [FromQuery] string? partialProductName = null, [FromQuery] BP.Domain.Entities.ProductSortOrder? sortOrder = null)
     {
         Logger.LogInformation("Searching products with filters");
 
@@ -228,7 +228,9 @@ public class ProductController(IProductService productService, ISkuGeneratorServ
                 filters.SelectedCollections,
                 filters.SelectedFeatures,
                 filters.SelectedYears,
-                effectivePartialName).ConfigureAwait(false)).ToList();
+                effectivePartialName,
+                sortOrder ?? filters.SortOrder
+            ).ConfigureAwait(false)).ToList();
 
             var totalCount = results.Count;
             if (page <= 0) page = 1;

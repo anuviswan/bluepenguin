@@ -1,3 +1,5 @@
+using BP.Domain.Entities;
+
 public class SearchProductsRequest
 {
     /// <summary>Categories to match (e.g. "Rings")</summary>
@@ -9,4 +11,7 @@ public class SearchProductsRequest
 
     /// <summary>Partial or full product name to match (case-insensitive)</summary>
     public string? PartialProductName { get; set; }
+
+    /// <summary>Sort order for results (default: Newest)</summary>
+    public ProductSortOrder SortOrder { get; set; } = ProductSortOrder.Newest;
 }
