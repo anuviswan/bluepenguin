@@ -23,7 +23,8 @@ public class ArtisanFavServiceTests
                 new SectionProductEntity { PartitionKey = ArtisanFavService.ARTISAN_FAVS_PARTITION_KEY, Sku = "sku-4" }
             ]);
 
-        var service = new ArtisanFavService(repository.Object);
+        var options = Microsoft.Extensions.Options.Options.Create(new BP.Application.Interfaces.Options.ArtisanFavOptions { Limit = 4 });
+        var service = new ArtisanFavService(repository.Object, options);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => service.Add("sku-5"));
         repository.Verify(x => x.Add(It.IsAny<SectionProductEntity>()), Times.Never);
@@ -39,7 +40,8 @@ public class ArtisanFavServiceTests
                 new SectionProductEntity { PartitionKey = ArtisanFavService.ARTISAN_FAVS_PARTITION_KEY, Sku = "sku-1" }
             ]);
 
-        var service = new ArtisanFavService(repository.Object);
+        var options = Microsoft.Extensions.Options.Options.Create(new BP.Application.Interfaces.Options.ArtisanFavOptions { Limit = 4 });
+        var service = new ArtisanFavService(repository.Object, options);
 
         await service.Add("sku-2");
 

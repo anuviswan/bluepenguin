@@ -1,6 +1,7 @@
 ﻿using BP.Application.Interfaces.Services;
 using BP.Domain.Entities;
 using BP.Domain.Repository;
+using BP.Domain.Entities;
 
 namespace BP.Application.Services;
 
@@ -73,14 +74,17 @@ public class ProductService(IProductRepository productRepository, ISectionProduc
         IEnumerable<string>? selectedMaterials,
         IEnumerable<string>? selectedCollections,
         IEnumerable<string>? selectedFeatures,
-        IEnumerable<string>? selectedYears)
+        IEnumerable<string>? selectedYears,
+        string? partialProductName,
+        ProductSortOrder sortOrder = ProductSortOrder.Newest)
     {
         // Maintain previous behavior: if caller provided no filters at all, return empty set
         if (selectedCategories == null &&
             selectedMaterials == null &&
             selectedCollections == null &&
             selectedFeatures == null &&
-            selectedYears == null)
+            selectedYears == null &&
+            string.IsNullOrWhiteSpace(partialProductName))
         {
             return Array.Empty<ProductEntity>();
         }
@@ -139,6 +143,21 @@ public class ProductService(IProductRepository productRepository, ISectionProduc
                 return !string.IsNullOrWhiteSpace(yearStr) && years.Contains(yearStr, StringComparer.OrdinalIgnoreCase);
             });
         }
+
+        if (!string.IsNullOrWhiteSpace(partialProductName))
+        {
+            results = results.Where(p =>
+                !string.IsNullOrWhiteSpace(p.ProductName) &&
+                p.ProductName.Contains(partialProductName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        // Sorting
+        results = sortOrder switch
+        {
+            ProductSortOrder.PriceHighToLow => results.OrderByDescending(p => p.Price),
+            ProductSortOrder.PriceLowToHigh => results.OrderBy(p => p.Price),
+            _ => results.OrderByDescending(p => p.Timestamp ?? DateTimeOffset.MinValue)
+        };
 
         return results;
     }
